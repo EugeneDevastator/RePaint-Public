@@ -7,6 +7,9 @@
 5. development stopped back in 2016, and god knows what is there now.
 6. Author is not responsible for mental damage caused by looking at or reading the code. You have been warned!
 
+#Building
+see this: https://wiki.qt.io/Deploy_an_Application_on_Windows
+
 # Shortcuts:
 try using keys like Shift, ctrl, alt, tab.
 most of the control is on them.

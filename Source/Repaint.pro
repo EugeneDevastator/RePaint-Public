@@ -1,7 +1,7 @@
 QT       += core gui network widgets
 TARGET = Repaint
 TEMPLATE = app
-
+RC_ICONS = reicon.ico
 # Define the base copy command depending on the platform
 win32 {
     COPY_CMD = xcopy /E /I /Y
@@ -62,6 +62,7 @@ HEADERS += \
     dlg_usersearch.h \
     pnl_quickcontrol.h \
     geomaster.h \
+    resources.rc \
     strokemaster.h \
     pnl_filemenu.h \
     pnl_chat.h \
