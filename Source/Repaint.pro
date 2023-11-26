@@ -1,7 +1,13 @@
 QT       += core gui network widgets
 TARGET = Repaint
 TEMPLATE = app
-RC_ICONS = reicon.ico
+
+win32 {
+    RC_ICONS += reicon.ico
+    ICON = reicon.ico
+} else {
+    ICON = reicon.ico
+}
 # Define the base copy command depending on the platform
 win32 {
     COPY_CMD = xcopy /E /I /Y
@@ -62,7 +68,6 @@ HEADERS += \
     dlg_usersearch.h \
     pnl_quickcontrol.h \
     geomaster.h \
-    resources.rc \
     strokemaster.h \
     pnl_filemenu.h \
     pnl_chat.h \
@@ -80,7 +85,7 @@ HEADERS += \
     layerstack.h
 
 CONFIG +=qt thread
-RC_FILE += resources.rc
+
 SOURCES += \
     MHPwindow.cpp \
     main.cpp \
@@ -214,3 +219,6 @@ DISTFILES += \
     Resources/uRclosed.png \
     Resources/uRfree.png \
     Resources/urwatch.png
+
+RESOURCES += \
+    qresource.qrc
