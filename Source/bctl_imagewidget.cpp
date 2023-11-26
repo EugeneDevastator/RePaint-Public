@@ -1,11 +1,8 @@
 #include "bctl_imagewidget.h"
 #include <QtGui>
 
-bctl_ImageWidget::bctl_ImageWidget(QWidget *parent) :
-    QWidget(parent)
+bctl_ImageWidget::bctl_ImageWidget(QWidget *parent) : QWidget(parent)
 {
-
-
 }
 void bctl_ImageWidget::paintEvent(QPaintEvent *event)
 {

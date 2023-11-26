@@ -18,83 +18,88 @@
 
 #include "strokemaster.h"
 
-StrokeMaster::StrokeMaster(pnl_bcontorls *bcont, pnl_Layers *lyrp, ImageArray *iar, QWidget *parent ) :
-    QWidget(parent)
+StrokeMaster::StrokeMaster(pnl_bcontorls *bcont, pnl_Layers *lyrp, ImageArray *iar, QWidget *parent) : QWidget(parent)
 {
-    isLogging=false;
-    //ARTM=artm;
-    BC=bcont;
-    LP=lyrp;
-    MainImage=iar;
-    baseSize=QSize(1920,1080);
-    baselcount=3;
+    isLogging = false;
+    // ARTM=artm;
+    BC = bcont;
+    LP = lyrp;
+    MainImage = iar;
+    baseSize = QSize(1920, 1080);
+    baselcount = 3;
 
-    offset=0;
+    offset = 0;
     ResetLocalPos();
-/*
-    uptimer =new QTimer;
-    connect(uptimer,SIGNAL(timeout()),this,SLOT(callupdate()),Qt::DirectConnection);
-    uptimer->setInterval(40);
-    uptimer->start();
-    executing=false;
-*/
+    /*
+        uptimer =new QTimer;
+        connect(uptimer,SIGNAL(timeout()),this,SLOT(callupdate()),Qt::DirectConnection);
+        uptimer->setInterval(40);
+        uptimer->start();
+        executing=false;
+    */
 }
 
-void StrokeMaster::ResetLocalPos(){
-    isNew=true;
+void StrokeMaster::ResetLocalPos()
+{
+    isNew = true;
 }
-void StrokeMaster::GetRawStroke(d_Stroke Strk, d_StrokePars currpars, d_StrokePars lastpars){
+void StrokeMaster::GetRawStroke(d_Stroke Strk, d_StrokePars currpars, d_StrokePars lastpars)
+{
 
     Strk.packpos1.SetByQPointF(Strk.pos1);
     Strk.packpos2.SetByQPointF(Strk.pos2);
 
-    Strk.pos1=Strk.packpos1.ToPointF();
-    Strk.pos2=Strk.packpos2.ToPointF();
+    Strk.pos1 = Strk.packpos1.ToPointF();
+    Strk.pos2 = Strk.packpos2.ToPointF();
 
     d_Action nact;
-    nact=BC->ParseBrush(Strk,currpars);
+    nact = BC->ParseBrush(Strk, currpars);
     d_Section Sect;
-    Sect.Stroke=Strk;
-Sect.Noisemode=nact.Noisemode;
-    Sect.Brush=nact.Brush;//BC->ParseBrush(Strk,currpars).Brush;
-    if (isNew) Sect.BrushFrom=BC->ParseBrush(Strk,lastpars).Brush;
-    else Sect.BrushFrom=prevBrush;
-    prevBrush=Sect.Brush;
+    Sect.Stroke = Strk;
+    Sect.Noisemode = nact.Noisemode;
+    Sect.Brush = nact.Brush; // BC->ParseBrush(Strk,currpars).Brush;
+    if (isNew)
+        Sect.BrushFrom = BC->ParseBrush(Strk, lastpars).Brush;
+    else
+        Sect.BrushFrom = prevBrush;
+    prevBrush = Sect.Brush;
 
-
-    Sect.layer=LP->GetActiveLayer();
-    Sect.spacing=BC->CtlSpc->GetModValue(currpars);
-    Sect.scatter=BC->CtlSpcJit->GetModValue(currpars)*(51);
-    Sect.ToolID=nact.ToolID;
-    if (currpars.Pars[csERASER]==1)
+    Sect.layer = LP->GetActiveLayer();
+    Sect.spacing = BC->CtlSpc->GetModValue(currpars);
+    Sect.scatter = BC->CtlSpcJit->GetModValue(currpars) * (51);
+    Sect.ToolID = nact.ToolID;
+    if (currpars.Pars[csERASER] == 1)
     {
-        Sect.Brush.Realb.bmidx=1;
-        Sect.BrushFrom.Realb.bmidx=1;
-        }
-    if (LP->BtnPresOp->isChecked()) {
-        Sect.Brush.Realb.preserveop=1;
-        Sect.BrushFrom.Realb.preserveop=1;
-        }
+        Sect.Brush.Realb.bmidx = 1;
+        Sect.BrushFrom.Realb.bmidx = 1;
+    }
+    if (LP->BtnPresOp->isChecked())
+    {
+        Sect.Brush.Realb.preserveop = 1;
+        Sect.BrushFrom.Realb.preserveop = 1;
+    }
 
+    if (isNew)
+    {
+        isNew = false;
+        lastpos = CalcLastPos(Sect);
+    }
+    else
+    {
+        Sect.Stroke.pos2 = lastpos;
+        lastpos = CalcLastPos(Sect);
+    }
 
-    if (isNew) {
-       isNew=false;
-       lastpos=CalcLastPos(Sect);
-       }
-    else {
-         Sect.Stroke.pos2=lastpos;
-         lastpos=CalcLastPos(Sect);
-        }
-
-      // this->ExecSection(Sect,true);
+    // this->ExecSection(Sect,true);
     LocalSects.append(Sect);
-    QApplication::processEvents(QEventLoop::AllEvents,7);
+    QApplication::processEvents(QEventLoop::AllEvents, 7);
     emit SendReadySect(Sect);
 }
 
-void StrokeMaster::ExecSectionNet(d_Section Sect){
-  //DO FUCKING NOTHING
-  //  NetSects.append(Sect);
+void StrokeMaster::ExecSectionNet(d_Section Sect)
+{
+    // DO FUCKING NOTHING
+    //   NetSects.append(Sect);
 }
 /*
 void StrokeMaster::callupdate(){
@@ -127,8 +132,3 @@ void StrokeMaster::callupdate(){
    }
 
 */
-
-
-
-
-

@@ -1,11 +1,11 @@
 #include "ctl_assetview.h"
 
-ctl_assetview::ctl_assetview (QGraphicsScene * scene, QWidget * parent)
+ctl_assetview::ctl_assetview(QGraphicsScene *scene, QWidget *parent)
 {
-   // QGraphicsView::QGraphicsView(scene,parent);
-   // GSC = new ctl_AssetScene;
-this->setScene(scene);
-   // this->scrollBarWidgets()
+    // QGraphicsView::QGraphicsView(scene,parent);
+    // GSC = new ctl_AssetScene;
+    this->setScene(scene);
+    // this->scrollBarWidgets()
     this->setDragMode(QGraphicsView::ScrollHandDrag);
 }
 /*
