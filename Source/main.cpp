@@ -1,6 +1,6 @@
 /*
     RePaint, the network painting tool
-    Copyright (C) 2013-2023 Yauheni Bolshakov
+    Copyright (C) 2012-2023 Yauheni Bolshakov
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include "MHPwindow.h"
 #include <QtWidgets/QInputDialog>
 //#include <QPlastiqueStyle>
+#include <QSplashScreen>
 //#include <QStyleHints>
 
 QByteArray GenRawKey(quint32 RegNum,int Modifier=0);
@@ -54,14 +55,13 @@ int main (int argc, char *argv[])
     QApplication app(argc,argv);
 
 
-    //QPixmap pixmap(":/splash.png");
-  // QPixmap pixmap(":/splash.png");
- //   QSplashScreen *splash = new QSplashScreen(pixmap);
- //   splash->show();
+    QPixmap pixmap(":/splash.png");
+    QSplashScreen *splash = new QSplashScreen(pixmap);
+    splash->show();
 
- //   app.processEvents();
+    //   app.processEvents();
     //app.setStyle(new QPlastiqueStyle);
-//app.setStyle(new QMacStyle);
+    //app.setStyle(new QMacStyle);
 
     /* block for encryption
     bool ok;
@@ -110,7 +110,7 @@ QByteArray GenRawKey(quint32 RegNum,int Modifier){
     tds << QChar(253);
     tds << RegNum;
 
-   return QCryptographicHash::hash(*gphrase,QCryptographicHash::Sha1);
+    return QCryptographicHash::hash(*gphrase,QCryptographicHash::Sha1);
 
 }
 
@@ -123,7 +123,7 @@ quint32 DecryptInt(QByteArray Crypt){
     quint8 d2;
     quint8 d1;
     quint8 d0;
-/*
+    /*
     CryptMatrix->append((quint8)CryptedNum->at(3)+(quint8)(97));
     CryptMatrix->prepend((quint8)CryptedNum->at(2)+(quint8)CryptedNum->at(3)*3+(quint8)11  );
     CryptMatrix->prepend((quint8)CryptedNum->at(1)+(quint8)CryptedNum->at(2)*2+(quint8)34+(quint8)CryptedNum->at(3)*4  );
@@ -141,7 +141,7 @@ quint32 DecryptInt(QByteArray Crypt){
 
     QDataStream cmds(DeCryptMatrix,QIODevice::ReadWrite);
     cmds >> result;
-return result;
+    return result;
 }
 
 
@@ -161,6 +161,6 @@ int ValidateKey(QString HexKey){
     ExtRawKey.append(ConvertedKey.right(ConvertedKey.count()-4-3));
 
     if (GenRawKey(RegNumber)==ExtRawKey)
-    return RegNumber;
-            else return -1;
+        return RegNumber;
+    else return -1;
 }
