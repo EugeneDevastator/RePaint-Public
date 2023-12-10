@@ -10,13 +10,6 @@
 #include "Enums.h"
 
 
-enum ConnectionMode {
-    emServer,
-    emGServer,
-    emClient,
-    emNone
-    };
-
 enum eHeads{
     hAction, hLAction, hLogin, hRegin, hSTOP
     };

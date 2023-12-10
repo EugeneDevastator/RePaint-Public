@@ -2,7 +2,6 @@
 #define STROKEMASTER_H
 
 #include <QtWidgets/QWidget>
-
 #include "Brushes.h"
 #include "ArtMaster.h"
 #include "pnl_bcontorls.h"

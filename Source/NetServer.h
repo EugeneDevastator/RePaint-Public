@@ -9,6 +9,7 @@
 #include "Brushes.h"
 #include "Enums.h"
 #include "NetSocket.h"
+#include "SharedNetCode/NetStructures.h"
 
 class NetServer : public QObject
 {

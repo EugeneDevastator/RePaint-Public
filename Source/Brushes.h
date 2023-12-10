@@ -187,7 +187,7 @@ struct g_KeyStates{
     int RB;
 
 };
-struct d_TriFloat{
+struct PackedFloat{
     qint16 IntVal;
     quint8 FVal;
 
@@ -196,8 +196,8 @@ struct d_TriFloat{
 };
 
 struct d_PointF{
-d_TriFloat xpos;
-d_TriFloat ypos;
+PackedFloat xpos;
+PackedFloat ypos;
 
     qreal x();
     qreal y();
@@ -267,8 +267,8 @@ struct d_BPSettings {
 
 struct d_PackedBrush{
 public:
-    d_TriFloat Prad_in;
-    d_TriFloat Prad_out;
+    PackedFloat Prad_in;
+    PackedFloat Prad_out;
     quint8 crv;  // curvature
     quint16 resangle;
     quint8 x2y;  //proportions [0-0.5]=[0-1] by x, [0.5-1]=[1-0] by y;

@@ -1,4 +1,5 @@
 #include "NetSocket.h"
+#include "SharedNetCode/NetStructures.h"
 
 QByteArray sAuth::Serialize()
 {

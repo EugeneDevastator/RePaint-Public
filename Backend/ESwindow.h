@@ -10,7 +10,7 @@
 #include <QToolBar>
 #include <QComboBox>
 #include <QDialog>
-#include <dbkeeper.h>
+#include "dbkeeper.h"
 #include <QTextEdit>
 
 QT_BEGIN_NAMESPACE

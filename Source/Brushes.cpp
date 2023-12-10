@@ -15,12 +15,12 @@ QString EGlobals::str1 = "asdasd";
 // static QString RESPATH(QApplication::applicationDirPath());
 QList<QString> EGlobals::PipeNames;
 
-void d_TriFloat::SetVal(double val)
+void PackedFloat::SetVal(double val)
 {
     IntVal = (qint16)(floor(val));
     FVal = (quint8)floor((val - floor(val)) * 255);
 }
-qreal d_TriFloat::GetVal()
+qreal PackedFloat::GetVal()
 {
     return (qreal)(IntVal + FVal / 255.0);
 }

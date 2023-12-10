@@ -10,6 +10,7 @@
 #include "Brushes.h"
 #include "Enums.h"
 #include "NetSocket.h"
+#include "SharedNetCode/NetStructures.h"
 
 /*
 QString DSZstring(QByteArray ba);
