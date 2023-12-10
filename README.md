@@ -7,7 +7,9 @@
 5. development stopped back in 2016, and god knows what is there now.
 6. Author is not responsible for mental damage caused by looking at or reading the code. You have been warned!
 
-#Building
+https://www.youtube.com/watch?v=VrmkxVnluOk
+
+# Building
 see this: https://wiki.qt.io/Deploy_an_Application_on_Windows
 
 # Shortcuts:
@@ -26,9 +28,9 @@ For anything feel free to reach me here on github, or linkedin:
 https://www.linkedin.com/in/eugene-bolshakov/
 
 # Credits:
-Andrey Penyaz : Beta Testing and support
-My wife, because it wouldnt make to public without her support and would be forever stuck on hard drive.
-Kim Robinson : for programming inspiration
+- Andrey Penyaz : Beta Testing and support
+- My wife, because it wouldnt make to public without her support and would be forever stuck on hard drive.
+- Kim Robinson : for programming inspiration; https://dnr.duke4.net/
 
 # Copyright Notice for RePaint, the network painting tool
 
