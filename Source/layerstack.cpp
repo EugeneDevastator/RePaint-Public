@@ -36,7 +36,7 @@ sectionList LayerStack::GetLocalSects(){
 
 }
 
-void LayerStack::addLocalDot(d_Action act){
+void LayerStack::addLocalDot(ActionData act){
     while (isLocked){
         QApplication::processEvents();
     }
@@ -52,7 +52,7 @@ void LayerStack::addLocalDotList(dotList dtLst){
     DotsLocal->append(dtLst);
             isLocked=false;
 }
-void LayerStack::addLocalSect(d_Section sect){
+void LayerStack::addLocalSect(StrokeSection sect){
     while (isLocked){
         QApplication::processEvents();
     }

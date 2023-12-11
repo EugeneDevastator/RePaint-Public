@@ -111,29 +111,29 @@ void ActionMaster::ExecOperation(quint8 OpType, QByteArray Data)
 {
 }
 
-void ActionMaster::ExecNetSection(d_Section Sect)
+void ActionMaster::ExecNetSection(StrokeSection Sect)
 {
     if (LStacks->count() - 1 >= Sect.layer)
     {
-        d_Section *pSect = new d_Section;
+        StrokeSection *pSect = new StrokeSection;
         *pSect = Sect;
         //  (*LStacks)[Sect.layer]->addNetSect(Sect);
     }
 }
 
-void ActionMaster::ExecSection(d_Section Sect)
+void ActionMaster::ExecSection(StrokeSection Sect)
 {
     if (LStacks->count() - 1 >= Sect.layer)
     {
 
-        d_Section *pSect = new d_Section;
+        StrokeSection *pSect = new StrokeSection;
         *pSect = Sect;
 
         (*LStacks)[Sect.layer]->addLocalSect(Sect);
     }
 }
 
-void ActionMaster::ExecLayerAction(d_LAction lact)
+void ActionMaster::ExecLayerAction(LayerAction lact)
 {
     LAStack.append(lact);
     if (!LActionBusy && LAStack.count() > 0)
@@ -164,7 +164,7 @@ void ActionMaster::ParseLActions()
     }
 
     LActionBusy = true;
-    d_LAction lact = LAStack.takeFirst();
+    LayerAction lact = LAStack.takeFirst();
 
     if (lact.ActID == laBm)
     {
@@ -248,7 +248,7 @@ void ActionMaster::ParseLActions()
 
 //----------------------- data conversion procedures
 
-void ActionMaster::UnpackSection(d_Section Sect, bool local)
+void ActionMaster::UnpackSection(StrokeSection Sect, bool local)
 {
     // please perhaps Backward stroke resolve! bug with rnd colors
 
@@ -305,11 +305,11 @@ void ActionMaster::UnpackSection(d_Section Sect, bool local)
             dotpos1.setX(Sect.Stroke.pos2.x() + ((nextlen * dx) / stdist) - rnflw * y2r + rnside * x2r);
             dotpos1.setY(Sect.Stroke.pos2.y() + ((nextlen * dy) / stdist) + rnflw * x2r + rnside * y2r);
 
-            d_Action *newact = new d_Action; //=Sect;
+            ActionData *newact = new ActionData; //=Sect;
 
             //------- send actions to thread
             qreal k = nextlen / stdist;
-            d_Brush Cbrush = Sect.BrushFrom;
+            BrushData Cbrush = Sect.BrushFrom;
             Cbrush.Realb = BlendBrushes(Sect.BrushFrom.Realb, Sect.Brush.Realb, k);
 
             newact->layer = Sect.layer;
@@ -350,7 +350,7 @@ void ActionMaster::UnpackSection(d_Section Sect, bool local)
                APlist.append(ap);*/
             if (local)
             {
-                d_Action rawact = *newact;
+                ActionData rawact = *newact;
                 //(*LStacks)[Sect.layer]->addLocalDot(rawact);
                 tmpList.append(rawact);
                 delete newact;
@@ -395,7 +395,7 @@ void ActionMaster::NewImg(QSize sz, int lcount)
     if (lcount > 1)
         for (int i = 1; i < lcount; i++)
         {
-            /*d_LAction lact;
+            /*LayerAction lact;
             lact.ActID=laAdd;
             lact.layer=1;
             ExecLayerAction(lact);
@@ -466,14 +466,14 @@ void ActionMaster::OpenImg(QIODevice *iodev)
     dstream >> height;
     // NewImg(QSize(width,height),lcount);
 
-    d_LAction nia;
+    LayerAction nia;
     nia.layer = lcount;
     nia.rect.setWidth(width);
     nia.rect.setHeight(height);
     nia.ActID = laNewCanvas;
     ExecLayerAction(nia);
 
-    d_LAction visact;
+    LayerAction visact;
 
     for (int i = 0; i < lcount; i++)
     {
@@ -512,7 +512,7 @@ void ActionMaster::ImportImg(QString fname)
     QImage tmpimg = QImage(QSize(50, 50), QImage::Format_ARGB32_Premultiplied);
     tmpimg.load(fname, "PNG");
 
-    d_LAction nia;
+    LayerAction nia;
     nia.layer = 1;
     nia.rect.setWidth(tmpimg.width());
     nia.rect.setHeight(tmpimg.height());
@@ -540,7 +540,7 @@ void ActionMaster::NewLog()
     baselcount = MainImage->ViewCanvas.count();
     isLogging = true;
 }
-void ActionMaster::LogAct(d_Action act)
+void ActionMaster::LogAct(ActionData act)
 {
     if (isLogging)
     {
@@ -550,7 +550,7 @@ void ActionMaster::LogAct(d_Action act)
         LOG.append(lp);
     }
 }
-void ActionMaster::LogLAct(d_LAction act)
+void ActionMaster::LogLAct(LayerAction act)
 {
     if (isLogging)
     {
@@ -560,7 +560,7 @@ void ActionMaster::LogLAct(d_LAction act)
         LOG.append(lp);
     }
 }
-void ActionMaster::LogSect(d_Section sect)
+void ActionMaster::LogSect(StrokeSection sect)
 {
     if (isLogging)
     {
@@ -605,7 +605,7 @@ void ActionMaster::OpenLog(QIODevice *iodev)
     {
         if (LOG[i].logid == atSect)
         {
-            d_Section sect;
+            StrokeSection sect;
             sect.DeSerialize(LOG[i].szdAction);
 
             sect.Stroke.pos1.setX(((qreal)sect.Stroke.pos1.x() * MainImage->ViewCanvas[0].width()) / baseSize.width());

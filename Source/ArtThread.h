@@ -41,7 +41,7 @@ bool isdone;
 public slots:
     void ForceSingleCore();
     void callupdate();
-    void ExecAction(QImage *img,d_Action Act, bool local=true);
+    void ExecAction(QImage *img, ActionData Act, bool local=true);
     void ExecActionList(QList <actionpair> APlist);
 
 signals:

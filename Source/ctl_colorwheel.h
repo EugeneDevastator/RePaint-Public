@@ -12,7 +12,7 @@ class ctl_ColorWheel : public bctl_ImageWidget
 {
     Q_OBJECT
 public:
-    d_Brush *g_Brush;
+    BrushData *g_Brush;
     explicit ctl_ColorWheel();
     //QImage ViewImage;
     b_SmartColor gPaintColor;

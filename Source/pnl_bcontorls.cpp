@@ -276,9 +276,9 @@ LtLeftToolbar->setContentsMargins(QMargins());
     logfile.write("\n BCONTROLS INIT+++");  logfile.close(); logfile.open(QFile::Append);
 }
 
-d_Brush pnl_bcontorls::ParseBrush(d_Brush BRSH){
+BrushData pnl_bcontorls::ParseBrush(BrushData BRSH){
 
-d_Brush nb;
+BrushData nb;
 return nb;
 }
 
@@ -286,10 +286,10 @@ void pnl_bcontorls::SetRadRel(float rel){
     CtlRadRel->SetValF(rel);
 }
 
-d_Action pnl_bcontorls::ParseBrush(d_Stroke Strk,d_StrokePars stpars){
+ActionData pnl_bcontorls::ParseBrush(d_Stroke Strk, d_StrokePars stpars){
 
-    d_Brush nb;
-    d_Action act;
+    BrushData nb;
+    ActionData act;
 
     nb.Realb.opacity=0.8;
         act.Brush=nb;

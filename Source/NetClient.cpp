@@ -63,7 +63,7 @@ void NetClient::OnConnectionSuccess()
 
     NetMode = emClient;
     // SendStatus("connected to :"+addr);
-    //     connect(LocalClient,SIGNAL(RSAction(d_Action)),this,SLOT(C_GetAction(d_Action)));
+    //     connect(LocalClient,SIGNAL(RSAction(ActionData)),this,SLOT(C_GetAction(ActionData)));
     // connect(LocalClient,SIGNAL(SendDataHid(QString,QByteArray)),this,SLOT(G_ExecData(QString,QByteArray)));
     connect(LocalClient, SIGNAL(SendDataObj(stNetHead, QByteArray, NetSocket *)), this, SLOT(G_ExecData(stNetHead, QByteArray, NetSocket *)));
     LocalClient->init();
@@ -73,7 +73,7 @@ void NetClient::OnConnectionSuccess()
 void NetClient::LogIn(QString Uname, QString Upass)
 {
 
-    sAuth auth;
+    AuthPacket auth;
     auth.uname = Uname;
     auth.upass = Upass;
     auth.aType = atLogin;
@@ -82,14 +82,14 @@ void NetClient::LogIn(QString Uname, QString Upass)
 
 void NetClient::RegisterNewUser(QString Uname, QString Upass)
 {
-    sAuth auth;
+    AuthPacket auth;
     auth.uname = Uname;
     auth.upass = Upass;
     auth.aType = atRegister;
     G_SendData(sdAuth, auth.Serialize(), LocalClient);
 }
 
-void NetClient::C_SendLaction(d_LAction la)
+void NetClient::C_SendLaction(LayerAction la)
 {
     G_SendData(sdLAction, la.Serialize(), LocalClient);
 }
@@ -151,13 +151,13 @@ void NetClient::G_ExecData(NetPacketHeader HEAD, QByteArray data, NetSocket *des
 
     else if (HEAD.Id == sdAction)
     {
-        d_Action act;
+        ActionData act;
         act.DeSerialize(data);
         emit SendAction(act);
     }
     else if (HEAD.Id == sdSection)
     {
-        d_Section sect;
+        StrokeSection sect;
         sect.DeSerialize(data);
         emit SendSection(sect);
     }
@@ -207,9 +207,9 @@ void NetClient::G_ExecData(NetPacketHeader HEAD, QByteArray data, NetSocket *des
     {
 
         /*
-        d_LAction *GotAction=new d_LAction;
-        QByteArray ReadBuf(data);//(this->Sck->read(sizeof(d_Action)));
-        for (unsigned int i = 0; i<sizeof(d_LAction); i++) {
+        LayerAction *GotAction=new LayerAction;
+        QByteArray ReadBuf(data);//(this->Sck->read(sizeof(ActionData)));
+        for (unsigned int i = 0; i<sizeof(LayerAction); i++) {
             // note this can be optimized to pointer switching
             ((unsigned char*)GotAction)[i]=(unsigned char)ReadBuf.at(i);
             }
@@ -218,7 +218,7 @@ void NetClient::G_ExecData(NetPacketHeader HEAD, QByteArray data, NetSocket *des
         emit SendLAction(*GotAction);
         delete GotAction;
         */
-        d_LAction lact;
+        LayerAction lact;
         lact.DeSerialize(data);
         emit SendLAction(lact);
     }
@@ -255,11 +255,11 @@ void NetClient::G_ExecData(NetPacketHeader HEAD, QByteArray data, NetSocket *des
     }
 }
 
-void NetClient::GetAction(d_Action st)
+void NetClient::GetAction(ActionData st)
 {
     G_SendData(sdAction, st.Serialize(), LocalClient);
 }
-void NetClient::GetSection(d_Section sect)
+void NetClient::GetSection(StrokeSection sect)
 {
     if (NetMode != emNone)
         G_SendData(sdSection, sect.Serialize(), LocalClient);

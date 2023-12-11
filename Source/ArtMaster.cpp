@@ -393,7 +393,7 @@ void ArtMaster::GenClamp(QImage *img, float top, float min)
 
 void ArtMaster::DoActionList(QImage *img, dotList *actlist, bool local = true)
 {
-    d_Action *Act;
+    ActionData *Act;
     for (int k = 0; k < actlist->count(); k++)
     {
         Act = &actlist->operator[](k);
@@ -421,7 +421,7 @@ void ArtMaster::DoActionList(QImage *img, dotList *actlist, bool local = true)
             DrawLine(img, Act->Stroke, Act->Brush);
         //     case 2: DrawSmudge(img,Act.Stroke,Act.Brush);
         int realrad = Act->Brush.Realb.rad_out * Act->Brush.Realb.scale;
-        // d_Action ac2;
+        // ActionData ac2;
         // ac2=Act;
         // emit ConfirmAction(ac2);
         // if (local) emit AffirmAction(Act);
@@ -431,7 +431,7 @@ void ArtMaster::DoActionList(QImage *img, dotList *actlist, bool local = true)
     delete actlist;
 }
 
-void ArtMaster::DoAction(QImage *img, d_Action Act, bool local = true)
+void ArtMaster::DoAction(QImage *img, ActionData Act, bool local = true)
 {
     if ((Act.ToolID == eSmudge) | (Act.ToolID == eDisp) | (Act.ToolID == eCont))
     {
@@ -456,7 +456,7 @@ void ArtMaster::DoAction(QImage *img, d_Action Act, bool local = true)
         DrawLine(img, Act.Stroke, Act.Brush);
     //     case 2: DrawSmudge(img,Act.Stroke,Act.Brush);
     int realrad = Act.Brush.Realb.rad_out * Act.Brush.Realb.scale;
-    // d_Action ac2;
+    // ActionData ac2;
     // ac2=Act;
     // emit ConfirmAction(ac2);
     // if (local) emit AffirmAction(Act);
@@ -466,7 +466,7 @@ void ArtMaster::DoAction(QImage *img, d_Action Act, bool local = true)
 
 //---------------------------- L I N E ---------------------------------
 
-void ArtMaster::DrawLine(QImage *img, d_Stroke STRK, d_Brush BRSH)
+void ArtMaster::DrawLine(QImage *img, d_Stroke STRK, BrushData BRSH)
 {
 
     float wd = BRSH.Realb.rad_out * 0.5;
@@ -537,7 +537,7 @@ void ArtMaster::DrawLine(QImage *img, d_Stroke STRK, d_Brush BRSH)
 
 // --------------------------- D R A W     S M U D G E ------------------------
 
-void ArtMaster::DrawSmudge(QImage *img, d_Stroke STRK, d_Brush BRSH)
+void ArtMaster::DrawSmudge(QImage *img, d_Stroke STRK, BrushData BRSH)
 {
 
     QPointF fpos = STRK.pos1;
@@ -642,7 +642,7 @@ void ArtMaster::DrawSmudge(QImage *img, d_Stroke STRK, d_Brush BRSH)
 
 // --------------------------- D R A W   B R U S H ----------------------
 
-void ArtMaster::DrawBrush(QImage *img, d_Stroke STRK, d_Brush BRSH)
+void ArtMaster::DrawBrush(QImage *img, d_Stroke STRK, BrushData BRSH)
 {
     QPointF fpos = STRK.pos1;
     fpos.setX(fpos.x() - floor(fpos.x()));
@@ -727,7 +727,7 @@ void ArtMaster::DrawBrush(QImage *img, d_Stroke STRK, d_Brush BRSH)
     // delete Bimg2;
 }
 
-void ArtMaster::DrawBrushDev(QPaintDevice *img, d_Stroke STRK, d_Brush BRSH)
+void ArtMaster::DrawBrushDev(QPaintDevice *img, d_Stroke STRK, BrushData BRSH)
 {
     // int hwd=floor(BRSH.rad_out);
     // int wd=hwd*2;
@@ -770,7 +770,7 @@ void ArtMaster::DrawBrushDev(QPaintDevice *img, d_Stroke STRK, d_Brush BRSH)
 }
 
 // --------------------------  L E V E L    B R U S H  ---------------------------------
-void ArtMaster::LvlBrush(QImage *img, d_Stroke STRK, d_Brush BRSH)
+void ArtMaster::LvlBrush(QImage *img, d_Stroke STRK, BrushData BRSH)
 {
     int wd = BRSH.Realb.rad_out * 2;
     float tscale = BRSH.Realb.scale;
@@ -931,7 +931,7 @@ void ArtMaster::LvlBrush(QImage *img, d_Stroke STRK, d_Brush BRSH)
 }
 // -------------------------- D I S P L A C E R    B R U S H ---------------------------
 
-void ArtMaster::DrawDisp(QImage *img, d_Stroke STRK, d_Brush BRSH)
+void ArtMaster::DrawDisp(QImage *img, d_Stroke STRK, BrushData BRSH)
 {
 
     qreal pwr = BRSH.Realb.pwr;
@@ -1165,7 +1165,7 @@ QImage *ArtMaster::SubPixelate(QImage *Bimg, float fx, float fy)
     */
     return NBimg;
 }
-QImage ArtMaster::GenBMask(d_Brush BRSH, float fx, float fy)
+QImage ArtMaster::GenBMask(BrushData BRSH, float fx, float fy)
 {
 
     bool sub3 = false;

@@ -52,9 +52,9 @@ void StrokeMaster::GetRawStroke(d_Stroke Strk, d_StrokePars currpars, d_StrokePa
     Strk.pos1 = Strk.packpos1.ToPointF();
     Strk.pos2 = Strk.packpos2.ToPointF();
 
-    d_Action nact;
+    ActionData nact;
     nact = BC->ParseBrush(Strk, currpars);
-    d_Section Sect;
+    StrokeSection Sect;
     Sect.Stroke = Strk;
     Sect.Noisemode = nact.Noisemode;
     Sect.Brush = nact.Brush; // BC->ParseBrush(Strk,currpars).Brush;
@@ -96,7 +96,7 @@ void StrokeMaster::GetRawStroke(d_Stroke Strk, d_StrokePars currpars, d_StrokePa
     emit SendReadySect(Sect);
 }
 
-void StrokeMaster::ExecSectionNet(d_Section Sect)
+void StrokeMaster::ExecSectionNet(StrokeSection Sect)
 {
     // DO FUCKING NOTHING
     //   NetSects.append(Sect);

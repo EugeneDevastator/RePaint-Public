@@ -197,7 +197,7 @@ void pnl_Layers::DelLayer(int userrow)
 void pnl_Layers::DelActiveLayer()
 {
     // DelLayer(ActiveLayer);
-    d_LAction lact;
+    LayerAction lact;
     lact.ActID = laDel;
     lact.layer = ActiveLayer;
     emit SendLayerAction(lact);
@@ -219,7 +219,7 @@ void pnl_Layers::DropLayerCmd()
 
     if (GetActiveLayer() < LayerProps->count() - 1)
     {
-        d_LAction lact;
+        LayerAction lact;
         lact.ActID = laDrop;
         lact.layer = GetActiveLayer();
         emit SendLayerAction(lact);
@@ -231,7 +231,7 @@ void pnl_Layers::DropLayerCmd()
 void pnl_Layers::SetActiveOp(float op)
 {
     // LayerProps[ActiveLayer].op=op;
-    d_LAction lact;
+    LayerAction lact;
     lact.ActID = laOp;
     lact.layer = GetActiveLayer();
     lact.op = op;
@@ -241,7 +241,7 @@ void pnl_Layers::SetActiveOp(float op)
 void pnl_Layers::SetActiveBm(int bm)
 {
     // LayerProps[ActiveLayer].blendmode=bm;
-    d_LAction lact;
+    LayerAction lact;
     lact.ActID = laBm;
     lact.layer = GetActiveLayer();
     lact.bm = bm;
@@ -326,7 +326,7 @@ void pnl_Layers::SelChanged()
     int layerto = GetActiveLayer();
     int layerfrom = movinglayer;
 
-    d_LAction lact;
+    LayerAction lact;
     lact.ActID = laMove;
     lact.layerto = layerto;
     lact.layer = layerfrom;
@@ -338,14 +338,14 @@ void pnl_Layers::AddLayerCmd()
 {
 
     //  ActiveLayer=MdlLayers->itemFromIndex(selmodel->selectedIndexes().at(0))->row();
-    d_LAction lact;
+    LayerAction lact;
     lact.ActID = laAdd;
     lact.layer = GetActiveLayer();
     emit SendLayerAction(lact);
 }
 void pnl_Layers::DupLayerCmd()
 {
-    d_LAction lact;
+    LayerAction lact;
     lact.ActID = laDup;
     lact.layer = GetActiveLayer();
     emit SendLayerAction(lact);
@@ -354,13 +354,13 @@ void pnl_Layers::DelLayerCmd()
 {
     // DelLayer(ActiveLayer);
     //     ActiveLayer=MdlLayers->itemFromIndex(selmodel->selectedIndexes().at(0))->row();
-    d_LAction lact;
+    LayerAction lact;
     lact.ActID = laDel;
     lact.layer = GetActiveLayer();
     qDebug() << (GetActiveLayer());
     emit SendLayerAction(lact);
 }
-void pnl_Layers::ExecLAction(d_LAction lact)
+void pnl_Layers::ExecLAction(LayerAction lact)
 {
 
     if (lact.ActID == laAdd)

@@ -205,7 +205,7 @@ PackedFloat ypos;
     QPointF ToPointF();
 };
 
-struct d_Brush;
+struct BrushData;
 struct d_RealBrush;
 struct d_PackedBrush;
 
@@ -337,7 +337,7 @@ public:
     QRgb col;
 };
 
-struct d_Brush{
+struct BrushData{
    // struct d_PackedBrush;
  //   struct d_RealBrush;
 public:
@@ -354,12 +354,12 @@ public:
     //QImage Mask;
 
 };
-struct d_Action //: public QObject
+struct ActionData //: public QObject
 {
- //   struct d_Brush;
+ //   struct BrushData;
 public:
     quint8 ToolID;
-    d_Brush Brush;
+    BrushData Brush;
     quint8 startseed;
     quint8 Noisemode;
     d_Stroke Stroke;
@@ -369,15 +369,15 @@ public:
 };
 
 struct actionpair{
-    d_Action Act;
+    ActionData Act;
     QImage *img;
     bool islocal;
 };
-struct d_Section
+struct StrokeSection
 {
     d_Stroke Stroke;
-    d_Brush BrushFrom;
-    d_Brush Brush;
+    BrushData BrushFrom;
+    BrushData Brush;
     quint8 BrushID;
     quint8 NoiseID;
 quint8 Noisemode;
@@ -412,7 +412,7 @@ quint8 Noisemode;
 
 
 // layer action
-struct d_LAction{
+struct LayerAction{
   quint8 ActID;
   qint16 layer; // layer from
   qint16 layerto;
@@ -452,14 +452,14 @@ float Clamp( float a ,float max);
 qreal RngConv(qreal inval, qreal inmin, qreal inmax,qreal outmin, qreal outmax);
 void MulPos(QPointF *pos1,float mul);
 QPoint WHratio(QPoint wh);
-//QByteArray SerializeAction(d_Action act);
+//QByteArray SerializeAction(ActionData act);
 QRgb QcToRGB(QColor col);
 qreal Blend2(qreal from, qreal to, qreal k);
 QRgb BlendRGB(QRgb from, QRgb to,qreal k);
 QColor BlendQCOL(QColor from, QColor to, qreal k);
 #endif // BRUSHES_H
 
-QPointF CalcLastPos(d_Section sect);
+QPointF CalcLastPos(StrokeSection sect);
 // --------------- functions for random;
 qreal SeqRnd(quint16 seed,quint16 N,qreal range);
 qreal RawRnd(quint16 seed,qreal range);

@@ -35,16 +35,16 @@ public:
 
     QPointF lastpos;
     qreal offset;
-    d_Brush prevBrush;
-    QList <d_Section> LocalSects;
-    QList <d_Section> NetSects;
+    BrushData prevBrush;
+    QList <StrokeSection> LocalSects;
+    QList <StrokeSection> NetSects;
     QTimer *uptimer;
 
 public slots:
    // void callupdate();
-  //  void ExecSection(d_Section Sect, bool local);
-    //void ExecSection(d_Section Sect, bool local);
-    void ExecSectionNet(d_Section Sect);
+  //  void ExecSection(StrokeSection Sect, bool local);
+    //void ExecSection(StrokeSection Sect, bool local);
+    void ExecSectionNet(StrokeSection Sect);
     void ResetLocalPos();
     void GetRawStroke(d_Stroke Strk,d_StrokePars currpars,d_StrokePars lastpars);
 
@@ -53,7 +53,7 @@ public slots:
 
     //void SaveLog();
 signals:
-    void SendReadySect(d_Section);
+    void SendReadySect(StrokeSection);
     void SendDots(QList <actionpair>,int);// list +
 };
 

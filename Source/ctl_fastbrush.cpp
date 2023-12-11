@@ -3,7 +3,7 @@
 
 ctl_FastBrush::ctl_FastBrush(QWidget *parent) : QWidget(parent)
 {
-    // g_Brush =new d_Brush;
+    // g_Brush =new BrushData;
     ZoomK = new float;
 
     this->setFixedSize(512, 512);
@@ -17,7 +17,7 @@ ctl_FastBrush::ctl_FastBrush(QWidget *parent) : QWidget(parent)
     ARTM = new ArtMaster();
     //  ARTM->corecount=1;
     //  ARTM->terminate();
-    DBR = new d_Brush;
+    DBR = new BrushData;
     gotbrush = false;
 }
 void ctl_FastBrush::ForcePaint()
@@ -110,7 +110,7 @@ void ctl_FastBrush::paintEvent(QPaintEvent *event)
     }
 }
 
-void ctl_FastBrush::ReBrush(d_Action act)
+void ctl_FastBrush::ReBrush(ActionData act)
 {
     *DBR = act.Brush;
     DBR->Realb.scale = DBR->Realb.scale * (*ZoomK);

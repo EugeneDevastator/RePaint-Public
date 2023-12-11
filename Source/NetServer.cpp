@@ -324,7 +324,7 @@ void NetServer::S_Retranslate(NetPacketHeader HEAD, QByteArray fulldata, NetSock
     if (HEAD.Id == sdAuth)
     {
         // (c2) client has sent auth, check it.
-        sAuth auth;
+        AuthPacket auth;
         auth = auth.DeSerialize(fulldata);
         auth.aType = atLogin;
         caller->RegName = auth.uname;

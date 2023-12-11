@@ -46,8 +46,8 @@ public slots:
     void N_Disconnect();
     void G_ExecData(NetPacketHeader HEAD, QByteArray data, NetSocket *dest);
     // input functions
-    void GetAction(d_Action st); // slot to receive action from local canvas
-    void GetSection(d_Section sect);
+    void GetAction(ActionData st); // slot to receive action from local canvas
+    void GetSection(StrokeSection sect);
 
     void GetChatMsg(QString msg);
 
@@ -60,8 +60,8 @@ public slots:
 
     void RegisterNewUser(QString Uname, QString Upass);
 
-    //  void C_Send(d_Action st); // send action client to server.
-    void C_SendLaction(d_LAction st);
+    //  void C_Send(ActionData st); // send action client to server.
+    void C_SendLaction(LayerAction st);
 
     void DisconnectFromServer(NetSocket *sock);
 
@@ -83,8 +83,8 @@ public slots:
 signals:
 
     // outside connection functions
-    void SendAction(d_Action st); // signal to send action to local canvas
-    void SendSection(d_Section sect);
+    void SendAction(ActionData st); // signal to send action to local canvas
+    void SendSection(StrokeSection sect);
 
     void SendStatus(QString msg);
 
@@ -115,7 +115,7 @@ signals:
 
     void SendLayerMove(int at, int to);
 
-    void SendLAction(d_LAction lact);
+    void SendLAction(LayerAction lact);
 
     void LoginSuccess();
 

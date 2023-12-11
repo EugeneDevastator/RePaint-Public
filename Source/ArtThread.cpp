@@ -98,7 +98,7 @@ void ArtThread::run()
                     /*
                                         while (!(*LStacks)[i]->DotsNet->isEmpty()){
                                          //   if (*GlobalLock) return;
-                                            d_Action act =*(*LStacks)[i]->DotsNet->takeFirst();//LStacks->operator [](i).DotsNet.takeFirst();
+                                            ActionData act =*(*LStacks)[i]->DotsNet->takeFirst();//LStacks->operator [](i).DotsNet.takeFirst();
                                             ARTM->DoAction(&MainImage->ViewCanvas[i],act,true); //not layer in action because they can be added and removed w/o change.
 
                                         }*/
@@ -159,7 +159,7 @@ void ArtThread::ForceSingleCore()
     executing = false;
 }
 
-void ArtThread::ExecAction(QImage *img, d_Action Act, bool local)
+void ArtThread::ExecAction(QImage *img, ActionData Act, bool local)
 {
     // converting parameters
 

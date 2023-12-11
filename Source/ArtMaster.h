@@ -43,16 +43,16 @@ ctl_BMselector BMsel;
 public slots:
 
 
-    void DoAction(QImage *img,d_Action Act, bool local);
+    void DoAction(QImage *img, ActionData Act, bool local);
     void DoActionList(QImage *img, dotList *actlist, bool local);
-    void DrawBrush(QImage *img, d_Stroke STRK, d_Brush BRSH);
-    void DrawBrushDev(QPaintDevice *img, d_Stroke STRK, d_Brush BRSH);
-    void DrawDisp(QImage *img, d_Stroke STRK, d_Brush BRSH);
-    void DrawSmudge(QImage *img, d_Stroke STRK, d_Brush BRSH);
-    void DrawLine(QImage *img, d_Stroke STRK, d_Brush BRSH);
-    void LvlBrush(QImage *img, d_Stroke STRK, d_Brush BRSH);
+    void DrawBrush(QImage *img, d_Stroke STRK, BrushData BRSH);
+    void DrawBrushDev(QPaintDevice *img, d_Stroke STRK, BrushData BRSH);
+    void DrawDisp(QImage *img, d_Stroke STRK, BrushData BRSH);
+    void DrawSmudge(QImage *img, d_Stroke STRK, BrushData BRSH);
+    void DrawLine(QImage *img, d_Stroke STRK, BrushData BRSH);
+    void LvlBrush(QImage *img, d_Stroke STRK, BrushData BRSH);
 
-    QImage GenBMask(d_Brush BRSH, float fx=0, float fy=0);
+    QImage GenBMask(BrushData BRSH, float fx=0, float fy=0);
     QImage* SubPixelate(QImage *Bimg,float fx,float fy);
     void GenSolidity(QImage *img, float sol, float sol2op);
     void GenSolidityP(QImage *img, float sol, float sol2op, qint16 noisex, qint16 noisey);
@@ -61,15 +61,15 @@ public slots:
     //void GenFocal(QImage *img, float top, float min);
     void GenClamp(QImage *img, float top,float min);
 
-  //  void DrawSection(QImage *img,d_Section Act, bool local=true);
+  //  void DrawSection(QImage *img,StrokeSection Act, bool local=true);
 
     float GenCurveF(float val,float midp);
 signals:
      void SendMsg(QString msg);
      void SendDirtyRect(QRect irect);
      void AskRepaint();
-     void ConfirmAction(d_Action act);
-     void AffirmAction(d_Action aAct);
+     void ConfirmAction(ActionData act);
+     void AffirmAction(ActionData aAct);
 
 
 private:

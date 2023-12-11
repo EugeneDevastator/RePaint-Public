@@ -10,7 +10,7 @@ ImageArray::ImageArray(QWidget *parent) :
 {
     this->setCursor(Qt::CrossCursor);
     this->setMouseTracking(true);
-//g_Brush=new d_Brush;
+//g_Brush=new BrushData;
     //ViewCanvas = new QImage(120,120,Format_RGB32)
     /*
     QImage BaseImg;
@@ -1361,7 +1361,7 @@ qDebug() <<("IaR zero layer reszd");
     painter.drawRect(0,0,sz.width(),sz.height());
     qDebug() <<("IaR zero layer filled");
 
-//d_LAction lact;
+//LayerAction lact;
 //lact.ActID=laAdd;
 //lact.layer=0;
 //emit SendLAction(lact);
@@ -1466,7 +1466,7 @@ void ImageArray::SetLvis(int layer,bool vis){
     RepaintWidgetRect(this->rect());
 }
 
-void ImageArray::ExecLayerAction(d_LAction lact){
+void ImageArray::ExecLayerAction(LayerAction lact){
 /*
     if (lact.ActID==laBm){
         SetLBm(lact.layer,lact.bm);

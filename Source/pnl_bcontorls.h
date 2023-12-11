@@ -70,13 +70,13 @@ public:
 
     QVBoxLayout *LtLeftToolbar;
 
-    d_Brush ParseBrush(d_Brush BRSH);
-    d_Action ParseBrush(d_Stroke Strk, d_StrokePars stpars);
+    BrushData ParseBrush(BrushData BRSH);
+    ActionData ParseBrush(d_Stroke Strk, d_StrokePars stpars);
 
 
 signals:
     void TransferPreset(d_ToolPreset prs);
-    void SendAction(d_Action act);
+    void SendAction(ActionData act);
  public slots:
     void BrushRequest();
     void SendPreset();

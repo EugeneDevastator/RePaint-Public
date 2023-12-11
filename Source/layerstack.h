@@ -4,8 +4,8 @@
 #include "Brushes.h"
 
 
-typedef QList <d_Section> sectionList;
-typedef QList <d_Action> dotList;
+typedef QList <StrokeSection> sectionList;
+typedef QList <ActionData> dotList;
 
 class LayerStack : public QObject
 {
@@ -22,9 +22,9 @@ signals:
 public slots:
     dotList* GetLocalDots();
     sectionList GetLocalSects();
-    void addLocalDot(d_Action act);
+    void addLocalDot(ActionData act);
     void addLocalDotList(dotList dtLst);
-    void addLocalSect(d_Section sect);
+    void addLocalSect(StrokeSection sect);
 
 private:
     sectionList *SectsLocal;

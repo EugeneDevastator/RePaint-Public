@@ -25,9 +25,9 @@ public:
     d_RealBrush *g_Brush;
    void Redraw();
 public slots:
-//    void GetBrush(d_Brush br);
+//    void GetBrush(BrushData br);
 signals:
-   void SendBrush(d_Brush br);
+   void SendBrush(BrushData br);
    void SendSize(int sz);
    void SendRadRel(float rel);
 

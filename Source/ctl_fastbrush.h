@@ -24,7 +24,7 @@ public:
       float scalerel;
       int anglerad;
       ArtMaster *ARTM;
-        d_Brush *DBR;
+        BrushData *DBR;
       QImage *Bpreview;
       QImage *BG;
       bool gotbrush;
@@ -37,7 +37,7 @@ signals:
       void AskBrush();
 public slots:
       void ParsePos(QPoint pos);
-      void ReBrush(d_Action act);
+      void ReBrush(ActionData act);
       void ForcePaint();
 protected:
     void paintEvent(QPaintEvent *event);

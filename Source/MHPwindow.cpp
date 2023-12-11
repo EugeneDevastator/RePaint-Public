@@ -41,7 +41,7 @@ MHPwindow::MHPwindow()
     spath = RESPATH + "res/icon16.png";
     this->setWindowIcon(QIcon(RESPATH + "/res/icon16.png"));
 
-    qRegisterMetaType<d_Action>("d_Action");
+    qRegisterMetaType<ActionData>("ActionData");
 
     QApplication::setApplicationVersion("Repaint Beta");
     setWindowTitle(QApplication::applicationVersion());
@@ -253,7 +253,7 @@ MHPwindow::MHPwindow()
     connect(NET, SIGNAL(GetImage(QByteArray)), this, SLOT(ConfirmImage(QByteArray)));
     connect(NET, SIGNAL(ReqImage(QString)), this, SLOT(GrabImg(QString)));
     if (!Dedicated)
-        connect(NET, SIGNAL(SendLAction(d_LAction)), ACM, SLOT(ExecLayerAction(d_LAction)));
+        connect(NET, SIGNAL(SendLAction(LayerAction)), ACM, SLOT(ExecLayerAction(LayerAction)));
 
     qDebug() << ("MHPW connects part-4 done");
     connect(NetControls, SIGNAL(sendlock(qint8)), LayersPanel, SLOT(SetLock(qint8)));
@@ -278,18 +278,18 @@ MHPwindow::MHPwindow()
     //    connect(MainImage,SIGNAL(MouseOut()),this,SLOT(RelKB()));
 
     connect(MainImage, SIGNAL(SendThumb(int, QImage)), LayersPanel, SLOT(SetThumb(int, QImage)));
-    connect(ACM, SIGNAL(SendLAction(d_LAction)), LayersPanel, SLOT(ExecLAction(d_LAction)));
+    connect(ACM, SIGNAL(SendLAction(LayerAction)), LayersPanel, SLOT(ExecLAction(LayerAction)));
     connect(MainImage, SIGNAL(SendPoly(QPolygonF)), this, SLOT(GetPoly(QPolygonF)));
 
     // please remove this later
-    connect(STM, SIGNAL(SendReadySect(d_Section)), ACM, SLOT(ExecSection(d_Section)));
-    connect(ACM, SIGNAL(SendSection(d_Section)), NET, SLOT(GetSection(d_Section)));
+    connect(STM, SIGNAL(SendReadySect(StrokeSection)), ACM, SLOT(ExecSection(StrokeSection)));
+    connect(ACM, SIGNAL(SendSection(StrokeSection)), NET, SLOT(GetSection(StrokeSection)));
     if (!Dedicated)
-        connect(NET, SIGNAL(SendSection(d_Section)), ACM, SLOT(ExecNetSection(d_Section)));
+        connect(NET, SIGNAL(SendSection(StrokeSection)), ACM, SLOT(ExecNetSection(StrokeSection)));
 
     connect(LayersPanel, SIGNAL(SendActiveLayer(int)), MainImage, SLOT(SetActiveLayer(int)));
     connect(LayersPanel, SIGNAL(SendLayerVis(int, bool)), MainImage, SLOT(SetLvis(int, bool)));
-    connect(LayersPanel, SIGNAL(SendLayerAction(d_LAction)), this, SLOT(ExecLayerAction(d_LAction)));
+    connect(LayersPanel, SIGNAL(SendLayerAction(LayerAction)), this, SLOT(ExecLayerAction(LayerAction)));
     connect(LayersPanel, SIGNAL(ActionDone()), ACM, SLOT(ConfirmLAction()));
     connect(LayersPanel, SIGNAL(ActionDone()), MainImage, SLOT(GenAllThumbs()));
     connect(LayersPanel, SIGNAL(ActionDone()), QuickPanel, SLOT(UpdateBG()));
@@ -351,7 +351,7 @@ MHPwindow::MHPwindow()
     //      MainImage->NewImg(QSize(1920,1200),3);
     //  else
     //   MainImage->NewImg(QSize(1920,1200),1);
-    d_LAction lact;
+    LayerAction lact;
     lact.ActID = laNewCanvas;
     lact.layer = 3;
     lact.rect.setSize(QSize(1920, 1200));
@@ -423,7 +423,7 @@ MHPwindow::MHPwindow()
 
     // CHAT->Chat->append(QString::number(act.Serialize().count()));
 
-    d_Section tsec1;
+    StrokeSection tsec1;
     // tsec1.DeSerialize(act.Serialize());
     int h = 0;
 
@@ -562,7 +562,7 @@ void MHPwindow::SendMsg()
     //  TcpClient->write(buf);
 }
 
-void MHPwindow::GetAction(d_Action act)
+void MHPwindow::GetAction(ActionData act)
 {
     if (!Dedicated)
     {
@@ -589,7 +589,7 @@ Strk.packpos1.SetByQPointF(Strk.pos1);
 Strk.packpos2.SetByQPointF(Strk.pos2);
 Strk.pos1=Strk.packpos1.ToPointF();
 Strk.pos2=Strk.packpos2.ToPointF();
-    d_Action nact=BControls->ParseBrush(Strk,stpars);
+    ActionData nact=BControls->ParseBrush(Strk,stpars);
     if (stpars.Pars[csERASER]==1) nact.Brush.bmidx=1;
     nact.layer=LayersPanel->GetActiveLayer();
 
@@ -599,7 +599,7 @@ Strk.pos2=Strk.packpos2.ToPointF();
 
      if (!Dedicated){
         //ARTM->ExecAction(&(MainImage->ViewCanvas[nact.layer]),nact,true);
-        d_Section sect;
+        StrokeSection sect;
         sect.BrushFrom=nact.Brush;
         sect.Brush=nact.Brush;
         sect.layer=nact.layer;
@@ -671,12 +671,12 @@ void MHPwindow::keyReleaseEvent(QKeyEvent *event)
      */
 }
 
-void MHPwindow::ConfirmAct(d_Action act)
+void MHPwindow::ConfirmAct(ActionData act)
 {
     NET->GetAction(act);
 }
 
-void MHPwindow::ExecLayerAction(d_LAction lact)
+void MHPwindow::ExecLayerAction(LayerAction lact)
 {
     // filter mode for layers;
     if (NET->NetMode == emNone)
@@ -1067,7 +1067,7 @@ void MHPwindow::NewImage(QSize sz)
     FileMenu->BtnSave->setEnabled(false);
     FileMenu->BtnReload->setEnabled(false);
 
-    d_LAction lact;
+    LayerAction lact;
     lact.ActID = laNewCanvas;
     lact.rect.setSize(sz);
     lact.layer = 1;

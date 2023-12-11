@@ -1,7 +1,7 @@
 #include "NetSocket.h"
 #include "SharedNetCode/NetStructures.h"
 
-QByteArray sAuth::Serialize()
+QByteArray AuthPacket::Serialize()
 {
     QByteArray *sa = new QByteArray;
     QDataStream tds(sa, QIODevice::ReadWrite);
@@ -12,9 +12,9 @@ QByteArray sAuth::Serialize()
     return *sa;
 }
 
-sAuth sAuth::DeSerialize(QByteArray ba)
+AuthPacket AuthPacket::DeSerialize(QByteArray ba)
 {
-    sAuth dsz;
+    AuthPacket dsz;
     QDataStream tds(&ba, QIODevice::ReadWrite);
     tds >> dsz.aType;
     tds >> dsz.uname;

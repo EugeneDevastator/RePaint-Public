@@ -24,7 +24,7 @@ public:
 };
 
 struct FullStroke{
-    QList <d_Section> Sections;
+    QList <StrokeSection> Sections;
 };
 
 
@@ -48,7 +48,7 @@ public:
    QList <logpair> LOG;
    QList <LayerStack*> *LStacks;
    QList <dotList> LDotLists;
-   QList <d_LAction> LAStack;
+   QList <LayerAction> LAStack;
 
     QSize baseSize;
         quint8 baselcount;
@@ -56,14 +56,14 @@ public:
         quint8 maxthreads;
 
 signals:
-    void SendLAction(d_LAction);
-    void SendSection(d_Section);
+    void SendLAction(LayerAction);
+    void SendSection(StrokeSection);
 public slots:
 
         void ExecOperation(quint8 OpType,QByteArray Data);
-        void ExecSection(d_Section Sect);
-        void ExecNetSection(d_Section Sect);
-        void ExecLayerAction(d_LAction lact);
+        void ExecSection(StrokeSection Sect);
+        void ExecNetSection(StrokeSection Sect);
+        void ExecLayerAction(LayerAction lact);
         //      void ExecSection
     void NewImg(QSize sz,int lcount=1);
 
@@ -75,14 +75,14 @@ public slots:
     void ImportImg(QString fname);
 
 
-        void UnpackSection(d_Section Sect, bool local);
+        void UnpackSection(StrokeSection Sect, bool local);
         void ParseSections();
         void ParseLActions();
 
     void NewLog();
-    void LogAct(d_Action act);
-    void LogLAct(d_LAction act);
-    void LogSect(d_Section sect);
+    void LogAct(ActionData act);
+    void LogLAct(LayerAction act);
+    void LogSect(StrokeSection sect);
     void OpenLog(QString Fname);
     void OpenLog(QIODevice *iodev);
 

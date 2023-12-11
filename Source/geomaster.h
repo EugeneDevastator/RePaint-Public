@@ -6,7 +6,7 @@
 
 
 struct fatpoint{
-   d_Brush props;
+   BrushData props;
    QPointF pos;
 };
 /*

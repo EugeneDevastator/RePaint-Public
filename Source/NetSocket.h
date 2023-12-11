@@ -14,14 +14,14 @@
 
 //----------------- STRUCTURES
 
-struct sAuth {
+struct AuthPacket {
    QString uname;
    QString upass;
    quint8 aType; //auth type;
 
    QByteArray Serialize();
 
-   sAuth DeSerialize(QByteArray ba);
+   AuthPacket DeSerialize(QByteArray ba);
 };
 
 struct NetPacketHeader {
@@ -107,8 +107,8 @@ class NetSocket : public QObject {
 
    signals:
 
-      void RSAction(d_Action st); //send parsed data outside
-      void RSActionObj(d_Action st, NetSocket *caller);
+      void RSAction(ActionData st); //send parsed data outside
+      void RSActionObj(ActionData st, NetSocket *caller);
 
       void RSDisconnect(NetSocket *caller);
 

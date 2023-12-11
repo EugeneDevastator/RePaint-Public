@@ -111,7 +111,7 @@ public slots:
 
     void GetPoly(QPolygonF Poly);
     void GetTStroke(d_Stroke Strk,d_StrokePars stpars);
-    void GetAction(d_Action act);
+    void GetAction(ActionData act);
     void GetClient();
     void GetMsg(QString msg);
     void GetServIp(QString msg);
@@ -144,9 +144,9 @@ public slots:
 
 
 
-    void ExecLayerAction(d_LAction lact);
+    void ExecLayerAction(LayerAction lact);
     void ConfirmImage(QByteArray ba);
-    void ConfirmAct(d_Action act);
+    void ConfirmAct(ActionData act);
 
 
 public:
@@ -209,8 +209,8 @@ pnl_Chat *CHAT;
     ctl_ColorWheel *CtlCol;
     float SaveDist;
 
-    d_Brush LocalBrush;
-    d_Action LocalAction;
+    BrushData LocalBrush;
+    ActionData LocalAction;
 
     //Layout defs
     QHBoxLayout *LtUpperToolbar;

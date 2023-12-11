@@ -60,7 +60,7 @@ public slots:
 
     void S_KillClient(NetSocket *caller);
     void S_Stop();
- //   void S_SendAll(d_Action st);
+ //   void S_SendAll(ActionData st);
  //   void S_SendAll(quint8 Id,QByteArray data);
 
     void S_GetFriends(long DGUID,QList <long> fguids,QList <QString> fnames);

@@ -181,7 +181,7 @@ public slots:
     void SetLvis(int layer,bool vis);
     void DupLayer(int layer);
     void AddZeroLayer(QSize sz,QColor bgcol);
-    void ExecLayerAction(d_LAction lact);
+    void ExecLayerAction(LayerAction lact);
   //  void ExecCanvasAction(d_CanvasAction cact);
     //void DupActiveLayer();
     d_StrokePars InterpolateSpars(d_StrokePars current, d_StrokePars last,qreal kblend);
@@ -215,7 +215,7 @@ signals:
     void SendThumb(int layer,QImage img);
     void SendNewLayer(QImage img);
     void SendLayer(int at,QImage img);
-    void SendLAction(d_LAction lact);
+    void SendLAction(LayerAction lact);
     void AskSaveLog(QString Fname);
     void AskOpenLog(QString Fname);
     void AskResetPos();

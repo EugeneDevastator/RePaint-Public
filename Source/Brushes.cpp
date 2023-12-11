@@ -159,7 +159,7 @@ void d_Stroke::DeSerialize(QDataStream *ba)
     pos2 = packpos2.ToPointF();
 }
 
-QByteArray d_Brush::Serialize()
+QByteArray BrushData::Serialize()
 {
 
     QByteArray qba;
@@ -168,7 +168,7 @@ QByteArray d_Brush::Serialize()
     return qba;
 }
 
-void d_Brush::Serialize(QDataStream *ba)
+void BrushData::Serialize(QDataStream *ba)
 {
     SelfPack();
     *ba << Pack.Prad_in.IntVal;
@@ -197,12 +197,12 @@ void d_Brush::Serialize(QDataStream *ba)
     *ba << Pack.pwr;
 }
 
-void d_Brush::DeSerialize(QByteArray *src)
+void BrushData::DeSerialize(QByteArray *src)
 {
     QDataStream ba(src, QIODevice::ReadWrite);
     DeSerialize(&ba);
 }
-void d_Brush::DeSerialize(QDataStream *ba)
+void BrushData::DeSerialize(QDataStream *ba)
 {
     // QDataStream ba(src,QIODevice::ReadWrite);
     *ba >> Pack.Prad_in.IntVal;
@@ -229,7 +229,7 @@ void d_Brush::DeSerialize(QDataStream *ba)
     *ba >> Pack.pwr;
     SelfUnpack();
 }
-void d_Brush::SelfPack()
+void BrushData::SelfPack()
 {
     Pack.Prad_in.SetVal(Realb.rad_in);
     Pack.Prad_out.SetVal(Realb.rad_out);
@@ -255,7 +255,7 @@ void d_Brush::SelfPack()
     Pack.pwr = (Realb.pwr + 1) * 127;
 }
 
-void d_Brush::SelfUnpack()
+void BrushData::SelfUnpack()
 {
     Realb.rad_in = Pack.Prad_in.GetVal();
     Realb.rad_out = Pack.Prad_out.GetVal();
@@ -281,7 +281,7 @@ void d_Brush::SelfUnpack()
     Realb.pwr = (Pack.pwr / 127.0) - 1.0;
 }
 
-QByteArray d_Action::Serialize()
+QByteArray ActionData::Serialize()
 {
     QByteArray *qba = new QByteArray('c', 1);
     qba->clear();
@@ -296,7 +296,7 @@ QByteArray d_Action::Serialize()
     return *qba;
 }
 
-void d_Action::DeSerialize(QByteArray src)
+void ActionData::DeSerialize(QByteArray src)
 {
     QDataStream ba(&src, QIODevice::ReadWrite);
     // putting in a stroke
@@ -319,7 +319,7 @@ void d_Action::DeSerialize(QByteArray src)
 }
 
 //--------------------------  SECTION SERIALIZATION;
-void d_Section::DeSerialize(QByteArray src)
+void StrokeSection::DeSerialize(QByteArray src)
 {
     QDataStream ba(&src, QIODevice::ReadWrite);
     Stroke.DeSerialize(&ba);
@@ -352,7 +352,7 @@ void d_Section::DeSerialize(QByteArray src)
     ba >> rLit;
 }
 
-QByteArray d_Section::Serialize()
+QByteArray StrokeSection::Serialize()
 {
     QByteArray *qba = new QByteArray('c', 1);
     qba->clear();
@@ -389,7 +389,7 @@ QByteArray d_Section::Serialize()
 
 // -------------------------  LACTION SERIALIZATION
 
-QByteArray d_LAction::Serialize()
+QByteArray LayerAction::Serialize()
 {
     QByteArray qba;
     QDataStream ds(&qba, QIODevice::ReadWrite);
@@ -404,7 +404,7 @@ QByteArray d_LAction::Serialize()
     return qba;
 }
 
-void d_LAction::DeSerialize(QByteArray src)
+void LayerAction::DeSerialize(QByteArray src)
 {
     QDataStream ds(&src, QIODevice::ReadWrite);
 
@@ -626,7 +626,7 @@ QColor BlendQCOL(QColor from, QColor to, qreal k)
                 Blend2(from.blueF(), to.blueF(), k));
     return bc;
 }
-QPointF CalcLastPos(d_Section Sect)
+QPointF CalcLastPos(StrokeSection Sect)
 {
 
     float stdist = Dist2D(Sect.Stroke.pos1, Sect.Stroke.pos2);

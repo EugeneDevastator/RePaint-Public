@@ -12,7 +12,7 @@ BrushSizer::BrushSizer(QWidget *parent)
     logfile.close();
     logfile.open(QFile::Append);
 
-    /*g_Brush=new d_Brush;
+    /*g_Brush=new BrushData;
     g_Brush->rad_out=20;
     g_Brush->rad_in=2;*/
 
@@ -90,7 +90,7 @@ void BrushSizer::Redraw()
     ts.pos2.setX(hsize);
     ts.pos2.setY(hsize);
     /*
-        d_Brush ViewBrush;
+        BrushData ViewBrush;
         ViewBrush.rad_in=g_Brush->rad_in;
         ViewBrush.rad_out=g_Brush->rad_out;
         ViewBrush.sol2op=g_Brush->sol2op;
@@ -111,7 +111,7 @@ void BrushSizer::Redraw()
     g_Brush->scale = 1;
     g_Brush->x2y = 0.5;
     // g_Brush->compmode=QPainter::CompositionMode_SourceOver;
-    d_Action act;
+    ActionData act;
     act.Stroke = ts;
     act.Brush.Realb = *g_Brush;
     // act.Brush.noisex=2;

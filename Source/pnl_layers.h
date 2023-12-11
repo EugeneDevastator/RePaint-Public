@@ -75,7 +75,7 @@ public slots:
     void DelLayerCmd();
     void DupLayerCmd();
     //void DupLayer(int before);
-    void ExecLAction(d_LAction lact);
+    void ExecLAction(LayerAction lact);
     void SetLock(qint8 lk);
     int GetActiveLayer();
 
@@ -90,7 +90,7 @@ signals:
     void SendLayerBm(int,int); // layer, bm
     void SendConfirmedLayerOp(int,float);
 
-    void SendLayerAction(d_LAction lact);
+    void SendLayerAction(LayerAction lact);
     void ActionDone();
 
 };
