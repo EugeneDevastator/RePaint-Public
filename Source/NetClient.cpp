@@ -98,14 +98,14 @@ void NetClient::JoinRoom(QString roomName)
 {
     if (roomName.compare(LocalClient->RegName) != 0)
     {
-        LocalClient->isInRoom = false;
+        LocalClient->IsInRoom = false;
         G_SendData(sdRoomJoin, SZstring(roomName), LocalClient);
     }
 }
 
 void NetClient::LeaveCurrentRoom()
 {
-    LocalClient->isInRoom = false;
+    LocalClient->IsInRoom = false;
     G_SendData(sdRoomPart, QByteArray('z', 1), LocalClient);
 }
 void NetClient::FindFriend(QString name)
@@ -187,7 +187,7 @@ void NetClient::G_ExecData(NetPacketHeader HEAD, QByteArray data, NetSocket *des
         // emit SendUserStatus(dname.left(dname.length()-1),(unsigned char)data.at(data.length()-1));
         NetUserState us;
         us.DeSerialize(data);
-        emit SendUserStatus(us.UserName, us.Ustate);
+        emit SendUserStatus(us.UserName, us.UserState);
     }
     else if (HEAD.Id == sdRoomJoin)
     { // user status

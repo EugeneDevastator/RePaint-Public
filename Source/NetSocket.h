@@ -26,7 +26,7 @@ struct AuthPacket {
 
 struct NetPacketHeader {
    quint8 Id;
-   quint32 Hsize;
+   quint32 Size;
 
    quint8 GetSSize();
 
@@ -36,7 +36,7 @@ struct NetPacketHeader {
 };
 
 struct NetUserState {
-   quint8 Ustate;
+   quint8 UserState;
    QString UserName;
    QByteArray Serialize();
    void DeSerialize(QByteArray ba);
@@ -70,14 +70,14 @@ class NetSocket : public QObject {
 
       qint32 RDataSize;
       int Role;
-      int uStatus;
-      int DataState;
+      int UserStateKind; //
+      int HeaderKind; // headerkind
       long UGUID;
       bool IsRegistered;
-      bool isInRoom;
+      bool IsInRoom;
       bool blocker;
       bool IsReading;
-      bool imageowner;
+      bool IsImageOwner;
 
       QString RegName;
       QString RegPass;

@@ -23,7 +23,7 @@ public:
        NetworkAppOperationMode ServMode;
        NetworkAppOperationMode NetMode;
        QTcpServer *LServer; // local server
-       QList<NetSocket *> RSockClientList; // remote clients
+       QList<NetSocket *> RemoteClients; // remote clients
        QHash<long,NetSocket*> GuidClientList;
        QHash<QString,NetSocket*> NameClientList;
        QNetworkSession *NetSession;
@@ -47,7 +47,7 @@ public slots:
     void S_Start();
     void S_GetClient();
     void S_Retranslate(NetPacketHeader HEAD, QByteArray fulldata, NetSocket *caller);
-    void S_ResendToRest(NetPacketHeader HEAD, QByteArray fulldata, NetSocket *caller, bool inroom);
+    void ResendToOtherUsers(NetPacketHeader HEAD, QByteArray fulldata, NetSocket *caller, bool inroom);
     void S_ResendToAll(NetPacketHeader HEAD, QByteArray fulldata, NetSocket *caller, bool inroom);
     void S_UpdateUserStatus(NetSocket *user,quint8 status);
 

@@ -19,7 +19,7 @@ void NetServer::StartSession()
     NetSession->open();
 
     LServer = new QTcpServer;
-    RSockClientList.clear();
+    RemoteClients.clear();
 }
 
 void NetServer::S_Disconnect()
@@ -27,11 +27,11 @@ void NetServer::S_Disconnect()
     if (NetMode != emNone)
     {
         NetMode = emNone;
-        foreach (NetSocket *client, RSockClientList)
+        foreach (NetSocket *client, RemoteClients)
         {
             client->Sck->close();
         }
-        RSockClientList.clear();
+        RemoteClients.clear();
         LServer->close();
         emit ServerOff();
     }
@@ -138,9 +138,9 @@ void NetServer::S_RegisterSock(NetSocket *sock)
 
     if (!NameClientList.contains(sock->RegName))
     {
-        RSockClientList.append(sock);
+        RemoteClients.append(sock);
         sock->IsRegistered = true;
-        sock->listIdx = RSockClientList.count() - 1;
+        sock->listIdx = RemoteClients.count() - 1;
         G_SendData(sdLoginS, SZstring(sock->RegName), sock);
         NameClientList[sock->RegName] = sock; // link name with socket.
 
@@ -152,7 +152,7 @@ void NetServer::S_RegisterSock(NetSocket *sock)
             // confirm to client that he connected
 
             // sending your nick to everyone. and everyone's to you.
-            foreach (NetSocket *client, RSockClientList)
+            foreach (NetSocket *client, RemoteClients)
             {
                 if (client->listIdx != sock->listIdx)
                     G_SendUserStatus(sock, client);
@@ -161,11 +161,11 @@ void NetServer::S_RegisterSock(NetSocket *sock)
             }
             // Getting image if you are not only in lobby
             // please maybe some mistakke with lobby counter rclient list will be not empty when all are in roms.
-            if ((GlobalRoomEnabled) && (RSockClientList.count() > 1))
+            if ((GlobalRoomEnabled) && (RemoteClients.count() > 1))
             {
                 //  HEAD.Id=sdLock; // lock fucking everyone whos not in room!
                 // S_ResendToAll(sdLock,QByteArray(1,c),client,true);
-                G_SendData(sdReqImg, SZstring(sock->RegName), RSockClientList[0]); // please  fix for rooms ask one for image
+                G_SendData(sdReqImg, SZstring(sock->RegName), RemoteClients[0]); // please  fix for rooms ask one for image
                 //  sock->blocker=true;
             }
             emit LoginS(Uname);
@@ -234,8 +234,8 @@ void NetServer::S_AddToRoom(NetSocket *client, QString rname)
     // new room is created in previous step.
 
     // find room by user's name
-    // if (NClientList.value(rname)->isInRoom==true & client->isInRoom==false){
-    if (client->isInRoom == false)
+    // if (NClientList.value(rname)->IsInRoom==true & client->IsInRoom==false){
+    if (client->IsInRoom == false)
     {
         /*foreach (NetSocket*sck,caller->Room->RemoteClients){
             G_SendData("RP",QByteArray(caller->RegName.toAscii()),sck); //user lefts room
@@ -262,7 +262,7 @@ void NetServer::S_AddToRoom(NetSocket *client, QString rname)
 
 void NetServer::S_DelFromRoom(NetSocket *client)
 {
-    if (client->isInRoom == true)
+    if (client->IsInRoom == true)
     {
         NetRoom *NR = client->Room;
         QString DelName = client->RegName;
@@ -277,10 +277,10 @@ void NetServer::S_DelFromRoom(NetSocket *client)
             if (NR->RemoteClients.count() > 0)
             {
                 NR->RemoteClients[0]->Role = srServ;
-                NR->RemoteClients[0]->imageowner = true;
+                NR->RemoteClients[0]->IsImageOwner = true;
                 /*NetUserState us;
                 us.UserName=(NR->RemoteClients.at(0)->RegName);
-                us.Ustate=suRoomFree;*/
+                us.UserState=suRoomFree;*/
                 S_SetUserStatus(NR->RemoteClients[0], suRoomFree); // marking new owner
                 // foreach (NetSocket *sck,NR->RemoteClients)
                 // G_SendData(sdUserStat,us.Serialize(),sck);
@@ -294,13 +294,13 @@ void NetServer::S_DelFromRoom(NetSocket *client)
 }
 void NetServer::S_SetUserStatus(NetSocket *client, int status)
 {
-    client->uStatus = status;
+    client->UserStateKind = status;
     /*//in any case send to roommates.
-    if (client->isInRoom==true)
+    if (client->IsInRoom==true)
         foreach (NetSocket *sck,client->Room->RemoteClients) G_SendUserStatus(client,sck);
 */
     if (NetMode == emServer)
-        foreach (NetSocket *sck, RSockClientList)
+        foreach (NetSocket *sck, RemoteClients)
             G_SendUserStatus(client, sck);
 
     else if (NetMode == emGServer)
@@ -310,7 +310,7 @@ void NetServer::S_SetUserStatus(NetSocket *client, int status)
             if (GuidClientList.value(fg) != NULL)
                 G_SendUserStatus(client, GuidClientList.value(fg));
         }
-        if (client->isInRoom)
+        if (client->IsInRoom)
         {
             foreach (NetSocket *sck, client->Room->RemoteClients)
                 G_SendUserStatus(client, sck);
@@ -341,9 +341,9 @@ void NetServer::S_Retranslate(NetPacketHeader HEAD, QByteArray fulldata, NetSock
         {
             int a = 1;
             QString Basename = caller->RegName;
-            for (int i = 0; i < RSockClientList.size(); i++)
+            for (int i = 0; i < RemoteClients.size(); i++)
             {
-                if (RSockClientList.at(i)->RegName.toLower().compare(caller->RegName.toLower()) == 0)
+                if (RemoteClients.at(i)->RegName.toLower().compare(caller->RegName.toLower()) == 0)
                 {
                     caller->RegName = Basename + "_" + QString::number(a);
                     i = 0;
@@ -386,7 +386,7 @@ void NetServer::S_Retranslate(NetPacketHeader HEAD, QByteArray fulldata, NetSock
     if (HEAD.Id == sdRoomCreate)
     {
         // presume user can create room only if he is stranded.
-        if (caller->isInRoom == false)
+        if (caller->IsInRoom == false)
         {
             caller->Room = new NetRoom;
             caller->Role = srServ;
@@ -402,7 +402,7 @@ void NetServer::S_Retranslate(NetPacketHeader HEAD, QByteArray fulldata, NetSock
         {
             if (NameClientList.contains(uname))
                 if (NameClientList.value(uname)->Room != NULL)
-                    if ((caller->isInRoom == false) & (caller->RegName != uname))
+                    if ((caller->IsInRoom == false) & (caller->RegName != uname))
                     {
                         caller->Role = srClient;
                         S_SetUserStatus(caller, suMemberFree);
@@ -420,24 +420,24 @@ void NetServer::S_Retranslate(NetPacketHeader HEAD, QByteArray fulldata, NetSock
     if (((HEAD.Id == sdAction) | (HEAD.Id == sdSection)))
     {
         if (NetMode == emServer)
-            S_ResendToRest(HEAD, fulldata, caller, caller->isInRoom);
+            ResendToOtherUsers(HEAD, fulldata, caller, caller->IsInRoom);
 
         else if (NetMode == emGServer)
         {
-            if (caller->isInRoom)
-                S_ResendToRest(HEAD, fulldata, caller, caller->isInRoom);
+            if (caller->IsInRoom)
+                ResendToOtherUsers(HEAD, fulldata, caller, caller->IsInRoom);
         }
     }
 
     if ((HEAD.Id == sdLAction) | (HEAD.Id == sdGetMsg))
     {
         if (NetMode == emServer)
-            S_ResendToAll(HEAD, fulldata, caller, caller->isInRoom);
+            S_ResendToAll(HEAD, fulldata, caller, caller->IsInRoom);
 
         else if (NetMode == emGServer)
         {
-            if (caller->isInRoom)
-                S_ResendToAll(HEAD, fulldata, caller, caller->isInRoom);
+            if (caller->IsInRoom)
+                S_ResendToAll(HEAD, fulldata, caller, caller->IsInRoom);
         }
     }
 
@@ -480,7 +480,7 @@ void NetServer::S_DeleteFriend(QString name, NetSocket *caller)
     }
 }
 
-void NetServer::S_ResendToRest(NetPacketHeader HEAD, QByteArray fulldata, NetSocket *caller, bool inroom)
+void NetServer::ResendToOtherUsers(NetPacketHeader HEAD, QByteArray fulldata, NetSocket *caller, bool inroom)
 {
     if (inroom)
     {
@@ -489,21 +489,21 @@ void NetServer::S_ResendToRest(NetPacketHeader HEAD, QByteArray fulldata, NetSoc
             if (i != caller->RoomIdx)
             {
                 // caller->Room->RemoteClients.at(i)->Sck->write(fulldata);
-                HEAD.Hsize = fulldata.count();
+                HEAD.Size = fulldata.count();
                 HEAD.Serialize(caller->Room->RemoteClients[i]->SockStream);
                 caller->Room->RemoteClients[i]->Sck->write(fulldata);
             }
         }
     }
     else if (GlobalRoomEnabled)
-        for (int i = 0; i < RSockClientList.size(); i++)
+        for (int i = 0; i < RemoteClients.size(); i++)
         {
             if (i != caller->listIdx)
-                if (RSockClientList.at(i)->isInRoom == false)
+                if (RemoteClients.at(i)->IsInRoom == false)
                 {
-                    HEAD.Hsize = fulldata.count();
-                    HEAD.Serialize(RSockClientList[i]->SockStream);
-                    RSockClientList[i]->Sck->write(fulldata);
+                    HEAD.Size = fulldata.count();
+                    HEAD.Serialize(RemoteClients[i]->SockStream);
+                    RemoteClients[i]->Sck->write(fulldata);
                 }
         }
     QApplication::processEvents(QEventLoop::AllEvents, 2);
@@ -514,19 +514,19 @@ void NetServer::S_ResendToAll(NetPacketHeader HEAD, QByteArray fulldata, NetSock
     if (inroom)
         for (int i = 0; i < caller->Room->RemoteClients.size(); i++)
         {
-            HEAD.Hsize = fulldata.count();
+            HEAD.Size = fulldata.count();
             HEAD.Serialize(caller->Room->RemoteClients[i]->SockStream);
             caller->Room->RemoteClients[i]->Sck->write(fulldata);
         }
     else
-        for (int i = 0; i < RSockClientList.size(); i++)
+        for (int i = 0; i < RemoteClients.size(); i++)
         {
-            if (RSockClientList.at(i)->isInRoom == false)
+            if (RemoteClients.at(i)->IsInRoom == false)
             {
 
-                HEAD.Hsize = fulldata.count();
-                HEAD.Serialize(RSockClientList[i]->SockStream);
-                RSockClientList[i]->Sck->write(fulldata);
+                HEAD.Size = fulldata.count();
+                HEAD.Serialize(RemoteClients[i]->SockStream);
+                RemoteClients[i]->Sck->write(fulldata);
             }
         }
     QApplication::processEvents(QEventLoop::AllEvents, 2);
@@ -543,21 +543,21 @@ void NetServer::S_KillClient(NetSocket *caller)
             GuidClientList.remove(caller->UGUID);
 
         NameClientList.remove(DelName);
-        RSockClientList.removeAt(caller->listIdx);
-        for (int i = 0; i < RSockClientList.size(); i++)
+        RemoteClients.removeAt(caller->listIdx);
+        for (int i = 0; i < RemoteClients.size(); i++)
         {
-            RSockClientList.at(i)->listIdx = i;
+            RemoteClients.at(i)->listIdx = i;
         }
 
         if (NetMode == emServer)
         { // delete from main chat in case of LAN server.
-            foreach (NetSocket *sck, RSockClientList)
+            foreach (NetSocket *sck, RemoteClients)
                 G_SendData(sdUserDel, SZstring(DelName), sck);
-            if (caller->imageowner)
-                RSockClientList[0]->imageowner = true;
+            if (caller->IsImageOwner)
+                RemoteClients[0]->IsImageOwner = true;
         }
         // remove client from room
-        // if caller->isInRoom
+        // if caller->IsInRoom
         S_DelFromRoom(caller);
 
         emit ClientEnd(DelName);
