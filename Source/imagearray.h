@@ -139,7 +139,7 @@ public slots:
     void SaveImg();
     void SaveImg(QString fname);
     void SaveImg(QIODevice *iodev);
-    void SaveImgBa(QByteArray *ba);
+    void WriteToBytes(QByteArray *ba);
 
     void ExportImg(QString fname);
 

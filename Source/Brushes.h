@@ -411,6 +411,7 @@ quint8 Noisemode;
 };
 
 
+// layer action
 struct d_LAction{
   quint8 ActID;
   qint16 layer; // layer from

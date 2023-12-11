@@ -1240,7 +1240,7 @@ void ImageArray::SaveImg(QIODevice *iodev){
     }
 }
 
-void ImageArray::SaveImgBa(QByteArray *ba){
+void ImageArray::WriteToBytes(QByteArray *ba){
     QBuffer *buf=new QBuffer(ba);
     buf->open(QBuffer::ReadWrite);
     SaveImg(buf);

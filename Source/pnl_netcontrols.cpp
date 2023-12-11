@@ -104,12 +104,12 @@ void pnl_NetControls::CreateRoom()
 
 void pnl_NetControls::Cstart()
 {
-    NET->C_Connect(EdTargetIP->text());
+    NET->ConnectToServer(EdTargetIP->text());
     emit sendlock(1);
 }
 void pnl_NetControls::Cloopback()
 {
-    NET->C_Connect("127.0.0.1");
+    NET->ConnectToServer("127.0.0.1");
 }
 
 void pnl_NetControls::ToClient()
@@ -159,6 +159,6 @@ void pnl_NetControls::SearchFriend()
                                           "Iris", &ok);
     if (ok)
     {
-        NET->C_FindFriend(iname);
+        NET->FindFriend(iname);
     }
 }

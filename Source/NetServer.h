@@ -20,8 +20,8 @@ public:
     bool GlobalRoomEnabled;
 
 
-       ConnectionMode ServMode;
-       ConnectionMode NetMode;
+       NetworkAppOperationMode ServMode;
+       NetworkAppOperationMode NetMode;
        QTcpServer *LServer; // local server
        QList<NetSocket *> RSockClientList; // remote clients
        QHash<long,NetSocket*> GuidClientList;
@@ -46,9 +46,9 @@ public slots:
     void S_Disconnect();
     void S_Start();
     void S_GetClient();
-    void S_Retranslate(stNetHead HEAD,QByteArray fulldata,NetSocket *caller);
-    void S_ResendToRest(stNetHead HEAD,QByteArray fulldata,NetSocket *caller,bool inroom);
-    void S_ResendToAll(stNetHead HEAD,QByteArray fulldata,NetSocket *caller,bool inroom);
+    void S_Retranslate(NetPacketHeader HEAD, QByteArray fulldata, NetSocket *caller);
+    void S_ResendToRest(NetPacketHeader HEAD, QByteArray fulldata, NetSocket *caller, bool inroom);
+    void S_ResendToAll(NetPacketHeader HEAD, QByteArray fulldata, NetSocket *caller, bool inroom);
     void S_UpdateUserStatus(NetSocket *user,quint8 status);
 
     void S_RegisterSock(NetSocket *sock);
@@ -61,7 +61,7 @@ public slots:
     void S_KillClient(NetSocket *caller);
     void S_Stop();
  //   void S_SendAll(d_Action st);
- //   void S_SendAll(quint8 Hid,QByteArray data);
+ //   void S_SendAll(quint8 Id,QByteArray data);
 
     void S_GetFriends(long DGUID,QList <long> fguids,QList <QString> fnames);
     void S_GetPeople(QStringList pList,NetSocket *asker);

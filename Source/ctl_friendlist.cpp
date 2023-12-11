@@ -163,7 +163,7 @@ void ctl_friendlist::AddUser(QString uName)
 }
 void ctl_friendlist::LeaveRoom()
 {
-    NET->C_PartRoom();
+    NET->LeaveCurrentRoom();
     while (RoomRoot->child(0) != NULL)
     {
         RoomRoot->removeRow(0);
@@ -172,7 +172,7 @@ void ctl_friendlist::LeaveRoom()
 
 void ctl_friendlist::StartRoom()
 {
-    NET->C_StartRoom();
+    NET->StartNewRoom();
 }
 
 void ctl_friendlist::SetUserStatus(QString uName, int status)
@@ -256,7 +256,7 @@ void ctl_friendlist::SearchFriend()
                                              tr("Name:"), QLineEdit::Normal,
                          "InputName", &ok);
    if (ok && !iname.isEmpty() && iname.length()>1){
-       NET->C_FindFriend(iname);
+       NET->FindFriend(iname);
    }*/
     DlgFind->show();
 }
@@ -265,7 +265,7 @@ void ctl_friendlist::DelFriend()
     QModelIndex idx = selmodel->selectedIndexes().at(0);
     if (stimodel->itemFromIndex(idx)->parent() != NULL)
     {
-        NET->C_DelFriend(stimodel->itemFromIndex(idx)->text());
+        NET->RemoveFriend(stimodel->itemFromIndex(idx)->text());
         DelFromBranch(FriendRoot, stimodel->itemFromIndex(idx)->text());
     }
 }

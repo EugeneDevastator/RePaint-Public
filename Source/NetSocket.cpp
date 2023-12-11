@@ -26,44 +26,44 @@ sAuth sAuth::DeSerialize(QByteArray ba)
 
 NetRoom::NetRoom()
 {
-    RCList.clear();
+    RemoteClients.clear();
 }
 void NetRoom::AddUser(NetSocket *client)
 {
 
-    RCList.append(client);
-    client->RoomIdx = RCList.count() - 1;
+    RemoteClients.append(client);
+    client->RoomIdx = RemoteClients.count() - 1;
     client->Room = this;
-    client->inroom = true;
+    client->isInRoom = true;
 }
 
 void NetRoom::DelUser(NetSocket *client)
 {
 
-    RCList.removeAt(client->RoomIdx);
-    for (int i = 0; i < RCList.size(); i++)
+    RemoteClients.removeAt(client->RoomIdx);
+    for (int i = 0; i < RemoteClients.size(); i++)
     {
-        RCList.at(i)->RoomIdx = i;
+        RemoteClients.at(i)->RoomIdx = i;
     }
-    client->inroom = false;
+    client->isInRoom = false;
     client->Room = NULL;
 }
 
 // ----------------- NETHEAD
 
-void stNetHead::Serialize(QDataStream *ds)
+void NetPacketHeader::Serialize(QDataStream *ds)
 {
-    *ds << Hid;
+    *ds << Id;
     *ds << Hsize;
 }
 
-void stNetHead::DeSerialize(QDataStream *ds)
+void NetPacketHeader::DeSerialize(QDataStream *ds)
 {
-    *ds >> Hid;
+    *ds >> Id;
     *ds >> Hsize;
 }
 
-quint8 stNetHead::GetSSize()
+quint8 NetPacketHeader::GetSSize()
 {
     QByteArray tmphead;
     QDataStream ds(&tmphead, QIODevice::ReadWrite);
@@ -73,27 +73,27 @@ quint8 stNetHead::GetSSize()
 
 //---------USERSTATE
 
-QByteArray stUserState::Serialize()
+QByteArray NetUserState::Serialize()
 {
-    QByteArray *ba = new QByteArray(1, 'c');
-    QDataStream tds(ba, QIODevice::ReadWrite);
+    QByteArray *arry = new QByteArray(1, 'c');
+    QDataStream tds(arry, QIODevice::ReadWrite);
     tds << Ustate;
-    tds << Uname;
-    return *ba;
+    tds << UserName;
+    return *arry;
 }
 
-void stUserState::DeSerialize(QByteArray ba)
+void NetUserState::DeSerialize(QByteArray ba)
 {
     QDataStream tds(&ba, QIODevice::ReadOnly);
     tds >> Ustate;
-    tds >> Uname;
+    tds >> UserName;
 }
 
 // ----------------------  additional functions
 void G_SendData(quint8 Hid, QByteArray data, NetSocket *sock)
 {
-    stNetHead HEAD;
-    HEAD.Hid = Hid; // please fix
+    NetPacketHeader HEAD;
+    HEAD.Id = Hid; // please fix
     HEAD.Hsize = data.count();
     HEAD.Serialize(sock->SockStream);
     sock->Sck->write(data);
@@ -109,16 +109,16 @@ void G_SendUserStatus(NetSocket *user, NetSocket *dest)
     ldata.append(user->uStatus);
     G_SendData("US",ldata,dest);
 */
-    stUserState us;
-    us.Uname = user->RegName;
+    NetUserState us;
+    us.UserName = user->RegName;
     us.Ustate = user->uStatus;
     G_SendData(sdUserStat, us.Serialize(), dest);
 }
 
 void G_SendUserStatus(QString uname, int status, NetSocket *dest)
 {
-    stUserState us;
-    us.Uname = uname;
+    NetUserState us;
+    us.UserName = uname;
     us.Ustate = status;
     G_SendData(sdUserStat, us.Serialize(), dest);
 }
@@ -138,21 +138,21 @@ NetSocket::NetSocket(QObject *parent) : QObject(parent)
     RDataSize = HeadSize;
     DataState = sdNONE;
     DataBuffer.clear();
-    Registered = true;
+    IsRegistered = true;
     Role = srNONE;
-    inroom = false;
+    isInRoom = false;
     uStatus = suOn;
 }
 
 void NetSocket::ParseData()
 {
     // int a =0;
-    if (!reading)
+    if (!IsReading)
     {
 
         while (Sck->bytesAvailable() > 0)
         {
-            reading = true;
+            IsReading = true;
             qDebug() << "Waiting amount:" + QString::number(HeadSize) + "Got Data:" + QString::number(Sck->bytesAvailable());
             if (DataState == sdNONE)
             { // waiting for head to come in
@@ -161,14 +161,14 @@ void NetSocket::ParseData()
 
                     HEAD.DeSerialize(SockStream);
                     RDataSize = HEAD.Hsize;
-                    DataState = HEAD.Hid;
+                    DataState = HEAD.Id;
                     DataBuffer.clear();
                     // if (DataState>sdSTOP)
                     //         this->Terminate(); //wrong head id = kill socket;
                 }
             }
             if (DataState != sdNONE)
-            { // reading data packet; and in case it arrived in one piece continue to read.
+            { // IsReading data packet; and in case it arrived in one piece continue to read.
                 if (Sck->bytesAvailable() >= RDataSize)
                 {
                     DataBuffer.append(this->Sck->read(RDataSize));
@@ -178,7 +178,7 @@ void NetSocket::ParseData()
                     (DataState != sdNONE)) // retranslating the packet;
                 {                          // when full data was read
 
-                    if (Registered)
+                    if (IsRegistered)
                     {
                         emit SendDataObj(HEAD, DataBuffer, this); // this should be rewritten
                     }
@@ -194,13 +194,13 @@ void NetSocket::ParseData()
             }
             QApplication::processEvents(QEventLoop::AllEvents, 2);
         }
-        reading = false;
+        IsReading = false;
     }
 }
 
 void NetSocket::init()
 {
-    reading = false;
+    IsReading = false;
     blocker = false;
     imageowner = false;
     connect(this->Sck, SIGNAL(readyRead()), this, SLOT(ParseData()));

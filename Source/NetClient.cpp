@@ -13,7 +13,7 @@ NetClient::NetClient(QWidget *parent)
     MainPort = 33789;
     StartSession();
     NetMode = emNone;
-    // LClient =new QTcpSocket;
+    // LocalClient =new QTcpSocket;
     // LServer =new QTcpServer;
 }
 
@@ -26,170 +26,170 @@ void NetClient::StartSession()
     NetSession = new QNetworkSession(config);
     NetSession->open();
 
-    LClient = new NetSocket;
+    LocalClient = new NetSocket;
 }
 
 // -------------------------- C L I E N T functions ------------------------
 // -------------------------------------------------------------------------
 
-void NetClient::C_Connect(QString addr)
+void NetClient::ConnectToServer(QString addr)
 {
     if (NetMode == emNone)
     {
-        //   LClient->Sck->close();
-        //   delete LClient;
-        LClient = new NetSocket;
+        //   LocalClient->Sck->close();
+        //   delete LocalClient;
+        LocalClient = new NetSocket;
         QHostAddress haddr;
         haddr.setAddress(addr);
-        LClient->Sck->connectToHost(haddr, MainPort);
-        connect(LClient->Sck, SIGNAL(connected()), this, SLOT(C_ConnectSuccess()));
-        connect(LClient, SIGNAL(RSDisconnect(NetSocket *)), this, SLOT(C_Suicide(NetSocket *)));
-        connect(LClient->Sck, SIGNAL(disconnected()), this, SLOT(N_Disconnect()));
+        LocalClient->Sck->connectToHost(haddr, MainPort);
+        connect(LocalClient->Sck, SIGNAL(connected()), this, SLOT(OnConnectionSuccess()));
+        connect(LocalClient, SIGNAL(RSDisconnect(NetSocket *)), this, SLOT(DisconnectFromServer(NetSocket * )));
+        connect(LocalClient->Sck, SIGNAL(disconnected()), this, SLOT(N_Disconnect()));
     }
 }
 
-void NetClient::C_Suicide(NetSocket *sock)
+void NetClient::DisconnectFromServer(NetSocket *sock)
 {
     N_Disconnect();
 }
 
-void NetClient::C_StartRoom()
+void NetClient::StartNewRoom()
 {
-    G_SendData(sdRoomCreate, QByteArray(1, 'R'), LClient);
+    G_SendData(sdRoomCreate, QByteArray(1, 'R'), LocalClient);
 }
 
-void NetClient::C_ConnectSuccess()
+void NetClient::OnConnectionSuccess()
 {
 
     NetMode = emClient;
     // SendStatus("connected to :"+addr);
-    //     connect(LClient,SIGNAL(RSAction(d_Action)),this,SLOT(C_GetAction(d_Action)));
-    // connect(LClient,SIGNAL(SendDataHid(QString,QByteArray)),this,SLOT(G_ExecData(QString,QByteArray)));
-    connect(LClient, SIGNAL(SendDataObj(stNetHead, QByteArray, NetSocket *)), this, SLOT(G_ExecData(stNetHead, QByteArray, NetSocket *)));
-    LClient->init();
-    LClient->Registered = true;
+    //     connect(LocalClient,SIGNAL(RSAction(d_Action)),this,SLOT(C_GetAction(d_Action)));
+    // connect(LocalClient,SIGNAL(SendDataHid(QString,QByteArray)),this,SLOT(G_ExecData(QString,QByteArray)));
+    connect(LocalClient, SIGNAL(SendDataObj(stNetHead, QByteArray, NetSocket *)), this, SLOT(G_ExecData(stNetHead, QByteArray, NetSocket *)));
+    LocalClient->init();
+    LocalClient->IsRegistered = true;
 }
 
-void NetClient::C_Login(QString Uname, QString Upass)
+void NetClient::LogIn(QString Uname, QString Upass)
 {
 
     sAuth auth;
     auth.uname = Uname;
     auth.upass = Upass;
     auth.aType = atLogin;
-    G_SendData(sdAuth, auth.Serialize(), LClient);
+    G_SendData(sdAuth, auth.Serialize(), LocalClient);
 }
 
-void NetClient::C_Regin(QString Uname, QString Upass)
+void NetClient::RegisterNewUser(QString Uname, QString Upass)
 {
     sAuth auth;
     auth.uname = Uname;
     auth.upass = Upass;
     auth.aType = atRegister;
-    G_SendData(sdAuth, auth.Serialize(), LClient);
+    G_SendData(sdAuth, auth.Serialize(), LocalClient);
 }
 
 void NetClient::C_SendLaction(d_LAction la)
 {
-    G_SendData(sdLAction, la.Serialize(), LClient);
+    G_SendData(sdLAction, la.Serialize(), LocalClient);
 }
 
-void NetClient::C_JoinRoom(QString uname)
+void NetClient::JoinRoom(QString roomName)
 {
-    if (uname.compare(LClient->RegName) != 0)
+    if (roomName.compare(LocalClient->RegName) != 0)
     {
-        LClient->inroom = false;
-        G_SendData(sdRoomJoin, SZstring(uname), LClient);
+        LocalClient->isInRoom = false;
+        G_SendData(sdRoomJoin, SZstring(roomName), LocalClient);
     }
 }
 
-void NetClient::C_PartRoom()
+void NetClient::LeaveCurrentRoom()
 {
-    LClient->inroom = false;
-    G_SendData(sdRoomPart, QByteArray('z', 1), LClient);
+    LocalClient->isInRoom = false;
+    G_SendData(sdRoomPart, QByteArray('z', 1), LocalClient);
 }
-void NetClient::C_FindFriend(QString name)
+void NetClient::FindFriend(QString name)
 {
-    G_SendData(sdFriendSeek, SZstring(name), LClient);
+    G_SendData(sdFriendSeek, SZstring(name), LocalClient);
 }
-void NetClient::C_AddFriend(QString name)
+void NetClient::AddFriend(QString name)
 {
-    G_SendData(sdFriendAdd, SZstring(name), LClient);
+    G_SendData(sdFriendAdd, SZstring(name), LocalClient);
 }
-void NetClient::C_DelFriend(QString name)
+void NetClient::RemoveFriend(QString name)
 {
-    G_SendData(sdFriendDel, SZstring(name), LClient);
+    G_SendData(sdFriendDel, SZstring(name), LocalClient);
 }
 
-void NetClient::C_SendImage(QString asker, QByteArray ELI)
+void NetClient::SendImageData(QString asker, QByteArray imageData)
 {
-    QByteArray *ba = new QByteArray;
-    QDataStream ds(ba, QIODevice::ReadWrite);
-    ds << asker;
-    ds << ELI;
-    G_SendData(sdGetImg, *ba, LClient);
-    delete ba;
+    QByteArray *bytes = new QByteArray;
+    QDataStream stream(bytes, QIODevice::ReadWrite);
+    stream << asker;
+    stream << imageData;
+    G_SendData(sdGetImg, *bytes, LocalClient);
+    delete bytes;
 }
 
 // --------------------- C-S SHARED FUNCTIONS -----------------
 // ------------------------------------------------------------
 
-void NetClient::G_ExecData(stNetHead HEAD, QByteArray data, NetSocket *dest)
+void NetClient::G_ExecData(NetPacketHeader HEAD, QByteArray data, NetSocket *dest)
 {
-    qDebug() << "size: " + QString::number(data.size()) + "head id:" + QString::number(HEAD.Hid);
-    if (HEAD.Hid == sdLogin)
+    qDebug() << "size: " + QString::number(data.size()) + "head id:" + QString::number(HEAD.Id);
+    if (HEAD.Id == sdLogin)
     { // user is connected and i send him request for authentification;
         emit ReqLogin(DSZstring(data));
     }
 
-    else if (HEAD.Hid == sdLoginS)
+    else if (HEAD.Id == sdLoginS)
     { // login success, you get this when you are connected;
         emit LoginS(DSZstring(data));
         emit LoginSuccess();
-        LClient->RegName = DSZstring(data);
+        LocalClient->RegName = DSZstring(data);
     }
 
-    else if (HEAD.Hid == sdAction)
+    else if (HEAD.Id == sdAction)
     {
         d_Action act;
         act.DeSerialize(data);
         emit SendAction(act);
     }
-    else if (HEAD.Hid == sdSection)
+    else if (HEAD.Id == sdSection)
     {
         d_Section sect;
         sect.DeSerialize(data);
         emit SendSection(sect);
     }
-    else if (HEAD.Hid == sdGetMsg)
+    else if (HEAD.Id == sdGetMsg)
     {
         emit SendChatMsg(DSZstring(data));
     }
 
-    else if (HEAD.Hid == sdUserAdded)
+    else if (HEAD.Id == sdUserAdded)
     { // user added, everyone gets this when someone connected
         emit LoginS(DSZstring(data));
     }
 
-    else if (HEAD.Hid == sdUserDel)
+    else if (HEAD.Id == sdUserDel)
     {
         emit ClientEnd(DSZstring(data));
     }
 
-    else if (HEAD.Hid == sdGetPass)
+    else if (HEAD.Id == sdGetPass)
     {
         // here should be performed check if user was registered, and also check for if it is a new registration
     }
 
-    else if (HEAD.Hid == sdUserStat)
+    else if (HEAD.Id == sdUserStat)
     { // user status
         // QString dname=DSZstring(data);
         // emit SendUserStatus(dname.left(dname.length()-1),(unsigned char)data.at(data.length()-1));
-        stUserState us;
+        NetUserState us;
         us.DeSerialize(data);
-        emit SendUserStatus(us.Uname, us.Ustate);
+        emit SendUserStatus(us.UserName, us.Ustate);
     }
-    else if (HEAD.Hid == sdRoomJoin)
+    else if (HEAD.Id == sdRoomJoin)
     { // user status
 
         QString dname = DSZstring(data);
@@ -198,12 +198,12 @@ void NetClient::G_ExecData(stNetHead HEAD, QByteArray data, NetSocket *dest)
         // please separate it :
         // emit SendUserStatus(dname.left(dname.length()-1),(unsigned char)data.at(data.length()-1));
     }
-    else if (HEAD.Hid == sdRoomPart)
+    else if (HEAD.Id == sdRoomPart)
     {
         QString dname = DSZstring(data);
         emit SendPartRoom(dname);
     }
-    else if (HEAD.Hid == sdLAction)
+    else if (HEAD.Id == sdLAction)
     {
 
         /*
@@ -222,23 +222,23 @@ void NetClient::G_ExecData(stNetHead HEAD, QByteArray data, NetSocket *dest)
         lact.DeSerialize(data);
         emit SendLAction(lact);
     }
-    else if (HEAD.Hid == sdLock)
+    else if (HEAD.Id == sdLock)
     {
         emit LockCanvas(1);
     }
-    else if (HEAD.Hid == sdUnlock)
+    else if (HEAD.Id == sdUnlock)
     {
         emit LockCanvas(-1);
     }
-    else if (HEAD.Hid == sdReqImg)
+    else if (HEAD.Id == sdReqImg)
     {
         emit ReqImage(DSZstring(data));
     }
-    else if (HEAD.Hid == sdPeopleResults)
+    else if (HEAD.Id == sdPeopleResults)
     {
         emit SendPeopleList(DSZstring(data).split(","));
     }
-    else if (HEAD.Hid == sdGetImg)
+    else if (HEAD.Id == sdGetImg)
     {
         /*QDataStream ds(data,QIODevice::ReadWrite);
         QByteArray ELI;
@@ -247,9 +247,9 @@ void NetClient::G_ExecData(stNetHead HEAD, QByteArray data, NetSocket *dest)
         ds >> ELI;*/
         emit GetImage(data);
         // assume this blockk kwill be only executed on client;
-        G_SendData(sdConfirmImg, QByteArray(1, 'c'), LClient);
+        G_SendData(sdConfirmImg, QByteArray(1, 'c'), LocalClient);
     }
-    else if (HEAD.Hid == sdFAIL)
+    else if (HEAD.Id == sdFAIL)
     {
         emit NetReset();
     }
@@ -257,17 +257,17 @@ void NetClient::G_ExecData(stNetHead HEAD, QByteArray data, NetSocket *dest)
 
 void NetClient::GetAction(d_Action st)
 {
-    G_SendData(sdAction, st.Serialize(), LClient);
+    G_SendData(sdAction, st.Serialize(), LocalClient);
 }
 void NetClient::GetSection(d_Section sect)
 {
     if (NetMode != emNone)
-        G_SendData(sdSection, sect.Serialize(), LClient);
+        G_SendData(sdSection, sect.Serialize(), LocalClient);
 }
 
 void NetClient::GetChatMsg(QString msg)
 {
-    G_SendData(sdGetMsg, SZstring(msg), LClient);
+    G_SendData(sdGetMsg, SZstring(msg), LocalClient);
 }
 
 void NetClient::N_Disconnect()
@@ -275,11 +275,11 @@ void NetClient::N_Disconnect()
     if (NetMode != emNone)
     {
         NetMode = emNone;
-        LClient->Sck->close();
+        LocalClient->Sck->close();
         emit NetReset();
     }
 }
 
 // void NetClient::C_Stop(){
-//     LClient->Sck->close();
+//     LocalClient->Sck->close();
 // }

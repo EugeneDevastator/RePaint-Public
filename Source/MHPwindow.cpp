@@ -578,7 +578,7 @@ void MHPwindow::GetAction(d_Action act)
 }
 void MHPwindow::ConnectAddr()
 {
-    NET->C_Connect(NetControls->EdTargetIP->text());
+    NET->ConnectToServer(NetControls->EdTargetIP->text());
 }
 
 void MHPwindow::GetTStroke(d_Stroke Strk, d_StrokePars stpars)
@@ -915,7 +915,7 @@ void MHPwindow::GetColor(QColor col)
 void MHPwindow::SendChatMsg()
 {
     QString Msg = CHAT->ChatLine->text();
-    Msg.prepend(NET->LClient->RegName + ": ");
+    Msg.prepend(NET->LocalClient->RegName + ": ");
     Msg.append("\n");
     CHAT->ChatLine->clear();
 
@@ -928,7 +928,7 @@ void MHPwindow::SendChatMsg()
 
 void MHPwindow::GetLogin(QString user, QString pass)
 {
-    NET->C_Login(user, pass);
+    NET->LogIn(user, pass);
 }
 void MHPwindow::GrabKB()
 {
@@ -1105,8 +1105,8 @@ void MHPwindow::LockCanvas(qint8 lk)
 void MHPwindow::GrabImg(QString asker)
 {
     QByteArray ELI(1, 'c');
-    MainImage->SaveImgBa(&ELI);
-    NET->C_SendImage(asker, ELI);
+    MainImage->WriteToBytes(&ELI);
+    NET->SendImageData(asker, ELI);
 }
 
 void MHPwindow::ConfirmImage(QByteArray ba)

@@ -1,13 +1,13 @@
 #ifndef ENUMS_H
 #define ENUMS_H
 
-enum rStates{
+enum NetworkRoleKind{
     srNONE, srServ, srClient, srGlobal, srSTOP
 };
-enum uStates{
+enum UserStateKind{
     suZERO,suOff,suOn,suRoomFree,suRoomClosed,suMemberFree,suMemberClosed,suMemberSame,suSTOP
 };
-enum aTypes{
+enum AuthKind{
     atLogin, atRegister, atRename, atSTOP
 };
 

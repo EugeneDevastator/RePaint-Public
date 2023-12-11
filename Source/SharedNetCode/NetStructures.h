@@ -5,14 +5,14 @@
 #ifndef SOURCE_NETSTRUCTURES_H
 #define SOURCE_NETSTRUCTURES_H
 
-enum ConnectionMode {
+enum NetworkAppOperationMode {
     emServer,
     emGServer,
     emClient,
     emNone
     };
 
-enum dStates{
+enum HeaderKind{
     sdNONE,         //0
     sdAction,       //AA 1
     sdSection,   //2
