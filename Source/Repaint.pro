@@ -53,7 +53,7 @@ HEADERS += \
     b_smartcolor.h \
     ArtMaster.h \
     dlg_login.h \
-    pnl_bcontorls.h \
+    BrushEditorPresenter.h \
     ctl_friendlist.h \
     pnl_netcontrols.h \
     Enums.h \
@@ -99,7 +99,7 @@ SOURCES += \
     b_smartcolor.cpp \
     ArtMaster.cpp \
     dlg_login.cpp \
-    pnl_bcontorls.cpp \
+    BrushEditorPresenter.cpp \
     ctl_friendlist.cpp \
     pnl_netcontrols.cpp \
     ctl_usertools.cpp \

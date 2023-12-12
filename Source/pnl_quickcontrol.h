@@ -7,7 +7,7 @@
 
 #include "ctl_bparam.h"
 #include "ctl_fastbrush.h"
-#include "pnl_bcontorls.h"
+#include "BrushEditorPresenter.h"
 #include "ctl_trueop.h"
 #include "ctl_toolselector.h"
 #include "ctl_BMselector.h"
@@ -20,7 +20,7 @@ class pnl_QuickControl : public QWidget
         Q_OBJECT
 
 public:
-    explicit pnl_QuickControl(pnl_bcontorls *BCTLS,d_RealBrush *gbrush,ImageArray *mimage);
+    explicit pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrush *gbrush, ImageArray *mimage);
 
     Ctl_BParam *QuickOp;
     Ctl_BParam *QuickSol;

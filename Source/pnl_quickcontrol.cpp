@@ -16,7 +16,7 @@ void pnl_QuickControl::linkSliders(Ctl_BParam *slave, Ctl_BParam *master)
     slave->MLayout->setMargin(1);
 }
 
-pnl_QuickControl::pnl_QuickControl(pnl_bcontorls *BCTLS, d_RealBrush *gbrush, ImageArray *mimage)
+pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrush *gbrush, ImageArray *mimage)
 {
 
     QFile logfile("d:/mhplog.log");
@@ -170,7 +170,7 @@ pnl_QuickControl::pnl_QuickControl(pnl_bcontorls *BCTLS, d_RealBrush *gbrush, Im
 
     FastTrueOp = new ctl_trueop();
     // FastTrueOp->rrel=&(BControls->CtlRadRel->Gslider->clipmaxF);
-    // FastTrueOp->crv=&(BControls->CtlCrv->Gslider->clipmaxF);
+    // FastTrueOp->FadeCurveExp=&(BControls->CtlCrv->Gslider->clipmaxF);
 
     FastTrueOp->setParent(this);
 

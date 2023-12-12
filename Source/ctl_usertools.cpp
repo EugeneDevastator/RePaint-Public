@@ -1,7 +1,7 @@
 #include "ctl_usertools.h"
-#include "pnl_bcontorls.h"
+#include "BrushEditorPresenter.h"
 
-ctl_UserTools::ctl_UserTools(pnl_bcontorls *bc, QWidget *parent)
+ctl_UserTools::ctl_UserTools(BrushEditorPresenter *bc, QWidget *parent)
 {
   Title->setText("Brush Presets");
   ToolsFile.setFileName(RESPATH + "/sets/Presets.dat");

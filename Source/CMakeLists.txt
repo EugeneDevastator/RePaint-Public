@@ -195,8 +195,8 @@ add_executable(Source
         NetServer.h
         NetSocket.cpp
         NetSocket.h
-        pnl_bcontorls.cpp
-        pnl_bcontorls.h
+        BrushEditorPresenter.cpp
+        BrushEditorPresenter.h
         pnl_chat.cpp
         pnl_chat.h
         pnl_colorpicker.cpp

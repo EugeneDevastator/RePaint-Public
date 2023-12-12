@@ -1,7 +1,6 @@
 #ifndef MHPWINDOW_H
 #define MHPWINDOW_H
 
-
 #include <QtWidgets/QWidget>
 #include <QTcpSocket>
 #include <QTcpServer>
@@ -49,201 +48,220 @@
 #include "NetClient.h"
 #include "NetServer.h"
 
-#include "pnl_bcontorls.h"
+#include "BrushEditorPresenter.h"
 #include "pnl_netcontrols.h"
 #include "pnl_layers.h"
 #include "pnl_quickcontrol.h"
 #include "pnl_filemenu.h"
 #include "pnl_chat.h"
 
-
-
 QT_BEGIN_NAMESPACE
 class QLabel;
+
 class QPixmap;
+
 class QPushButton;
+
 class QTcpSocket;
+
 class QNetworkSession;
+
 class QHBoxLayout;
+
 class QVBoxLayout;
+
 class QLineEdit;
 
-
 class ArtMaster;
+
 class b_smartcolor;
+
 class bctl_imagewidget;
+
 class bctl_dblslider;
+
 class c_keylink;
+
 class ctl_BMselector;
+
 class ctl_bparam;
+
 class ctl_brushsizer;
+
 class ctl_colorwheel;
+
 class ctl_fastbrush;
+
 class ctl_friendlist;
+
 class ctl_maskselect;
+
 class ctl_toolselector;
+
 class ctl_trueop;
+
 class ctl_usertools;
+
 class dlg_login;
+
 class dlg_newcanvas;
+
 class dlg_usersearch;
 
 class geomaster;
+
 class imagearray;
+
 class NetClient;
 
-class pnl_bcontorls;
+class BrushEditorPresenter;
+
 class pnl_netcontrols;
+
 class pnl_layers;
+
 class pnl_quickcontrol;
+
 QT_END_NAMESPACE
 
+class MHPwindow : public QWidget {
+   Q_OBJECT
 
-class MHPwindow : public QWidget
-{
-    Q_OBJECT
+   public slots:
 
-public slots:
+      void SendMsg();
 
+      void GetPoly(QPolygonF Poly);
+      void GetTStroke(d_Stroke Strk, d_StrokePars stpars);
+      void GetAction(ActionData act);
+      void GetClient();
+      void GetMsg(QString msg);
+      void GetServIp(QString msg);
+      void ConnectAddr();
+      void ImgOpen();
+      void RedrawCol();
+      void GetColor(QColor col);
+      void SendChatMsg();
+      // void GetChatMsg(QString Msg);
+      void GetLogin(QString user, QString pass);
+      void GrabKB();
+      void RelKB();
+      void SaveLogin();
+      void LoadLogin();
+      void OpenImage();
+      void ReOpenImage();
+      void SnapImage();
+      void SaveImg();
+      void SaveImgAs();
+      void NewImage(QSize sz);
+      void PasteImage();
+      void RealignQP();
+      void ShowQP();
+      void HideQP();
 
+      void SwitchPinPanels();
 
-    void SendMsg();
+      void LockCanvas(qint8 lk);
+      void GrabImg(QString asker);
 
-    void GetPoly(QPolygonF Poly);
-    void GetTStroke(d_Stroke Strk,d_StrokePars stpars);
-    void GetAction(ActionData act);
-    void GetClient();
-    void GetMsg(QString msg);
-    void GetServIp(QString msg);
-    void ConnectAddr();
-    void ImgOpen();
-    void RedrawCol();
-    void GetColor(QColor col);
-    void SendChatMsg();
-   // void GetChatMsg(QString Msg);
-    void GetLogin(QString user,QString pass);
-    void GrabKB();
-    void RelKB();
-    void SaveLogin();
-    void LoadLogin();
-    void OpenImage();
-    void ReOpenImage();
-    void SnapImage();
-    void SaveImg();
-    void SaveImgAs();
-    void NewImage(QSize sz);
-    void PasteImage();
-    void RealignQP();
-    void ShowQP();
-    void HideQP();
+      void ExecLayerAction(LayerAction lact);
+      void ConfirmImage(QByteArray ba);
+      void ConfirmAct(ActionData act);
 
-    void SwitchPinPanels();
+   public:
+      MHPwindow();
+      qint8 lock;
+      bool StrokingEN;
+      int ActiveLayer;
 
-    void LockCanvas(qint8 lk);
-    void GrabImg(QString asker);
+      ActionMaster *ActionExecutor;
+      LayersPanelPresenter *LayersPanel;
+      QPointF lastpos;
 
+      //   QMdiArea *MdiArea;
+      bool Dedicated;
 
+      QString WorkFilePath;
+      int SnapIdx;
 
-    void ExecLayerAction(LayerAction lact);
-    void ConfirmImage(QByteArray ba);
-    void ConfirmAct(ActionData act);
+      QString *LocalName;
+      NetClient *NET;
+      NetServer *sNET;
+      c_KeyLink *KBLINK;
 
+      ArtThread *ARTM;
+      QSettings *AppSettings;
 
-public:
-    MHPwindow();
-    qint8 lock;
-    bool StrokingEN;
-    int ActiveLayer;
+      //bctl_HoverBrush *HoverBrush;
+      ClientBrush *g_Brush;
+      b_SmartColor *g_PaintColor;
+      b_SmartColor *g_EraseColor;
+      pnl_QuickControl *QuickPanel;
+      pnl_FileMenu *FileMenu;
+      ctl_UserTools *PRESETS;
+      //QPicture *ViewCanvas;
+      QLabel *Label1;
+      QLabel *LblServIp;
+      QLabel *Lb1;
 
-   ActionMaster *ACM;
-    pnl_Layers *LayersPanel;
-    QPointF lastpos;
+      QSplitter *MCSplitter;
+      QList<int> MCsizes;
+      QList<int> TMsizes;
+      QList<QWidget *> AllPanels;
+      bool PansHidden;
+      QGridLayout *MainLayout;
+      QRect MainGeometry;
 
- //   QMdiArea *MdiArea;
-    bool Dedicated;
+      // QPushButton *BtnAbout;
+      //    QPushButton *BtnLogin;
 
-    QString WorkFilePath;
-    int SnapIdx;
+      pnl_NetControls *NetControls;
+      pnl_Chat *CHAT;
+      ctl_friendlist *FriendList;
 
-    QString *LocalName;
-    NetClient *NET;
-    NetServer *sNET;
-    c_KeyLink *KBLINK;
+      //QDialog *DlgCol;
+      QDialog *DlgAbout;
 
-    ArtThread *ARTM;
-    QSettings *AppSettings;
+      dlg_login *DlgLogin;
+      dlg_NewCanvas *DlgNew;
+      ctl_ColorWheel *CtlCol;
+      float SaveDist;
 
-    //bctl_HoverBrush *HoverBrush;
-    d_RealBrush *g_Brush;
-    b_SmartColor *g_PaintColor;
-    b_SmartColor *g_EraseColor;
-    pnl_QuickControl *QuickPanel;
-    pnl_FileMenu *FileMenu;
-        ctl_UserTools *PRESETS;
-    //QPicture *ViewCanvas;
-    QLabel *Label1;
-    QLabel *LblServIp;
-    QLabel *Lb1;
+      BrushData LocalBrush;
+      ActionData LocalAction;
 
-    QSplitter *MCSplitter;
-    QList <int> MCsizes;
-    QList <int> TMsizes;
-    QList <QWidget *> AllPanels;
-    bool PansHidden;
-QGridLayout *MainLayout;
-    QRect MainGeometry;
-
-   // QPushButton *BtnAbout;
-    //    QPushButton *BtnLogin;
-
-    pnl_NetControls *NetControls;
-pnl_Chat *CHAT;
-    ctl_friendlist *FriendList;
-
-
-    //QDialog *DlgCol;
-    QDialog *DlgAbout;
-
-    dlg_login *DlgLogin;
-    dlg_NewCanvas *DlgNew;
-    ctl_ColorWheel *CtlCol;
-    float SaveDist;
-
-    BrushData LocalBrush;
-    ActionData LocalAction;
-
-    //Layout defs
-    QHBoxLayout *LtUpperToolbar;
-    QHBoxLayout *LtUpperRightToolbar;
-    QVBoxLayout *LtLeftToolbar;
-    QWidget *Leftpanel;
+      //Layout defs
+      QHBoxLayout *LtUpperToolbar;
+      QHBoxLayout *LtUpperRightToolbar;
+      QVBoxLayout *LtLeftToolbar;
+      QWidget *Leftpanel;
 //    QSplitter *TMSplitter;
 
 
-    // network defs
+      // network defs
 
-    ImageArray *MainImage;
+      ImageArray *MainImage;
 
-    QToolButton *btnTool;
-    QToolBar *TB1;
+      QToolButton *btnTool;
+      QToolBar *TB1;
 
+      BrushEditorPresenter *BControls;
+      QVBoxLayout *LtChat;
+      QWidget *wChat;
 
-    pnl_bcontorls *BControls;
-    QVBoxLayout *LtChat;
-QWidget *wChat;
+      StrokeMaster *STM;
 
-StrokeMaster *STM;
+      bool PanelsPinned;
 
-bool PanelsPinned;
+   protected:
+      void keyPressEvent(QKeyEvent *event);
+      void keyReleaseEvent(QKeyEvent *event);
+      void closeEvent(QCloseEvent *event);
 
-protected:
-    void keyPressEvent(QKeyEvent *event);
-    void keyReleaseEvent(QKeyEvent *event);
-    void closeEvent(QCloseEvent *event);
-
-    void wheelEvent(QWheelEvent *event);
-    //void MainImage::mouseMoveEvent(QMouseEvent *event);
+      void wheelEvent(QWheelEvent *event);
+      //void MainImage::mouseMoveEvent(QMouseEvent *event);
 };
+
 #endif // MHPWINDOW_H
 
 

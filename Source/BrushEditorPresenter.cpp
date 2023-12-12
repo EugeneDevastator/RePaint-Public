@@ -1,7 +1,7 @@
-#include "pnl_bcontorls.h"
+#include "BrushEditorPresenter.h"
 #include "ctl_bparam.h"
 
-pnl_bcontorls::pnl_bcontorls(d_RealBrush *GG_brush,QWidget *parent)
+BrushEditorPresenter::BrushEditorPresenter(ClientBrush *GG_brush, QWidget *parent)
 {
 
     this->Title->setText("Brush DNA");
@@ -14,7 +14,7 @@ pnl_bcontorls::pnl_bcontorls(d_RealBrush *GG_brush,QWidget *parent)
 
 QString AppPath=RESPATH;
 CtlTools=new ctl_ToolSelector();
-g_Brush = new d_RealBrush;
+g_Brush = new ClientBrush;
 //BrushControl = new BrushSizer();
 
 logfile.write("\n BCONTROLS brushsizer+");  logfile.close(); logfile.open(QFile::Append);
@@ -276,17 +276,17 @@ LtLeftToolbar->setContentsMargins(QMargins());
     logfile.write("\n BCONTROLS INIT+++");  logfile.close(); logfile.open(QFile::Append);
 }
 
-BrushData pnl_bcontorls::ParseBrush(BrushData BRSH){
+BrushData BrushEditorPresenter::ParseBrush(BrushData BRSH){
 
 BrushData nb;
 return nb;
 }
 
-void pnl_bcontorls::SetRadRel(float rel){
+void BrushEditorPresenter::SetRadRel(float rel){
     CtlRadRel->SetValF(rel);
 }
 
-ActionData pnl_bcontorls::ParseBrush(d_Stroke Strk, d_StrokePars stpars){
+ActionData BrushEditorPresenter::ParseBrush(d_Stroke Strk, d_StrokePars stpars){
 
     BrushData nb;
     ActionData act;
@@ -371,7 +371,7 @@ return act;
 
 
 }
-void pnl_bcontorls::ApplyPreset(d_ToolPreset Preset){
+void BrushEditorPresenter::ApplyPreset(d_ToolPreset Preset){
     int cshift=0;
     if (Preset.usecolor==true) cshift=3;
         CtlCompMode->setBMbyint(Preset.compmode);
@@ -393,7 +393,7 @@ void pnl_bcontorls::ApplyPreset(d_ToolPreset Preset){
 }
 
 }
-d_ToolPreset pnl_bcontorls::GenPreset(){
+d_ToolPreset BrushEditorPresenter::GenPreset(){
     d_ToolPreset Preset;
 
         Preset.compmode=CtlCompMode->GetIdx();
@@ -410,11 +410,11 @@ d_ToolPreset pnl_bcontorls::GenPreset(){
 return Preset;
 }
 
-void pnl_bcontorls::SendPreset(){
+void BrushEditorPresenter::SendPreset(){
     emit TransferPreset(GenPreset());
 
 }
-void pnl_bcontorls::BrushRequest(){
+void BrushEditorPresenter::BrushRequest(){
     d_Stroke strk1;
     d_StrokePars stp1;
     for (int i=0;i<csSTOP;i++) stp1.Pars[i]=1;

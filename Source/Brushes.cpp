@@ -171,14 +171,14 @@ QByteArray BrushData::Serialize()
 void BrushData::Serialize(QDataStream *ba)
 {
     SelfPack();
-    *ba << Pack.Prad_in.IntVal;
-    *ba << Pack.Prad_in.FVal;
-    *ba << Pack.Prad_out.IntVal;
-    *ba << Pack.Prad_out.FVal;
-    *ba << Pack.bmidx;
+    *ba << Pack.RadiusInner.IntVal;
+    *ba << Pack.RadiusInner.FVal;
+    *ba << Pack.RadiusOuter.IntVal;
+    *ba << Pack.RadiusOuter.FVal;
+    *ba << Pack.BlendMode;
     *ba << Pack.col;
-    *ba << Pack.cop;
-    *ba << Pack.crv;
+    *ba << Pack.CloneOpacity;
+    *ba << Pack.FadeCurveExp;
     *ba << Pack.MaskID;
     *ba << Pack.NoiseID;
 
@@ -190,9 +190,9 @@ void BrushData::Serialize(QDataStream *ba)
     *ba << Pack.scale;
     *ba << Pack.seed;
 
-    *ba << Pack.sol;
-    *ba << Pack.sol2op;
-    *ba << Pack.x2y;
+    *ba << Pack.Solidity;
+    *ba << Pack.SolidityOfOpacity;
+    *ba << Pack.ProportionsX2Y;
     *ba << Pack.preserveop;
     *ba << Pack.pwr;
 }
@@ -205,14 +205,14 @@ void BrushData::DeSerialize(QByteArray *src)
 void BrushData::DeSerialize(QDataStream *ba)
 {
     // QDataStream ba(src,QIODevice::ReadWrite);
-    *ba >> Pack.Prad_in.IntVal;
-    *ba >> Pack.Prad_in.FVal;
-    *ba >> Pack.Prad_out.IntVal;
-    *ba >> Pack.Prad_out.FVal;
-    *ba >> Pack.bmidx;
+    *ba >> Pack.RadiusInner.IntVal;
+    *ba >> Pack.RadiusInner.FVal;
+    *ba >> Pack.RadiusOuter.IntVal;
+    *ba >> Pack.RadiusOuter.FVal;
+    *ba >> Pack.BlendMode;
     *ba >> Pack.col;
-    *ba >> Pack.cop;
-    *ba >> Pack.crv;
+    *ba >> Pack.CloneOpacity;
+    *ba >> Pack.FadeCurveExp;
     *ba >> Pack.MaskID;
     *ba >> Pack.NoiseID;
 
@@ -222,22 +222,22 @@ void BrushData::DeSerialize(QDataStream *ba)
     *ba >> Pack.resangle;
     *ba >> Pack.scale;
     *ba >> Pack.seed;
-    *ba >> Pack.sol;
-    *ba >> Pack.sol2op;
-    *ba >> Pack.x2y;
+    *ba >> Pack.Solidity;
+    *ba >> Pack.SolidityOfOpacity;
+    *ba >> Pack.ProportionsX2Y;
     *ba >> Pack.preserveop;
     *ba >> Pack.pwr;
     SelfUnpack();
 }
 void BrushData::SelfPack()
 {
-    Pack.Prad_in.SetVal(Realb.rad_in);
-    Pack.Prad_out.SetVal(Realb.rad_out);
-    Pack.bmidx = Realb.bmidx;
+    Pack.RadiusInner.SetVal(Realb.rad_in);
+    Pack.RadiusOuter.SetVal(Realb.rad_out);
+    Pack.BlendMode = Realb.bmidx;
     // notice packed opacity is automatically stored in color and is packed in BControls
     Pack.col = Realb.col;
-    Pack.cop = Realb.cop * 255.0;
-    Pack.crv = Realb.crv * 255.0;
+    Pack.CloneOpacity = Realb.cop * 255.0;
+    Pack.FadeCurveExp = Realb.crv * 255.0;
     Pack.MaskID = Realb.MaskID;
     Pack.NoiseID = Realb.NoiseID;
     Pack.noisex = Realb.noisex;
@@ -248,22 +248,22 @@ void BrushData::SelfPack()
     Pack.resangle = (Realb.resangle * 65535.0) / 360.0;
     Pack.scale = (Realb.scale * 51);
     Pack.seed = Realb.seed;
-    Pack.sol = Realb.sol * 255.0;
-    Pack.sol2op = Realb.sol2op * 255.0;
-    Pack.x2y = Realb.x2y * 255.0;
+    Pack.Solidity = Realb.sol * 255.0;
+    Pack.SolidityOfOpacity = Realb.sol2op * 255.0;
+    Pack.ProportionsX2Y = Realb.x2y * 255.0;
     Pack.preserveop = Realb.preserveop;
     Pack.pwr = (Realb.pwr + 1) * 127;
 }
 
 void BrushData::SelfUnpack()
 {
-    Realb.rad_in = Pack.Prad_in.GetVal();
-    Realb.rad_out = Pack.Prad_out.GetVal();
-    Realb.bmidx = Pack.bmidx;
+    Realb.rad_in = Pack.RadiusInner.GetVal();
+    Realb.rad_out = Pack.RadiusOuter.GetVal();
+    Realb.bmidx = Pack.BlendMode;
     Realb.col = Pack.col;
     Realb.opacity = qAlpha(Pack.col) / 255.0;
-    Realb.cop = Pack.cop / 255.0;
-    Realb.crv = Pack.crv / 255.0;
+    Realb.cop = Pack.CloneOpacity / 255.0;
+    Realb.crv = Pack.FadeCurveExp / 255.0;
     Realb.MaskID = Pack.MaskID;
     Realb.NoiseID = Pack.NoiseID;
     Realb.noisex = Pack.noisex;
@@ -274,9 +274,9 @@ void BrushData::SelfUnpack()
     Realb.resangle = (Pack.resangle * 360.0) / 65535.0;
     Realb.scale = ((Pack.scale * 5.0) / 255.0);
     Realb.seed = Pack.seed;
-    Realb.sol = Pack.sol / 255.0;
-    Realb.sol2op = Pack.sol2op / 255.0;
-    Realb.x2y = Pack.x2y / 255.0;
+    Realb.sol = Pack.Solidity / 255.0;
+    Realb.sol2op = Pack.SolidityOfOpacity / 255.0;
+    Realb.x2y = Pack.ProportionsX2Y / 255.0;
     Realb.preserveop = Pack.preserveop;
     Realb.pwr = (Pack.pwr / 127.0) - 1.0;
 }
@@ -707,9 +707,9 @@ qreal RNDf(qreal range)
     quint32 Sseed = QTime::currentTime().minute() * 10000 + QTime::currentTime().second() * 100 + QTime::currentTime().msec() + Rnd_Counter;
     return RawRnd(Sseed / 3, 0) * range;
 }
-d_RealBrush BlendBrushes(d_RealBrush Bfrom, d_RealBrush Bto, float k)
+ClientBrush BlendBrushes(ClientBrush Bfrom, ClientBrush Bto, float k)
 {
-    d_RealBrush bbr;
+    ClientBrush bbr;
     //(f+  (t-f)    *k)
 
     bbr.rad_in = Blend2(Bfrom.rad_in, Bto.rad_in, k);

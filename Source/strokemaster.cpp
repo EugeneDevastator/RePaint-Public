@@ -18,7 +18,7 @@
 
 #include "strokemaster.h"
 
-StrokeMaster::StrokeMaster(pnl_bcontorls *bcont, pnl_Layers *lyrp, ImageArray *iar, QWidget *parent) : QWidget(parent)
+StrokeMaster::StrokeMaster(BrushEditorPresenter *bcont, LayersPanelPresenter *lyrp, ImageArray *iar, QWidget *parent) : QWidget(parent)
 {
     isLogging = false;
     // ARTM=artm;

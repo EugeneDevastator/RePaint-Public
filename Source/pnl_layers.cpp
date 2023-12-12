@@ -1,9 +1,11 @@
 #include "pnl_layers.h"
 #include "Brushes.h"
 
-pnl_Layers::pnl_Layers(QWidget *parent)
+LayersPanelPresenter::LayersPanelPresenter(QWidget *parent)
 
 {
+    setAccessibleName("LayersPanel");
+    setWindowTitle("Layers");
     Title->setText("Layers");
     qDebug() << ("layer panel init BEGIN");
     locked = 0;
@@ -136,7 +138,7 @@ pnl_Layers::pnl_Layers(QWidget *parent)
     connect(LayerList->itemDelegate(), SIGNAL(closeEditor(QWidget *, QAbstractItemDelegate::EndEditHint)), this, SLOT(ListWidgetEditEnd(QWidget *, QAbstractItemDelegate::EndEditHint)), Qt::DirectConnection);
 }
 
-void pnl_Layers::ListWidgetEditEnd(QWidget *editor, QAbstractItemDelegate::EndEditHint hint)
+void LayersPanelPresenter::ListWidgetEditEnd(QWidget *editor, QAbstractItemDelegate::EndEditHint hint)
 {
     quint16 lyr = GetActiveLayer();
     (LayerProps->operator[](lyr)).layerName = "Fixlayernaming"; // reinterpret_cast<QLineEdit*>(editor)->text();
@@ -144,7 +146,7 @@ void pnl_Layers::ListWidgetEditEnd(QWidget *editor, QAbstractItemDelegate::EndEd
     //    qDebug() << reinterpret_cast<QLineEdit*>(editor)->text() << "at layer:" << GetActiveLayer();
 }
 
-quint16 pnl_Layers::CheckIndex(quint16 idx)
+quint16 LayersPanelPresenter::CheckIndex(quint16 idx)
 {
 
     // if (MdlLayers->rowCount()<(idx+1)) idx=MdlLayers->rowCount()-1;
@@ -153,7 +155,7 @@ quint16 pnl_Layers::CheckIndex(quint16 idx)
     return idx;
 }
 
-int pnl_Layers::GetActiveLayer()
+int LayersPanelPresenter::GetActiveLayer()
 {
 
     quint16 Lyr = 0;
@@ -168,7 +170,7 @@ int pnl_Layers::GetActiveLayer()
     return Lyr;
 }
 
-void pnl_Layers::AddLayerAt(int before)
+void LayersPanelPresenter::AddLayerAt(int before)
 {
 
     QListWidgetItem *itmw = new QListWidgetItem("new layer");
@@ -183,7 +185,7 @@ void pnl_Layers::AddLayerAt(int before)
     ActiveLayer = GetActiveLayer();
 }
 
-void pnl_Layers::DelLayer(int userrow)
+void LayersPanelPresenter::DelLayer(int userrow)
 {
     ActiveLayer = GetActiveLayer();
     if (LayerList->count() > 1)
@@ -194,7 +196,7 @@ void pnl_Layers::DelLayer(int userrow)
     ActiveLayer = GetActiveLayer();
 }
 
-void pnl_Layers::DelActiveLayer()
+void LayersPanelPresenter::DelActiveLayer()
 {
     // DelLayer(ActiveLayer);
     LayerAction lact;
@@ -202,7 +204,7 @@ void pnl_Layers::DelActiveLayer()
     lact.layer = ActiveLayer;
     emit SendLayerAction(lact);
 }
-void pnl_Layers::SetThumb(int userlayer, QImage thumb)
+void LayersPanelPresenter::SetThumb(int userlayer, QImage thumb)
 {
     // Lmovelock+=1;
 
@@ -213,7 +215,7 @@ void pnl_Layers::SetThumb(int userlayer, QImage thumb)
     }
 }
 
-void pnl_Layers::DropLayerCmd()
+void LayersPanelPresenter::DropLayerCmd()
 {
     //    emit SendDropLayer(ActiveLayer);
 
@@ -228,7 +230,7 @@ void pnl_Layers::DropLayerCmd()
     //    DelLayer(ActiveLayer);
 }
 
-void pnl_Layers::SetActiveOp(float op)
+void LayersPanelPresenter::SetActiveOp(float op)
 {
     // LayerProps[ActiveLayer].Opacity=Opacity;
     LayerAction lact;
@@ -238,7 +240,7 @@ void pnl_Layers::SetActiveOp(float op)
     emit SendLayerAction(lact);
     // emit SendLayerOp(ActiveLayer,Opacity);
 }
-void pnl_Layers::SetActiveBm(int bm)
+void LayersPanelPresenter::SetActiveBm(int bm)
 {
     // LayerProps[ActiveLayer].blendmode=bm;
     LayerAction lact;
@@ -250,7 +252,7 @@ void pnl_Layers::SetActiveBm(int bm)
     // emit SendLayerBm(ActiveLayer,bm);
 }
 
-void pnl_Layers::ItemHasChanged(QListWidgetItem *itm)
+void LayersPanelPresenter::ItemHasChanged(QListWidgetItem *itm)
 {
     int layer = LayerList->row(itm);
     // layer=CheckIndex(layer);
@@ -266,7 +268,7 @@ void pnl_Layers::ItemHasChanged(QListWidgetItem *itm)
     }
 }
 
-void pnl_Layers::UpdateLayerInfo(QModelIndex newid, QModelIndex oldid)
+void LayersPanelPresenter::UpdateLayerInfo(QModelIndex newid, QModelIndex oldid)
 {
 
     ActiveLayer = GetActiveLayer(); // MdlLayers->itemFromIndex(newid)->row();
@@ -286,7 +288,7 @@ void pnl_Layers::UpdateLayerInfo(QModelIndex newid, QModelIndex oldid)
    */
 }
 
-void pnl_Layers::UpdateLayerInfo(QListWidgetItem *itm)
+void LayersPanelPresenter::UpdateLayerInfo(QListWidgetItem *itm)
 {
 
     ActiveLayer = GetActiveLayer(); // MdlLayers->itemFromIndex(newid)->row();
@@ -296,31 +298,31 @@ void pnl_Layers::UpdateLayerInfo(QListWidgetItem *itm)
     LbIndex->setText(QString::number(ActiveLayer));
 }
 
-void pnl_Layers::ListItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
+void LayersPanelPresenter::ListItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
 {
     int c = LayerList->row(current); // this is for changing selection;
     int p = LayerList->row(previous);
     qDebug() << c << " previous:" << p;
 }
 
-void pnl_Layers::ItemPicked(QListWidgetItem *itm)
+void LayersPanelPresenter::ItemPicked(QListWidgetItem *itm)
 {
     movinglayer = LayerList->row(itm);
     qDebug() << movinglayer << "dragged item";
 }
 
-void pnl_Layers::ItemMoved(int ilist)
+void LayersPanelPresenter::ItemMoved(int ilist)
 {
     int c = 1;
     int p = ActiveLayer;
     qDebug() << c << " previous:" << p;
 }
-void pnl_Layers::ItemRenamed(QString newName)
+void LayersPanelPresenter::ItemRenamed(QString newName)
 {
     qDebug() << "rename New name:" << newName;
 }
 
-void pnl_Layers::SelChanged()
+void LayersPanelPresenter::SelChanged()
 {
 
     int layerto = GetActiveLayer();
@@ -334,7 +336,7 @@ void pnl_Layers::SelChanged()
     qDebug() << layerto << " - layerto   layerfrom - :" << movinglayer;
 }
 
-void pnl_Layers::AddLayerCmd()
+void LayersPanelPresenter::AddLayerCmd()
 {
 
     //  ActiveLayer=MdlLayers->itemFromIndex(selmodel->selectedIndexes().at(0))->row();
@@ -343,14 +345,14 @@ void pnl_Layers::AddLayerCmd()
     lact.layer = GetActiveLayer();
     emit SendLayerAction(lact);
 }
-void pnl_Layers::DupLayerCmd()
+void LayersPanelPresenter::DupLayerCmd()
 {
     LayerAction lact;
     lact.ActID = laDup;
     lact.layer = GetActiveLayer();
     emit SendLayerAction(lact);
 }
-void pnl_Layers::DelLayerCmd()
+void LayersPanelPresenter::DelLayerCmd()
 {
     // DelLayer(ActiveLayer);
     //     ActiveLayer=MdlLayers->itemFromIndex(selmodel->selectedIndexes().at(0))->row();
@@ -360,7 +362,7 @@ void pnl_Layers::DelLayerCmd()
     qDebug() << (GetActiveLayer());
     emit SendLayerAction(lact);
 }
-void pnl_Layers::ExecLAction(LayerAction lact)
+void LayersPanelPresenter::ExecLAction(LayerAction lact)
 {
 
     if (lact.ActID == laAdd)
@@ -435,7 +437,7 @@ void pnl_Layers::ExecLAction(LayerAction lact)
     emit ActionDone();
 }
 
-void pnl_Layers::SetLock(qint8 lk)
+void LayersPanelPresenter::SetLock(qint8 lk)
 {
     locked += lk;
     if (locked > 0)

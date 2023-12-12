@@ -9,7 +9,7 @@
 #include "Brushes.h"
 #include <QMoveEvent>
 #include "ctl_bparam.h"
-#include "pnl_bcontorls.h"
+#include "BrushEditorPresenter.h"
 #include "c_keylink.h"
 #include "ctl_BMselector.h"
 #include "geomaster.h"
@@ -37,13 +37,13 @@ public:
     explicit ImageArray(QWidget *parent = 0);
     //void resizeImage(QImage *image, const QSize &newSize);
  //   void DrawBrush(QPointF pos,int rad,float Opacity);
-    d_RealBrush *g_Brush;
+    ClientBrush *g_Brush;
     d_Stroke pstroke;
     c_KeyLink *GlobalKB;
     qint8 locked;
     ctl_BMselector BMsel;
     QImage *ImgTransp;
-    //ActionMaster *ACM;
+    //ActionMaster *ActionExecutor;
 
     QList <QImage> ViewCanvas;
     QList <QImage> DropLayers;
@@ -116,7 +116,7 @@ public:
 
     bool EnablePoly;
 
-    pnl_bcontorls *BControls;
+    BrushEditorPresenter *BControls;
     Ctl_BParam *RadCtl;
     Ctl_BParam *RadRelCtl;
     Ctl_BParam *ScaleCtl;

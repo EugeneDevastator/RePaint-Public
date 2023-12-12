@@ -27,11 +27,11 @@ MHPwindow::MHPwindow()
     QFile logfile("d:/mhplog.log");
     logfile.open(QFile::ReadWrite | QFile::Truncate);
 
-    QPixmap pixmap(RESPATH + "/res/splash.png");
+    QPixmap SplashPic(RESPATH + "/res/splash.png");
 
-    QSplashScreen splash(pixmap);
+    QSplashScreen splash(SplashPic);
     splash.show();
-    splash.setPixmap(pixmap);
+    splash.setPixmap(SplashPic);
     // splash.showMessage("Loading REPAINT full...");
     // splash.resize(500,500);
     // splash.move(500,200);
@@ -62,15 +62,15 @@ MHPwindow::MHPwindow()
 
     g_PaintColor = new b_SmartColor();
     g_EraseColor = new b_SmartColor();
-    g_Brush = new d_RealBrush;
+    g_Brush = new ClientBrush;
     g_Brush->sol2op = 1;
     g_Brush->rad_out = 20;
     g_Brush->rad_in = 10;
     g_Brush->resangle = 0.0;
 
     bool singlecore = false;
-    ACM = new ActionMaster(MainImage, singlecore, this);
-    ACM->executing = true;
+    ActionExecutor = new ActionMaster(MainImage, singlecore, this);
+    ActionExecutor->executing = true;
     NET = new NetClient();
     sNET = new NetServer();
 
@@ -89,9 +89,7 @@ MHPwindow::MHPwindow()
     //     AllPanels.append(CHAT);
     CHAT->hide();
 
-    LayersPanel = new pnl_Layers();
-    LayersPanel->setAccessibleName("LayersPanel");
-    LayersPanel->setWindowTitle("Layers");
+    LayersPanel = new LayersPanelPresenter();
     AllPanels.append(LayersPanel);
     LayersPanel->show();
     FileMenu = new pnl_FileMenu;
@@ -100,7 +98,7 @@ MHPwindow::MHPwindow()
     AllPanels.append(FileMenu);
     DlgNew = new dlg_NewCanvas(MainImage);
 
-    BControls = new pnl_bcontorls(g_Brush, this);
+    BControls = new BrushEditorPresenter(g_Brush, this);
     BControls->setAccessibleName("BrushControls");
     BControls->setWindowTitle("Brush DNA");
     AllPanels.append(BControls);
@@ -249,11 +247,11 @@ MHPwindow::MHPwindow()
 
     connect(NET, SIGNAL(LockCanvas(qint8)), this, SLOT(LockCanvas(qint8)));
     if (!Dedicated)
-        connect(NET, SIGNAL(GetImage(QByteArray)), ACM, SLOT(OpenImgBa(QByteArray)));
+        connect(NET, SIGNAL(GetImage(QByteArray)), ActionExecutor, SLOT(OpenImgBa(QByteArray)));
     connect(NET, SIGNAL(GetImage(QByteArray)), this, SLOT(ConfirmImage(QByteArray)));
     connect(NET, SIGNAL(ReqImage(QString)), this, SLOT(GrabImg(QString)));
     if (!Dedicated)
-        connect(NET, SIGNAL(SendLAction(LayerAction)), ACM, SLOT(ExecLayerAction(LayerAction)));
+        connect(NET, SIGNAL(SendLAction(LayerAction)), ActionExecutor, SLOT(ExecLayerAction(LayerAction)));
 
     qDebug() << ("MHPW connects part-4 done");
     connect(NetControls, SIGNAL(sendlock(qint8)), LayersPanel, SLOT(SetLock(qint8)));
@@ -278,19 +276,19 @@ MHPwindow::MHPwindow()
     //    connect(MainImage,SIGNAL(MouseOut()),this,SLOT(RelKB()));
 
     connect(MainImage, SIGNAL(SendThumb(int, QImage)), LayersPanel, SLOT(SetThumb(int, QImage)));
-    connect(ACM, SIGNAL(SendLAction(LayerAction)), LayersPanel, SLOT(ExecLAction(LayerAction)));
+    connect(ActionExecutor, SIGNAL(SendLAction(LayerAction)), LayersPanel, SLOT(ExecLAction(LayerAction)));
     connect(MainImage, SIGNAL(SendPoly(QPolygonF)), this, SLOT(GetPoly(QPolygonF)));
 
     // please remove this later
-    connect(STM, SIGNAL(SendReadySect(StrokeSection)), ACM, SLOT(ExecSection(StrokeSection)));
-    connect(ACM, SIGNAL(SendSection(StrokeSection)), NET, SLOT(GetSection(StrokeSection)));
+    connect(STM, SIGNAL(SendReadySect(StrokeSection)), ActionExecutor, SLOT(ExecSection(StrokeSection)));
+    connect(ActionExecutor, SIGNAL(SendSection(StrokeSection)), NET, SLOT(GetSection(StrokeSection)));
     if (!Dedicated)
-        connect(NET, SIGNAL(SendSection(StrokeSection)), ACM, SLOT(ExecNetSection(StrokeSection)));
+        connect(NET, SIGNAL(SendSection(StrokeSection)), ActionExecutor, SLOT(ExecNetSection(StrokeSection)));
 
     connect(LayersPanel, SIGNAL(SendActiveLayer(int)), MainImage, SLOT(SetActiveLayer(int)));
     connect(LayersPanel, SIGNAL(SendLayerVis(int, bool)), MainImage, SLOT(SetLvis(int, bool)));
     connect(LayersPanel, SIGNAL(SendLayerAction(LayerAction)), this, SLOT(ExecLayerAction(LayerAction)));
-    connect(LayersPanel, SIGNAL(ActionDone()), ACM, SLOT(ConfirmLAction()));
+    connect(LayersPanel, SIGNAL(ActionDone()), ActionExecutor, SLOT(ConfirmLAction()));
     connect(LayersPanel, SIGNAL(ActionDone()), MainImage, SLOT(GenAllThumbs()));
     connect(LayersPanel, SIGNAL(ActionDone()), QuickPanel, SLOT(UpdateBG()));
 
@@ -355,7 +353,7 @@ MHPwindow::MHPwindow()
     lact.ActID = laNewCanvas;
     lact.layer = 3;
     lact.rect.setSize(QSize(1920, 1200));
-    ACM->ExecLayerAction(lact);
+    ActionExecutor->ExecLayerAction(lact);
     //       MainImage->NewImg(QSize(1920,1200),1);
 
     //        QImage img(RESPATH+"/res/eyeris.jpg");
@@ -416,7 +414,7 @@ MHPwindow::MHPwindow()
     //   CHAT->Chat->append("Threadcount"+QString::number(ARTM->corecount));
     //  if (ARTM->singlecore) CHAT->Chat->append("running as SINGLECORE");
     //  if (!ARTM->singlecore) CHAT->Chat->append("running as threaded");
-    CHAT->Chat->append("arththreadcount " + QString::number(ACM->atcount));
+    CHAT->Chat->append("arththreadcount " + QString::number(ActionExecutor->atcount));
     CHAT->Chat->append(QString::number(RawRnd(10, 0)) + " ");
     CHAT->Chat->append(QString::number(RawRnd(20, 0)) + " ");
     CHAT->Chat->append(QString::number(RawRnd(30, 0)) + " ");
@@ -445,8 +443,8 @@ MHPwindow::MHPwindow()
     GV->setParent(this);
     GV->setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint);
     // GV->show();
-    // ACM->NewLog();
-    // ACM->OpenLog("/Users/Devastator/QTProjects/MHP/debug/pics/log5.ELI");
+    // ActionExecutor->NewLog();
+    // ActionExecutor->OpenLog("/Users/Devastator/QTProjects/MHP/debug/pics/log5.ELI");
     CHAT->GetIntchatMsg("HUIHUI=" + QString::number(1 % 3));
 
     /*
@@ -590,7 +588,7 @@ Strk.packpos2.SetByQPointF(Strk.pos2);
 Strk.pos1=Strk.packpos1.ToPointF();
 Strk.pos2=Strk.packpos2.ToPointF();
     ActionData nact=BControls->ParseBrush(Strk,stpars);
-    if (stpars.Pars[csERASER]==1) nact.Brush.bmidx=1;
+    if (stpars.Pars[csERASER]==1) nact.Brush.BlendMode=1;
     nact.layer=LayersPanel->GetActiveLayer();
 
 //    LOGM->AddAct(nact);
@@ -682,7 +680,7 @@ void MHPwindow::ExecLayerAction(LayerAction lact)
     if (NET->NetMode == emNone)
     {
         if (!Dedicated)
-            ACM->ExecLayerAction(lact);
+            ActionExecutor->ExecLayerAction(lact);
         // net send layer action
     }
     else
@@ -978,7 +976,7 @@ void MHPwindow::OpenImage()
             if (EXT.compare("ril", Qt::CaseInsensitive) == 0)
             {
                 fileName.chop(4);
-                // ACM->OpenLog((fileName));
+                // ActionExecutor->OpenLog((fileName));
             }
             else
             {
@@ -989,7 +987,7 @@ void MHPwindow::OpenImage()
                 FileMenu->BtnReload->setEnabled(true);
                 MainImage->RepaintWidgetRect(MainImage->rect());
                 MainImage->update();
-                ACM->OpenImg(fileName);
+                ActionExecutor->OpenImg(fileName);
             }
         }
     }
@@ -1000,7 +998,7 @@ void MHPwindow::ReOpenImage()
     if (!WorkFilePath.isEmpty())
         /*
          MainImage->ViewCanvas[0].load(WorkFilePath);*/
-        ACM->OpenImg(WorkFilePath);
+        ActionExecutor->OpenImg(WorkFilePath);
     MainImage->RepaintWidgetRect(MainImage->rect());
     MainImage->update();
 }
@@ -1058,7 +1056,7 @@ void MHPwindow::SaveImgAs()
         FileMenu->BtnSave->setEnabled(true);
         FileMenu->BtnReload->setEnabled(true);
         MainImage->SaveImg(fileName);
-        // ACM->SaveLog(fileName);
+        // ActionExecutor->SaveLog(fileName);
     }
 }
 void MHPwindow::NewImage(QSize sz)
@@ -1071,7 +1069,7 @@ void MHPwindow::NewImage(QSize sz)
     lact.ActID = laNewCanvas;
     lact.rect.setSize(sz);
     lact.layer = 1;
-    ACM->ExecLayerAction(lact);
+    ActionExecutor->ExecLayerAction(lact);
 }
 
 void MHPwindow::PasteImage()

@@ -20,15 +20,15 @@
 #include "ArtMaster.h"
 
 
-class pnl_bcontorls : public bctl_WidgetHolder
+class BrushEditorPresenter : public bctl_WidgetHolder
 {
     Q_OBJECT
 public:
   //  ArtMaster *ARTM;
     ctl_friendlist *Flist;
 
-    explicit pnl_bcontorls(d_RealBrush *GG_brush , QWidget *parent= 0);
-    d_RealBrush *g_Brush;
+    explicit BrushEditorPresenter(ClientBrush *GG_brush , QWidget *parent= 0);
+    ClientBrush *g_Brush;
     b_SmartColor *g_PaintColor;
     b_SmartColor *g_EraseColor;
     QList <QString> LCMNames;

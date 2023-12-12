@@ -101,7 +101,7 @@ ArtMaster::ArtMaster(QObject *parent)
 
     //    br512 = QImage(QSize(511,511),QImage::Format_ARGB32);
     //   br512e = QImage(QSize(512,512),QImage::Format_ARGB32);
-    qDebug() << ("ARTM:crv init");
+    qDebug() << ("ARTM:FadeCurveExp init");
 
     // float rad;
     // int iv;
@@ -258,8 +258,8 @@ void ArtMaster::GenSolidity(QImage *img, float sol, float sol2op)
 {
     int sal;
     QRgb *px;
-    // sol=sol/255.0;
-    // sol2op=sol2op/255.0;
+    // Solidity=Solidity/255.0;
+    // SolidityOfOpacity=SolidityOfOpacity/255.0;
     int wd = img->width();
     for (int i = 0; i < wd; i++)
     {
@@ -284,7 +284,7 @@ void ArtMaster::GenSolidityP(QImage *img, float sol, float sol2op, qint16 noisex
 
     qint16 offx = noisex;
     qint16 offy = noisey;
-    // float fsol=sol;
+    // float fsol=Solidity;
     float fsol2op = sol2op;
     sol = sol * 255;
     sol2op = sol2op * 255;
@@ -589,7 +589,7 @@ void ArtMaster::DrawSmudge(QImage *img, d_Stroke STRK, BrushData BRSH)
         Cpainter.drawImage(0,0,Bimg2);
 
         Cpainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
-         Cpainter.setOpacity(BRSH.cop);
+         Cpainter.setOpacity(BRSH.CloneOpacity);
          Cpainter.drawImage(QPoint(0,0),*img,Trect);
     */
 
@@ -691,7 +691,7 @@ void ArtMaster::DrawBrush(QImage *img, d_Stroke STRK, BrushData BRSH)
 
     // resaturating with brush color, EXCLUDING transparent pixels!;
     // Cpainter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
-    // Cpainter.setOpacity(1-BRSH.cop);
+    // Cpainter.setOpacity(1-BRSH.CloneOpacity);
     // Cpainter.fillRect(Cimg.rect(),col1);
 
     //    Cpainter.setCompositionMode(QPainter::CompositionMode_DestinationIn); //applying pregenerated mask
@@ -833,11 +833,11 @@ void ArtMaster::LvlBrush(QImage *img, d_Stroke STRK, BrushData BRSH)
     Bpainter.setBrush(QBrush(BGrad));
     Bpainter.drawEllipse(0,0,wd,wd);
 
-    float fop=(BRSH.crv/255.0)*2-1.0;
+    float fop=(BRSH.FadeCurveExp/255.0)*2-1.0;
     GenClamp(&Bimg,1-(BRSH.rad_in/BRSH.rad_out),0);
     if (fop<0) GenFocalInv(&Bimg,abs(fop));
         else GenFocal(&Bimg,fop);
-    GenSolidity(&Bimg,BRSH.sol,1-BRSH.sol2op);
+    GenSolidity(&Bimg,BRSH.Solidity,1-BRSH.SolidityOfOpacity);
 */
     //---------------------------------
     // now just rescaling noised image
@@ -867,8 +867,8 @@ void ArtMaster::LvlBrush(QImage *img, d_Stroke STRK, BrushData BRSH)
         cpx = (QRgb *)Cimg.constScanLine(i);
         for (int j = 0; j < twd * 2; j++)
         {
-            // sal=qAlpha(px[j])*(((qrand()/32768.0)<sol) ? 1 : 0); //solidity filter
-            // sal=(((qrand()/128)<sal) ? 255*sol2op+sal*(1-sol2op) : sal*(1-sol2op));
+            // sal=qAlpha(px[j])*(((qrand()/32768.0)<Solidity) ? 1 : 0); //solidity filter
+            // sal=(((qrand()/128)<sal) ? 255*SolidityOfOpacity+sal*(1-SolidityOfOpacity) : sal*(1-SolidityOfOpacity));
             // ((char *)&cpx[j])[3]=qAlpha(px[j]);
             cpx[j] = qRgba(qRed(cpx[j]), qGreen(cpx[j]), qBlue(cpx[j]), qAlpha(px[j]));
         }
@@ -1059,11 +1059,11 @@ void ArtMaster::DrawDisp(QImage *img, d_Stroke STRK, BrushData BRSH)
    Bpainter.setBrush(QBrush(BGrad));
    Bpainter.drawEllipse(0,0,wd,wd);
 Bpainter.end();
-   float fop=(BRSH.crv/255.0)*2-1.0;
+   float fop=(BRSH.FadeCurveExp/255.0)*2-1.0;
    GenClamp(&Bimg,1-(BRSH.rad_in/BRSH.rad_out),0);
    if (fop<0) GenFocalInv(&Bimg,abs(fop));
        else GenFocal(&Bimg,fop);
-   GenSolidity(&Bimg,BRSH.sol,1-BRSH.sol2op);
+   GenSolidity(&Bimg,BRSH.Solidity,1-BRSH.SolidityOfOpacity);
 */
     //---------------------------------
     // now just rescaling noised image
@@ -1100,7 +1100,7 @@ Bpainter.end();
     dpainter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
     dpainter.drawImage(0, 0, Bimg2);
     // dpainter.setCompositionMode(QPainter::CompositionMode_DestinationAtop);
-    // dpainter.setOpacity(BRSH.cop);
+    // dpainter.setOpacity(BRSH.CloneOpacity);
     // dpainter.drawImage(0,0,Bimg2);
 
     QPainter painter(img);

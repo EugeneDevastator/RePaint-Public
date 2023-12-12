@@ -12,7 +12,7 @@ class ctl_FastBrush : public QWidget
 public:
     explicit ctl_FastBrush(QWidget *parent = 0);
     QImage *ViewCanvas;
-    d_RealBrush *g_Brush;
+    ClientBrush *g_Brush;
       int midp;
       float ang;
       float *ZoomK;

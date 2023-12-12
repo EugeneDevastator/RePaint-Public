@@ -22,7 +22,7 @@ public:
     float offang;
 
     QImage BrushImg;
-    d_RealBrush *g_Brush;
+    ClientBrush *g_Brush;
    void Redraw();
 public slots:
 //    void GetBrush(BrushData br);

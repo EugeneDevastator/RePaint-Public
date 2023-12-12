@@ -93,14 +93,14 @@ void BrushSizer::Redraw()
         BrushData ViewBrush;
         ViewBrush.rad_in=g_Brush->rad_in;
         ViewBrush.rad_out=g_Brush->rad_out;
-        ViewBrush.sol2op=g_Brush->sol2op;
-        ViewBrush.sol=1;
+        ViewBrush.SolidityOfOpacity=g_Brush->SolidityOfOpacity;
+        ViewBrush.Solidity=1;
         ViewBrush.compmode=QPainter::CompositionMode_SourceOver;
-        ViewBrush.crv=g_Brush->crv;
+        ViewBrush.FadeCurveExp=g_Brush->FadeCurveExp;
         ViewBrush.col=Qt::black;
         ViewBrush.rot=rad2deg(offang);
         ViewBrush.Opacity=1;
-        ViewBrush.x2y=0.5;
+        ViewBrush.ProportionsX2Y=0.5;
         ViewBrush.scale=1;
         ARTM->DrawBrush(BrushImg,ts,ViewBrush);
       */

@@ -11,7 +11,7 @@
 #include <QtWidgets/QListView>
 #include <QtWidgets/QLineEdit>
 #include "Brushes.h"
-#include "pnl_bcontorls.h"
+#include "BrushEditorPresenter.h"
 #include "bctl_widgetholder.h"
 #include <signal.h>
 #include <QFile>
@@ -21,9 +21,9 @@ class ctl_UserTools : public bctl_WidgetHolder
 {
     Q_OBJECT
 public:
-    explicit ctl_UserTools(pnl_bcontorls * bc,QWidget *parent = 0);
+    explicit ctl_UserTools(BrushEditorPresenter * bc, QWidget *parent = 0);
 
-    pnl_bcontorls *BC;
+    BrushEditorPresenter *BC;
     QPushButton BtnJoin;
     QPushButton BtnCreate;
     QGridLayout *LT;

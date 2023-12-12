@@ -4,7 +4,7 @@
 #include <QtWidgets/QWidget>
 #include "Brushes.h"
 #include "ArtMaster.h"
-#include "pnl_bcontorls.h"
+#include "BrushEditorPresenter.h"
 #include "pnl_layers.h"
 #include "imagearray.h"
 #include "ArtThread.h"
@@ -18,7 +18,7 @@ class StrokeMaster : public QWidget
 {
     Q_OBJECT
 public:
-    explicit StrokeMaster(pnl_bcontorls *bcont, pnl_Layers *lyrp, ImageArray *iar, QWidget *parent=0);
+    explicit StrokeMaster(BrushEditorPresenter *bcont, LayersPanelPresenter *lyrp, ImageArray *iar, QWidget *parent=0);
     
 
     QSize baseSize;
@@ -29,8 +29,8 @@ public:
     bool executing;
 
     ArtThread *ARTM;
-    pnl_bcontorls *BC;
-    pnl_Layers *LP;
+    BrushEditorPresenter *BC;
+    LayersPanelPresenter *LP;
     ImageArray *MainImage;
 
     QPointF lastpos;

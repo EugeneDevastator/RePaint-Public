@@ -16,7 +16,7 @@
 #include "bctl_widgetholder.h"
 
 
-class pnl_Layers : public bctl_WidgetHolder
+class LayersPanelPresenter : public bctl_WidgetHolder
 
 {
       Q_OBJECT
@@ -47,7 +47,7 @@ public:
     //QList <QIcon> sIcons;
     ///QString *LocalName;
 
-    explicit pnl_Layers(QWidget *parent=0);
+    explicit LayersPanelPresenter(QWidget *parent=0);
 
 public slots:
 //    void AddLayer(QImage thumb);
