@@ -17,8 +17,8 @@ ImageArray::ImageArray(QWidget *parent) :
     ViewCanvas.append(BaseImg);
     resizeImage(&ViewCanvas[0], QSize(2400, 2400));
 
-    sLayerProps lp;
-    lp.op=1;
+    LayerData lp;
+    lp.Opacity=1;
     LayerProps.append(lp);
 */
 
@@ -202,8 +202,8 @@ painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
 painter.drawRect(iRect); // clear active rect;
 
     for (int i=0;i<ViewCanvas.count();i++){
-        if (LayerProps[i].visible) {
-            painter.setOpacity(LayerProps[i].op);
+        if (LayerProps[i].IsVisible) {
+            painter.setOpacity(LayerProps[i].Opacity);
             painter.setCompositionMode(BMsel.GetCMfromIndex(LayerProps[i].blendmode));
             painter.drawImage(iRect, ViewCanvas[i], iRect);
 
@@ -291,8 +291,8 @@ Offy=qMin((int)((ViewCanvas[0].height()+hh/ZoomK))-51,Offy);
        // if (!wasmerged) {
         for (int i=ViewCanvas.count()-1;i>=0;i--){
 
-            if (LayerProps[i].visible) {
-                painter.setOpacity(LayerProps[i].op);
+            if (LayerProps[i].IsVisible) {
+                painter.setOpacity(LayerProps[i].Opacity);
                 painter.setCompositionMode(BMsel.GetCMfromIndex(LayerProps[i].blendmode));
                 painter.drawImage(RepaintRect, ViewCanvas[i], RepaintiRect);
             }
@@ -370,8 +370,8 @@ Offy=qMin((int)((ViewCanvas[0].height()+hh/ZoomK))-51,Offy);
 
         for (int i=ViewCanvas.count()-1;i>=0;i--){
 
-            if (LayerProps[i].visible) {
-                Lpnt.setOpacity(LayerProps[i].op);
+            if (LayerProps[i].IsVisible) {
+                Lpnt.setOpacity(LayerProps[i].Opacity);
                 Lpnt.setCompositionMode(BMsel.GetCMfromIndex(LayerProps[i].blendmode));
                 Lpnt.drawImage(QRect(0,0,Loupesize,Loupesize), ViewCanvas[i], QRect(PPos4.x()-cellcount+2,PPos4.y()-cellcount+2,cellcount,cellcount));
                 //Lpnt.setCompositionMode(QPainter::CompositionMode_SourceOver);
@@ -427,8 +427,8 @@ void ImageArray::SpacingFilter(d_Stroke *strk){
 
     //input parameters grabbing::::::::::
     {
-        currspars.Pars[csVel]=RngConv(stdist,0,maxvel,0,1);
-       // stpars.Pars[csVel]=lastspars.Pars[csVel]*0.5;
+        currspars.Pars[Velocity]=RngConv(stdist, 0, maxvel, 0, 1);
+       // stpars.Pars[Velocity]=lastspars.Pars[Velocity]*0.5;
 
     float dir=AtanXY((strk->pos1.x()-strk->pos2.x()),strk->pos1.y()-strk->pos2.y());
 //    float dir2=AtanXY((strk.pos2.x()-strk.pos3.x()),strk.pos2.y()-strk.pos3.y());
@@ -438,8 +438,8 @@ void ImageArray::SpacingFilter(d_Stroke *strk){
     Hvv2.normalize();
     float dcos= Hvv.dotProduct(Hvv,Hvv2);
     currspars.Pars[csCrv]=RngConv(dcos,0.8,1,0,1);
-    currspars.Pars[csDir]=RngConv(dir,-M_PI,M_PI,0,1);
-    float relang=fabs(currspars.Pars[csDir]-currspars.Pars[csRot]);
+    currspars.Pars[Direction]=RngConv(dir, -M_PI, M_PI, 0, 1);
+    float relang=fabs(currspars.Pars[Direction] - currspars.Pars[csRot]);
     if (relang>0.5) relang = 1-relang;
     relang=relang*2;                                                                            //  //  //  //  //  //  spacing   f i l t e r
     relang=1-fabs(relang-0.5)*2;
@@ -447,7 +447,7 @@ void ImageArray::SpacingFilter(d_Stroke *strk){
     currspars.Pars[csHVdir]=fabs(Hvv.x()/Hvv.length());
     currspars.Pars[csLen]=RngConv(leftlen,0,maxlen,0,1);
     currspars.Pars[csLenpx]=RngConv(leftrlen,0,maxrlen,0,1);
-    currspars.Pars[csAcc]=1-fabs(currspars.Pars[csVel]-lastspars.Pars[csVel]);
+    currspars.Pars[csAcc]=1-fabs(currspars.Pars[Velocity] - lastspars.Pars[Velocity]);
     currspars.Pars[csAcc]=RngConv(currspars.Pars[csAcc],0.7,1,0,1);
    // stpars.Pars[csAcc]=(stpars.Pars[csAcc]+lastspars.Pars[csAcc])*0.5;
 
@@ -553,7 +553,7 @@ d_Stroke strk;
 for (int i=0;i<csSTOP;i++) currspars.Pars[i]=1;
 
   //  currspars.Pars[csERASER] = 0;
-    currspars.Pars[csPressure]=event->pressure();
+    currspars.Pars[PenPressure]=event->pressure();
     float cxtilt=(event->xTilt()+pxtilt)/2;
     float cytilt=(event->yTilt()+pytilt)/2;
     currspars.Pars[csXtilt]=((float)(cxtilt+60))/120;
@@ -645,7 +645,7 @@ switch (event->type()) {
         strk.pos3=strk.pos1;
         pstroke=strk;
         */
-        if (event->pressure()>0)  ppres=currspars.Pars[csPressure];
+        if (event->pressure()>0)  ppres=currspars.Pars[PenPressure];
         pxtilt=currspars.Pars[csXtilt];
         pytilt=currspars.Pars[csYtilt];
        // ParseStartPosF((apos));
@@ -689,7 +689,7 @@ switch (event->type()) {
             strk.pos3=strk.pos1;
             pstroke=strk;
             */
-            if (event->pressure()>0)  ppres=currspars.Pars[csPressure];
+            if (event->pressure()>0)  ppres=currspars.Pars[PenPressure];
             pxtilt=currspars.Pars[csXtilt];
             pytilt=currspars.Pars[csYtilt];
            // ParseStartPosF((apos));
@@ -974,7 +974,7 @@ uptimer->setInterval(activetime);
 void ImageArray::mouseMoveEvent(QMouseEvent *event)
 {
 /*
-    if ((TMode==0)&(locked==0)) {
+    if ((TMode==0)&(IsLocked==0)) {
 
 
         Drawn=true;
@@ -1095,7 +1095,7 @@ void ImageArray::mouseDoubleClickEvent(QMouseEvent *event){
 
 }
 void ImageArray::mouseReleaseEvent(QMouseEvent *event){
-/*if (locked==0) {
+/*if (IsLocked==0) {
     MergeAll();
     GenAllThumbs();
     uptimer->setInterval(idletime);
@@ -1168,8 +1168,8 @@ void ImageArray::ExportImg(QString fname){
           //  if (!wasmerged) {
             for (int i=ViewCanvas.count()-1;i>=0;i--){
 
-                if (LayerProps[i].visible) {
-                    pnt.setOpacity(LayerProps[i].op);
+                if (LayerProps[i].IsVisible) {
+                    pnt.setOpacity(LayerProps[i].Opacity);
                     pnt.setCompositionMode(BMsel.GetCMfromIndex(LayerProps[i].blendmode));
                     pnt.drawImage(0,0,ViewCanvas[i]);
                     }
@@ -1234,7 +1234,7 @@ void ImageArray::SaveImg(QIODevice *iodev){
         dstream << lsz;
         dstream << buf.data();
         LayerProps[i].Serialize(&dstream);
-    //    QByteArray LPBuf((const char *)&LayerProps[i], sizeof(sLayerProps));
+    //    QByteArray LPBuf((const char *)&LayerProps[i], sizeof(LayerData));
      //   dstream << LPBuf;
 
     }
@@ -1295,10 +1295,10 @@ void ImageArray::resizeEvent(QResizeEvent *event){
 
 void ImageArray::AddLayer()
 {
-    sLayerProps lp;
+    LayerData lp;
 
-    lp.op=1;
-    lp.visible=true;
+    lp.Opacity=1;
+    lp.IsVisible=true;
     lp.blendmode=0;
     LayerProps.append(lp);
 
@@ -1314,10 +1314,10 @@ void ImageArray::AddLayer()
 
 
 void ImageArray::AddLayerAt(int above){
-    sLayerProps lp;
+    LayerData lp;
 
-    lp.op=1;
-    lp.visible=true;
+    lp.Opacity=1;
+    lp.IsVisible=true;
     lp.blendmode=0;
     LayerProps.insert(above,lp);
         qDebug() <<("lp added");
@@ -1336,11 +1336,11 @@ void ImageArray::AddZeroLayer(QSize sz, QColor bgcol){
 
 // clear all layers;
 
-    sLayerProps lp;
+    LayerData lp;
 
-    lp.op=1;
+    lp.Opacity=1;
     lp.blendmode=0;
-    lp.visible=true;
+    lp.IsVisible=true;
     LayerProps.append(lp);
 
     QImage NewImg;
@@ -1397,7 +1397,7 @@ void ImageArray::DropLayer(int num){
     if (num<ViewCanvas.count()-1){
         QPainter painter(&ViewCanvas[num+1]);
         painter.setPen(Qt::NoPen);
-        painter.setOpacity(LayerProps[num].op/LayerProps[num+1].op);
+        painter.setOpacity(LayerProps[num].Opacity / LayerProps[num + 1].Opacity);
         painter.setCompositionMode(BMsel.GetCMfromIndex(LayerProps[num].blendmode));
         painter.drawImage(0,0,ViewCanvas[num]);
         DelLayer(num);
@@ -1450,7 +1450,7 @@ void ImageArray::SetActiveLayer(int num){
 
 
 void ImageArray::SetLOp(int layer, float op){
-    LayerProps[layer].op=op;
+    LayerProps[layer].Opacity=op;
     //please add collapsed repaint here;
     RepaintWidgetRect(this->rect());
     wasmerged=false;
@@ -1462,7 +1462,7 @@ void ImageArray::SetLBm(int layer, int bm){
     wasmerged=false;
 }
 void ImageArray::SetLvis(int layer,bool vis){
-    LayerProps[layer].visible=vis;
+    LayerProps[layer].IsVisible=vis;
     RepaintWidgetRect(this->rect());
 }
 
@@ -1472,7 +1472,7 @@ void ImageArray::ExecLayerAction(LayerAction lact){
         SetLBm(lact.layer,lact.bm);
     }
     else if (lact.ActID==laOp){
-        SetLOp(lact.layer,lact.op);
+        SetLOp(lact.layer,lact.Opacity);
     }
     else if (lact.ActID==laDup){
         DupLayer(lact.layer);
@@ -1504,10 +1504,10 @@ void ImageArray::ExecLayerAction(LayerAction lact){
 
 
 void ImageArray::DupLayer(int layer){
-    sLayerProps lp;
+    LayerData lp;
 
-    lp.op=1;
-    lp.visible=true;
+    lp.Opacity=1;
+    lp.IsVisible=true;
     lp.blendmode=0;
     //LayerProps.append(lp);
     LayerProps.insert(layer,LayerProps.at(layer));
@@ -1522,7 +1522,7 @@ void ImageArray::DupLayer(int layer){
 
 /*
 void ImageArray::DupActiveLayer(){
-    //sLayerProps lp;
+    //LayerData lp;
 
 
     LayerProps.insert(ActiveLayer+1,LayerProps.at(ActiveLayer));
@@ -1563,7 +1563,7 @@ void ImageArray::MergeAll(){
 
     for (int i=0;i<ViewCanvas.count();i++){
         if (LayerProps[i].visible) {
-            painter.setOpacity(LayerProps[i].op);
+            painter.setOpacity(LayerProps[i].Opacity);
             painter.setCompositionMode(BMsel.GetCMfromIndex(LayerProps[i].blendmode));
             painter.drawImage(0,0,ViewCanvas[i]);
 
@@ -1625,7 +1625,7 @@ d_StrokePars ImageArray::InterpolateSpars(d_StrokePars current, d_StrokePars las
     //float dirblend=0.4;
     for (int i=0;i<csSTOP;i++) {
         //if (i!=csERASER)
-        if (i==csDir)  newspars.Pars[i]=current.Pars[i];//(current.Pars[i]*dirblend)+(last.Pars[i]*(1.0-dirblend));
+        if (i == Direction) newspars.Pars[i]=current.Pars[i];//(current.Pars[i]*dirblend)+(last.Pars[i]*(1.0-dirblend));
        else
             newspars.Pars[i]=current.Pars[i]*kblend+last.Pars[i]*(1.0-kblend);
     }
@@ -1673,8 +1673,8 @@ QImage ImageArray::GetCollapsedRect(QRect wRect){
 // if (!wasmerged) {
  for (int i=ViewCanvas.count()-1;i>=0;i--){
 
-     if (LayerProps[i].visible) {
-         painter.setOpacity(LayerProps[i].op);
+     if (LayerProps[i].IsVisible) {
+         painter.setOpacity(LayerProps[i].Opacity);
          painter.setCompositionMode(BMsel.GetCMfromIndex(LayerProps[i].blendmode));
          painter.drawImage(resimg.rect(), ViewCanvas[i], iRect);
      }

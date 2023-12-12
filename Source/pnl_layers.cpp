@@ -7,7 +7,7 @@ pnl_Layers::pnl_Layers(QWidget *parent)
     Title->setText("Layers");
     qDebug() << ("layer panel init BEGIN");
     locked = 0;
-    // LayerProps=new QList <sLayerProps>;
+    // LayerProps=new QList <LayerData>;
     LbIndex = new QLabel("Layer index");
     qDebug() << ("layer panel created objs.");
 
@@ -104,7 +104,7 @@ pnl_Layers::pnl_Layers(QWidget *parent)
     // QStandardItem *itm=new QStandardItem(QIcon(QPixmap::fromImage(thumb)),"New Layer");
     // MdlLayers->insertRow(-1,itm);
     // selmodel->select(MdlLayers->indexFromItem(itm),QItemSelectionModel::ClearAndSelect);
-    // OpSlider->clipmaxF=LayerProps->at(ActiveLayer).op;
+    // OpSlider->clipmaxF=LayerProps->at(ActiveLayer).Opacity;
     // OpSlider->Redraw();
     // BMsel->setBMbyint(LayerProps->at(ActiveLayer).blendmode);
     ActiveLayer = 0;
@@ -230,13 +230,13 @@ void pnl_Layers::DropLayerCmd()
 
 void pnl_Layers::SetActiveOp(float op)
 {
-    // LayerProps[ActiveLayer].op=op;
+    // LayerProps[ActiveLayer].Opacity=Opacity;
     LayerAction lact;
     lact.ActID = laOp;
     lact.layer = GetActiveLayer();
     lact.op = op;
     emit SendLayerAction(lact);
-    // emit SendLayerOp(ActiveLayer,op);
+    // emit SendLayerOp(ActiveLayer,Opacity);
 }
 void pnl_Layers::SetActiveBm(int bm)
 {
@@ -255,7 +255,7 @@ void pnl_Layers::ItemHasChanged(QListWidgetItem *itm)
     int layer = LayerList->row(itm);
     // layer=CheckIndex(layer);
     bool itemvis = itm->checkState();
-    bool innervis = LayerProps->at(layer).visible;
+    bool innervis = LayerProps->at(layer).IsVisible;
     if ((itemvis) != (innervis))
     {
         emit SendLayerVis(layer, itm->checkState());
@@ -270,14 +270,14 @@ void pnl_Layers::UpdateLayerInfo(QModelIndex newid, QModelIndex oldid)
 {
 
     ActiveLayer = GetActiveLayer(); // MdlLayers->itemFromIndex(newid)->row();
-    OpSlider->clipmaxF = LayerProps->at(ActiveLayer).op;
+    OpSlider->clipmaxF = LayerProps->at(ActiveLayer).Opacity;
     OpSlider->Redraw();
     BMsel->setBMbyint(LayerProps->at(ActiveLayer).blendmode);
 
     // emit SendActiveLayer(ActiveLayer);
     /*   if (selmodel->selectedIndexes().count()>0){
            ActiveLayer=MdlLayers->itemFromIndex(newid)->row();
-           OpSlider->clipmaxF=LayerProps->at(ActiveLayer).op;
+           OpSlider->clipmaxF=LayerProps->at(ActiveLayer).Opacity;
            OpSlider->Redraw();
            BMsel->setBMbyint(LayerProps->at(ActiveLayer).blendmode);
            }
@@ -290,7 +290,7 @@ void pnl_Layers::UpdateLayerInfo(QListWidgetItem *itm)
 {
 
     ActiveLayer = GetActiveLayer(); // MdlLayers->itemFromIndex(newid)->row();
-    OpSlider->clipmaxF = LayerProps->at(ActiveLayer).op;
+    OpSlider->clipmaxF = LayerProps->at(ActiveLayer).Opacity;
     OpSlider->Redraw();
     BMsel->setBMbyint(LayerProps->at(ActiveLayer).blendmode);
     LbIndex->setText(QString::number(ActiveLayer));
@@ -381,7 +381,7 @@ void pnl_Layers::ExecLAction(LayerAction lact)
     }
     else if (lact.ActID == laOp)
     {
-        // LayerProps[lact.layer].op=lact.op;
+        // LayerProps[lact.layer].Opacity=lact.Opacity;
     }
     else if (lact.ActID == laBm)
     {

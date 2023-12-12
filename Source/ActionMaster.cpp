@@ -499,7 +499,7 @@ void ActionMaster::OpenImg(QIODevice *iodev)
         MainImage->LayerProps[i].DeSerialize(&dstream);
 
         visact.layer = i;
-        visact.vis = MainImage->LayerProps[i].visible;
+        visact.vis = MainImage->LayerProps[i].IsVisible;
         visact.ActID = laVis;
         ExecLayerAction(visact);
     }

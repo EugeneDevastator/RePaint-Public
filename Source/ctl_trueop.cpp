@@ -4,7 +4,7 @@
 ctl_trueop::ctl_trueop(QWidget *parent) : QWidget(parent)
 {
     col = QColor::fromRgbF(0.5, 1, 0, 1);
-    // op=0.2;
+    // Opacity=0.2;
     //  spc=0.5;
     op = 1;
     spc = 0.3;

@@ -27,18 +27,18 @@ Ctl_BParam::Ctl_BParam(QWidget *parent) : QWidget(parent)
         Names.append("nil");
     }
     /*
-    enum csParams{
-        csNone, csPressure, csVel, csDir, csRot, csTilt, csXtilt, csYtilt, csLen, csLenpx, csAcc, csCrv, csIdir, csHVdir, csHVrot, csSTOP
+    enum ParameterControlKind{
+        csNone, PenPressure, Velocity, Direction, csRot, csTilt, csXtilt, csYtilt, csLen, csLenpx, csAcc, csCrv, csIdir, csHVdir, csHVrot, csSTOP
     };
     */
     IcNames[csNone] = "tct_none";
     Names[csNone] = "MAX";
-    IcNames[csPressure] = "tct_pressure";
-    Names[csPressure] = "Pressure";
-    IcNames[csVel] = "tct_vel";
-    Names[csVel] = "Velocity";
-    IcNames[csDir] = "tct_dir";
-    Names[csDir] = "Travel Direction";
+    IcNames[PenPressure] = "tct_pressure";
+    Names[PenPressure] = "Pressure";
+    IcNames[Velocity] = "tct_vel";
+    Names[Velocity] = "Velocity";
+    IcNames[Direction] = "tct_dir";
+    Names[Direction] = "Travel Direction";
     IcNames[csRot] = "tct_rot";
     Names[csRot] = "Pen z-angle";
     IcNames[csTilt] = "tct_tilt";

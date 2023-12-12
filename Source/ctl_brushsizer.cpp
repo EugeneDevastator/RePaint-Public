@@ -99,7 +99,7 @@ void BrushSizer::Redraw()
         ViewBrush.crv=g_Brush->crv;
         ViewBrush.col=Qt::black;
         ViewBrush.rot=rad2deg(offang);
-        ViewBrush.op=1;
+        ViewBrush.Opacity=1;
         ViewBrush.x2y=0.5;
         ViewBrush.scale=1;
         ARTM->DrawBrush(BrushImg,ts,ViewBrush);

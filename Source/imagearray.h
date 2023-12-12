@@ -36,7 +36,7 @@ class ImageArray : public QWidget
 public:
     explicit ImageArray(QWidget *parent = 0);
     //void resizeImage(QImage *image, const QSize &newSize);
- //   void DrawBrush(QPointF pos,int rad,float op);
+ //   void DrawBrush(QPointF pos,int rad,float Opacity);
     d_RealBrush *g_Brush;
     d_Stroke pstroke;
     c_KeyLink *GlobalKB;
@@ -51,7 +51,7 @@ public:
     QList <QImage> DropUpLayers;
     QList <QImage *> LayerDump;
     QImage MergedCanvas;
-    QList <sLayerProps> LayerProps;
+    QList <LayerData> LayerProps;
 
 
     QPointF ScrollPos;

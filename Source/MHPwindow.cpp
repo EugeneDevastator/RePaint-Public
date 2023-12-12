@@ -620,7 +620,7 @@ Strk.pos2=Strk.packpos2.ToPointF();
 
        NET->GetAction(nact);
 
-    ChatLine->setText(QString::number(stpars.Pars[csPressure]));
+    ChatLine->setText(QString::number(stpars.Pars[PenPressure]));
 
 */
 }
@@ -1095,8 +1095,8 @@ void MHPwindow::PasteImage()
 void MHPwindow::LockCanvas(qint8 lk)
 {
     /*
-     MainImage->locked=MainImage->locked+lk;
-      if (MainImage->locked >0)
+     MainImage->IsLocked=MainImage->IsLocked+lk;
+      if (MainImage->IsLocked >0)
           ARTM->suspended=true;
       else
           ARTM->suspended=false;

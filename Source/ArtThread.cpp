@@ -45,7 +45,7 @@ ArtThread::ArtThread(ImageArray *mimg, QObject *parent) : QThread(parent)
 void ArtThread::run()
 {
     /*
-        if (!locked) {
+        if (!IsLocked) {
             if (!executing){
                 executing=true;
                 if (!suspended) {

@@ -18,11 +18,11 @@
 #include <QByteArray>
 #include <QtWidgets/QApplication>
 #include <QCoreApplication>
-enum csParams{    //Drawing modifiers
+enum ParameterControlKind{    //Drawing modifiers
     csNone,
-    csPressure,
-    csVel,
-    csDir,
+    PenPressure,
+    Velocity,
+    Direction,
     csRot,
     csTilt,
     csRelang,
@@ -37,17 +37,17 @@ enum csParams{    //Drawing modifiers
     csSTOP,
     csERASER,
     // disabled ones go here
-        csLen,
+    csLen,
     csCrv,
     csIdir,
     csHVdir,
     csHVrot,
     csENDPOINT
 };
-enum eTools {
+enum ToolKind {
     eBrush, eSmudge, eDisp,  eCont, eSTOP,eLine, eEOE
 };
-enum bmBlends {  //Blending Modes
+enum BlendingMode {  //Blending Modes
     bmNormal,
     bmPlus,
     bmDodge,
@@ -62,10 +62,11 @@ enum bmBlends {  //Blending Modes
     bmXor,
     bmDiff,
     bmExc,
+    // add fancy sqare root normalizd one
     bmSTOP
 
 };
-enum eLActions{ //Layer Actions
+enum LayerActionKind{ //Layer Actions
     laAdd,
     laDel,
     laDup,
@@ -85,7 +86,7 @@ enum eLActions{ //Layer Actions
     laSTOP
 };
 
-enum eCanvasActions{
+enum CanvasActionKind{
  caNew,
  caResize,
  caCrop,
@@ -102,7 +103,7 @@ enum eCanvasActions{
       Rotate //inside application cycle
       Scale-disprop  // --non linear scaling applied.
 */
-enum ePipelines{
+enum BrushPipelineKind{
     // clamp focal noise Scale rotate
     plCFNSR, plRS, plSTOP
 
@@ -162,15 +163,15 @@ public:
 };
 
 
-struct sLayerProps{
+struct LayerData{
   //  quint16 layerID;
-    qreal op;
-    bool visible;
+    qreal Opacity;
+    bool IsVisible;
     int blendmode;
     quint8 presop;
     bool droppedup;
     bool droppeddown;
-    bool locked;
+    bool IsLocked;
     quint8 realidx;
     QString layerName;
 
@@ -254,7 +255,7 @@ struct d_ToolPreset {
 
 };
 
-struct d_BPSettings {
+struct BrushParameterSettings {
     float clipmin;
     float clipmax;
     float jitter;

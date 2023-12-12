@@ -31,7 +31,7 @@ public:
     QVBoxLayout *LT;
     bctl_DblSlider *OpSlider;
     QComboBox *CbBmode;
-    QList <sLayerProps> *LayerProps;
+    QList <LayerData> *LayerProps;
 
     QListWidget *LayerList;
 

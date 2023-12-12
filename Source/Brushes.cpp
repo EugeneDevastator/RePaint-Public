@@ -63,7 +63,7 @@ QByteArray SZstring(QString st)
     return *ba;
 }
 
-QByteArray sLayerProps::Serialize()
+QByteArray LayerData::Serialize()
 {
 
     QByteArray qba;
@@ -73,33 +73,33 @@ QByteArray sLayerProps::Serialize()
     return qba;
 }
 
-void sLayerProps::Serialize(QDataStream *ba)
+void LayerData::Serialize(QDataStream *ba)
 {
 
-    *ba << op;
-    *ba << visible;
+    *ba << Opacity;
+    *ba << IsVisible;
     *ba << blendmode;
     *ba << presop;
-    *ba << locked;
+    *ba << IsLocked;
     *ba << layerName;
 }
 
-void sLayerProps::DeSerialize(QByteArray src)
+void LayerData::DeSerialize(QByteArray src)
 {
     QDataStream ba(&src, QIODevice::ReadWrite);
     // putting in a stroke
     DeSerialize(&ba);
 }
 
-void sLayerProps::DeSerialize(QDataStream *ba)
+void LayerData::DeSerialize(QDataStream *ba)
 {
     // QDataStream ba(src,QIODevice::ReadWrite);
     //  putting in a stroke
-    *ba >> op;
-    *ba >> visible;
+    *ba >> Opacity;
+    *ba >> IsVisible;
     *ba >> blendmode;
     *ba >> presop;
-    *ba >> locked;
+    *ba >> IsLocked;
     *ba >> layerName;
 }
 
