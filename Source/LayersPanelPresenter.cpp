@@ -1,4 +1,4 @@
-#include "pnl_layers.h"
+#include "LayersPanelPresenter.h"
 #include "Brushes.h"
 
 LayersPanelPresenter::LayersPanelPresenter(QWidget *parent)

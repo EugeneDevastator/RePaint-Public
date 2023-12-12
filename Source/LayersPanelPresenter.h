@@ -17,7 +17,6 @@
 
 
 class LayersPanelPresenter : public bctl_WidgetHolder
-
 {
       Q_OBJECT
 public:

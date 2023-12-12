@@ -64,7 +64,7 @@ HEADERS += \
     ctl_fastbrush.h \
     ctl_trueop.h \
     ctl_BMselector.h \
-    pnl_layers.h \
+    LayersPanelPresenter.h \
     dlg_usersearch.h \
     pnl_quickcontrol.h \
     geomaster.h \
@@ -109,7 +109,7 @@ SOURCES += \
     ctl_fastbrush.cpp \
     ctl_trueop.cpp \
     ctl_BMselector.cpp \
-    pnl_layers.cpp \
+    LayersPanelPresenter.cpp \
     dlg_usersearch.cpp \
     pnl_quickcontrol.cpp \
     GEOmaster.cpp \

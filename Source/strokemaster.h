@@ -5,7 +5,7 @@
 #include "Brushes.h"
 #include "ArtMaster.h"
 #include "BrushEditorPresenter.h"
-#include "pnl_layers.h"
+#include "LayersPanelPresenter.h"
 #include "imagearray.h"
 #include "ArtThread.h"
 

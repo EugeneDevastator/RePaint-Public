@@ -203,8 +203,8 @@ add_executable(Source
         pnl_colorpicker.h
         pnl_filemenu.cpp
         pnl_filemenu.h
-        pnl_layers.cpp
-        pnl_layers.h
+        LayersPanelPresenter.cpp
+        LayersPanelPresenter.h
         pnl_netcontrols.cpp
         pnl_netcontrols.h
         pnl_quickcontrol.cpp

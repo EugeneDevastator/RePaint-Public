@@ -50,7 +50,7 @@
 
 #include "BrushEditorPresenter.h"
 #include "pnl_netcontrols.h"
-#include "pnl_layers.h"
+#include "LayersPanelPresenter.h"
 #include "pnl_quickcontrol.h"
 #include "pnl_filemenu.h"
 #include "pnl_chat.h"
@@ -118,7 +118,7 @@ class BrushEditorPresenter;
 
 class pnl_netcontrols;
 
-class pnl_layers;
+class LayersPanelPresenter;
 
 class pnl_quickcontrol;
 
