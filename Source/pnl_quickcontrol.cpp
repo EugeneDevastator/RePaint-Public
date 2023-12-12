@@ -22,13 +22,19 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrush *gbr
     QFile logfile("d:/mhplog.log");
     logfile.open(QFile::Append);
 
-    MImage = mimage;
-    this->setParent(MImage);
-    QuickOp = new Ctl_BParam;
-    QuickSol = new Ctl_BParam;
-    QuickSop = new Ctl_BParam;
-    QuickCop = new Ctl_BParam;
-    QuickPow = new Ctl_BParam;
+
+    if (MImage) {
+        MImage = mimage;
+        this->setParent(MImage);
+        // Rest of your initialization code that depends on MImage
+    } else {
+        // Handle the case when MImage is null
+    }
+    QuickOp = new Ctl_BParam(this);
+    QuickSol = new Ctl_BParam(this);
+    QuickSop = new Ctl_BParam(this);
+    QuickCop = new Ctl_BParam(this);
+    QuickPow = new Ctl_BParam(this);
 
     FastBrush = new ctl_FastBrush;
     // FastBrush->show();
@@ -279,6 +285,10 @@ void pnl_QuickControl::RealignPanel()
 }
 void pnl_QuickControl::UpdateBG()
 {
+    if (!MImage || !FastBrush || !FastTrueOp) {
+        return; // Safeguard against null pointers
+    }
+
     qint16 x = -256 + MImage->width() * 0.5;
     qint16 y = -256 + MImage->height() * 0.5;
 

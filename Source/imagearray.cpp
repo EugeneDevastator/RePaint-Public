@@ -10,7 +10,7 @@ ImageArray::ImageArray(QWidget *parent) :
 {
     this->setCursor(Qt::CrossCursor);
     this->setMouseTracking(true);
-//g_Brush=new BrushData;
+//Brush=new BrushData;
     //ViewCanvas = new QImage(120,120,Format_RGB32)
     /*
     QImage BaseImg;
@@ -615,7 +615,7 @@ switch (event->type()) {
     if (Brepainted) {
         BPos=apos;
         Btilt=QPointF(currspars.Pars[csXtilt],currspars.Pars[csYtilt]);
-        Brad=g_Brush->rad_out*ZoomK*RadCtl->GetModValue(lastspars)*ScaleCtl->GetModValue(lastspars);
+        Brad=Brush->rad_out*ZoomK*RadCtl->GetModValue(lastspars)*ScaleCtl->GetModValue(lastspars);
         Brepainted=false;
     }
     */
@@ -716,7 +716,7 @@ else
     }
 
     int rad=ceil(g_Brush->rad_out*RadCtl->GetModValue(lastspars)*ScaleCtl->GetModValue(lastspars));
-    //if  (MMode==50) rad=g_Brush->rad_out*ZoomK;//if setting brush size
+    //if  (MMode==50) rad=Brush->rad_out*ZoomK;//if setting brush size
     if (rad < 1) rad = 1;
 
    // RepaintImgRect(QRect(PPos3.toPoint()-QPoint(rad,rad),PPos3.toPoint()+QPoint(rad,rad)));
@@ -927,7 +927,7 @@ if (EnablePoly){
 
 
 
-//    int rad=ceil(g_Brush->rad_out*ScaleCtl->GetValue()*RadCtl->GetValue());
+//    int rad=ceil(Brush->rad_out*ScaleCtl->GetValue()*RadCtl->GetValue());
 //    if (rad < 1) rad = 1;
 
     PPos3=CalcPos(pos);
@@ -994,7 +994,7 @@ void ImageArray::mouseMoveEvent(QMouseEvent *event)
             //Btilt2=Btilt;
             BPos=event->pos();
             Btilt=QPointF(stpars.Pars[csXtilt],stpars.Pars[csYtilt]);
-            Brad=g_Brush->rad_out*ZoomK*RadCtl->GetModValue(lastspars)*ScaleCtl->GetModValue(lastspars);
+            Brad=Brush->rad_out*ZoomK*RadCtl->GetModValue(lastspars)*ScaleCtl->GetModValue(lastspars);
             Brepainted=false;
         }
 
@@ -1041,21 +1041,21 @@ void ImageArray::mouseMoveEvent(QMouseEvent *event)
 
     else if (MMode==mRadSize){
         BPos=PPos;
-        g_Brush->rad_out=Dist2D(PPos,event->pos())/ZoomK;
+        Brush->rad_out=Dist2D(PPos,event->pos())/ZoomK;
     }
     else if (MMode==mrad2Size){
        BPos=PPos;
-       g_Brush->rad_in=Dist2D(PPos,event->pos())/ZoomK;
-       g_Brush->rad_in=qMin(g_Brush->rad_in,(g_Brush->rad_out-1));
-       BControls->CtlRadRel->SetValF(g_Brush->rad_in/g_Brush->rad_out);
-       BControls->BrushControl->saverel=(g_Brush->rad_in/g_Brush->rad_out);
+       Brush->rad_in=Dist2D(PPos,event->pos())/ZoomK;
+       Brush->rad_in=qMin(Brush->rad_in,(Brush->rad_out-1));
+       BControls->CtlRadRel->SetValF(Brush->rad_in/Brush->rad_out);
+       BControls->BrushControl->saverel=(Brush->rad_in/Brush->rad_out);
 
    }
     else if (MMode==mCrv){
        BPos=PPos;
        float rad_in=Dist2D(PPos,event->pos())/ZoomK;
-       rad_in=qMin(rad_in,(g_Brush->rad_out));
-       BControls->CtlCrv->SetValF(1-(rad_in/g_Brush->rad_out));
+       rad_in=qMin(rad_in,(Brush->rad_out));
+       BControls->CtlCrv->SetValF(1-(rad_in/Brush->rad_out));
 
    }
     else {
@@ -1070,7 +1070,7 @@ void ImageArray::mouseMoveEvent(QMouseEvent *event)
 
 
 
-//    int rad=ceil(g_Brush->rad_out*ScaleCtl->GetValue()*RadCtl->GetValue());
+//    int rad=ceil(Brush->rad_out*ScaleCtl->GetValue()*RadCtl->GetValue());
 //    if (rad < 1) rad = 1;
 
     PPos3=CalcPosI(event->pos());

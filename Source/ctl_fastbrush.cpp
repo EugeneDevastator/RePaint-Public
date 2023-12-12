@@ -3,7 +3,7 @@
 
 ctl_FastBrush::ctl_FastBrush(QWidget *parent) : QWidget(parent)
 {
-    // g_Brush =new BrushData;
+    // Brush =new BrushData;
     ZoomK = new float;
 
     this->setFixedSize(512, 512);
@@ -175,7 +175,7 @@ void ctl_FastBrush::tabletEvent(QTabletEvent *event)
 void ctl_FastBrush::ParsePos(QPoint pos)
 {
 
-    //    float radrel=g_Brush->rad_out/g_Brush->rad_in;
+    //    float radrel=Brush->rad_out/Brush->rad_in;
     int mode;
     ang = AtanXY(pos.x() - midp, pos.y() - midp);
     if ((pos.x() - midp) == 0)

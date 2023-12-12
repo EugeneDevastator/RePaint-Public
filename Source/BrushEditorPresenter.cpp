@@ -20,7 +20,7 @@ g_Brush = new ClientBrush;
 logfile.write("\n BCONTROLS brushsizer+");  logfile.close(); logfile.open(QFile::Append);
 qDebug()<<("bcontrols brushsizer done");
 
- //   BrushControl->g_Brush=GG_brush;
+ //   BrushControl->Brush=GG_brush;
     BtnMasks=new QPushButton("Presets");
     MaskSelWidget=new ctl_MaskSelect();
     chkFastMode=new QCheckBox();
@@ -302,7 +302,7 @@ act.Brush.Realb.opacity=op;
         act.Brush.Realb.opacity*=(act.Brush.Realb.rad_out)/minrad;
         act.Brush.Realb.rad_out=(minrad+act.Brush.Realb.rad_out)*0.5;
         }
-act.Brush.Realb.rad_in=act.Brush.Realb.rad_out*CtlRadRel->GetModValue(stpars);//g_Brush->rad_in*CtlRad->GetModValue(stpars);//*stpars.pressure;
+act.Brush.Realb.rad_in=act.Brush.Realb.rad_out*CtlRadRel->GetModValue(stpars);//Brush->rad_in*CtlRad->GetModValue(stpars);//*stpars.pressure;
 
 
 act.Brush.Realb.resangle=g_Brush->resangle+CtlAng->GetModValue(stpars);
@@ -317,7 +317,7 @@ QColor DrawCol=QColor::fromHslF(CtlHue->GetModValue(stpars)
 
 act.Brush.Realb.col=qRgba(DrawCol.red(),DrawCol.green(),DrawCol.blue(),round(act.Brush.Realb.opacity*255));
 
-//if (stpars.Pars[csERASER]==1) act.Brush.col = g_EraseColor->UseCol;
+//if (stpars.Pars[csERASER]==1) act.Brush.col = EraserColor->UseCol;
 
 act.Brush.Realb.crv=CtlCrv->GetModValue(stpars);
 act.Brush.Realb.cop=CtlCop->GetModValue(stpars);

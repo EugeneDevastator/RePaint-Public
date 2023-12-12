@@ -193,9 +193,9 @@ class MHPwindow : public QWidget {
       QSettings *AppSettings;
 
       //bctl_HoverBrush *HoverBrush;
-      ClientBrush *g_Brush;
-      b_SmartColor *g_PaintColor;
-      b_SmartColor *g_EraseColor;
+      ClientBrush *Brush;
+      b_SmartColor *PaintColor;
+      b_SmartColor *EraserColor;
       pnl_QuickControl *QuickPanel;
       pnl_FileMenu *FileMenu;
       ctl_UserTools *PRESETS;
@@ -249,7 +249,7 @@ class MHPwindow : public QWidget {
       QVBoxLayout *LtChat;
       QWidget *wChat;
 
-      StrokeMaster *STM;
+      StrokeMaster *StrokeMaster;
 
       bool PanelsPinned;
 

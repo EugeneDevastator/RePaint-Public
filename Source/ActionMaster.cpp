@@ -406,7 +406,7 @@ void ActionMaster::NewImg(QSize sz, int lcount)
     painter.setBrush(Qt::white);
     painter.setPen(Qt::NoPen);
     painter.drawRect(MainImage->ViewCanvas[0].rect());
-    // ViewCanvas[0].fill(g_Brush->col);
+    // ViewCanvas[0].fill(Brush->col);
     MainImage->RepaintWidgetRect(MainImage->rect());
 }
 

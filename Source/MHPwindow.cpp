@@ -60,13 +60,13 @@ MHPwindow::MHPwindow()
 
     //--------------- MASTERS INIT --------------
 
-    g_PaintColor = new b_SmartColor();
-    g_EraseColor = new b_SmartColor();
-    g_Brush = new ClientBrush;
-    g_Brush->sol2op = 1;
-    g_Brush->rad_out = 20;
-    g_Brush->rad_in = 10;
-    g_Brush->resangle = 0.0;
+    PaintColor = new b_SmartColor();
+    EraserColor = new b_SmartColor();
+    Brush = new ClientBrush;
+    Brush->sol2op = 1;
+    Brush->rad_out = 20;
+    Brush->rad_in = 10;
+    Brush->resangle = 0.0;
 
     bool singlecore = false;
     ActionExecutor = new ActionMaster(MainImage, singlecore, this);
@@ -98,7 +98,7 @@ MHPwindow::MHPwindow()
     AllPanels.append(FileMenu);
     DlgNew = new dlg_NewCanvas(MainImage);
 
-    BControls = new BrushEditorPresenter(g_Brush, this);
+    BControls = new BrushEditorPresenter(Brush, this);
     BControls->setAccessibleName("BrushControls");
     BControls->setWindowTitle("Brush DNA");
     AllPanels.append(BControls);
@@ -114,18 +114,18 @@ MHPwindow::MHPwindow()
     AllPanels.append(FriendList);
     // FriendList->hide();
 
-    STM = new StrokeMaster(BControls, LayersPanel, MainImage);
+    StrokeMaster = new class StrokeMaster(BControls, LayersPanel, MainImage);
     NetControls->init(NET, sNET);
     FriendList->NET = NET;
 
-    g_PaintColor->SetCol(Qt::black);
-    g_EraseColor->SetCol(Qt::white);
-    BControls->g_Brush = g_Brush;
-    //  BControls->BrushControl->g_Brush=g_Brush;
+    PaintColor->SetCol(Qt::black);
+    EraserColor->SetCol(Qt::white);
+    BControls->g_Brush = Brush;
+    //  BControls->BrushControl->Brush=Brush;
 
     //------------- end of fast panel init;
 
-    MainImage->g_Brush = g_Brush;
+    MainImage->g_Brush = Brush;
     MainImage->SpacingCtl = BControls->CtlSpc;
     MainImage->SpacingJitCtl = BControls->CtlSpcJit;
     MainImage->RadCtl = BControls->CtlRad;
@@ -202,14 +202,14 @@ MHPwindow::MHPwindow()
     logfile.close();
     logfile.open(QFile::Append);
 
-    QuickPanel = new pnl_QuickControl(BControls, g_Brush, MainImage);
+    QuickPanel = new pnl_QuickControl(BControls, Brush, MainImage);
     //  please connect with qp
     connect(QuickPanel->QuickLit->Gslider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
     connect(QuickPanel->QuickSat->Gslider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
     connect(QuickPanel->QuickHue->Gslider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
-    connect(QuickPanel->QuickHue->Gslider, SIGNAL(ValChange(float)), g_PaintColor, SLOT(SetHueF(float)));
-    connect(QuickPanel->QuickSat->Gslider, SIGNAL(ValChange(float)), g_PaintColor, SLOT(SetSatF(float)));
-    connect(QuickPanel->QuickLit->Gslider, SIGNAL(ValChange(float)), g_PaintColor, SLOT(SetLitF(float)));
+    connect(QuickPanel->QuickHue->Gslider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetHueF(float)));
+    connect(QuickPanel->QuickSat->Gslider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetSatF(float)));
+    connect(QuickPanel->QuickLit->Gslider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetLitF(float)));
 
     QuickPanel->RealignPanel();
 
@@ -260,16 +260,16 @@ MHPwindow::MHPwindow()
     //        connect(ARTM,SIGNAL(SendMsg(QString)),CHAT,SLOT(GetChatMsg(QString)));
 
     //  connect(MainImage,SIGNAL(SendStroke(d_Stroke)),this,SLOT(GetStroke(d_Stroke)));
-    connect(MainImage, SIGNAL(SendTStroke2(d_Stroke, d_StrokePars, d_StrokePars)), STM, SLOT(GetRawStroke(d_Stroke, d_StrokePars, d_StrokePars)));
+    connect(MainImage, SIGNAL(SendTStroke2(d_Stroke, d_StrokePars, d_StrokePars)), StrokeMaster, SLOT(GetRawStroke(d_Stroke, d_StrokePars, d_StrokePars)));
     connect(MainImage, SIGNAL(SendTStroke(d_Stroke, d_StrokePars)), this, SLOT(GetTStroke(d_Stroke, d_StrokePars)));
 
     // connect(BControls->BrushControl,SIGNAL(SendSize(int)),MainImage,SLOT(GetBSize(int)));
 
     // connect(this,SIGNAL(destroyed()),DlgCol,SLOT(close()));
     // connect(MainImage,SIGNAL(SendColor(QColor)),CtlCol,SLOT(SetColor(QColor)));
-    connect(MainImage, SIGNAL(AskResetPos()), STM, SLOT(ResetLocalPos()), Qt::DirectConnection);
+    connect(MainImage, SIGNAL(AskResetPos()), StrokeMaster, SLOT(ResetLocalPos()), Qt::DirectConnection);
     connect(MainImage, SIGNAL(SendColor(QColor)), this, SLOT(GetColor(QColor)));
-    connect(MainImage, SIGNAL(SendColor(QColor)), g_PaintColor, SLOT(SetCol(QColor)));
+    connect(MainImage, SIGNAL(SendColor(QColor)), PaintColor, SLOT(SetCol(QColor)));
     qDebug() << ("MHPW connects part-5 done");
     connect(MainImage, SIGNAL(MouseIn()), this, SLOT(GrabKB()));
     connect(LayersPanel, SIGNAL(MouseIn()), this, SLOT(GrabKB()));
@@ -280,7 +280,7 @@ MHPwindow::MHPwindow()
     connect(MainImage, SIGNAL(SendPoly(QPolygonF)), this, SLOT(GetPoly(QPolygonF)));
 
     // please remove this later
-    connect(STM, SIGNAL(SendReadySect(StrokeSection)), ActionExecutor, SLOT(ExecSection(StrokeSection)));
+    connect(StrokeMaster, SIGNAL(SendReadySect(StrokeSection)), ActionExecutor, SLOT(ExecSection(StrokeSection)));
     connect(ActionExecutor, SIGNAL(SendSection(StrokeSection)), NET, SLOT(GetSection(StrokeSection)));
     if (!Dedicated)
         connect(NET, SIGNAL(SendSection(StrokeSection)), ActionExecutor, SLOT(ExecNetSection(StrokeSection)));
@@ -295,9 +295,9 @@ MHPwindow::MHPwindow()
     qDebug() << ("MHPW connects part-6 done");
 
     // connect(CtlCol,SIGNAL(SendColor(QColor)),this,SLOT(GetColor(QColor)));
-    connect(BControls->CtlHue->Gslider, SIGNAL(ValChange(float)), g_PaintColor, SLOT(SetHueF(float)));
-    connect(BControls->CtlSat->Gslider, SIGNAL(ValChange(float)), g_PaintColor, SLOT(SetSatF(float)));
-    connect(BControls->CtlLit->Gslider, SIGNAL(ValChange(float)), g_PaintColor, SLOT(SetLitF(float)));
+    connect(BControls->CtlHue->Gslider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetHueF(float)));
+    connect(BControls->CtlSat->Gslider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetSatF(float)));
+    connect(BControls->CtlLit->Gslider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetLitF(float)));
 
     connect(BControls->CtlHue->Gslider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
     connect(BControls->CtlSat->Gslider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
@@ -435,14 +435,18 @@ MHPwindow::MHPwindow()
     }
     this->show();
 
-    ctl_AssetScene *ASV;
-    ASV = new ctl_AssetScene;
-    ASV->InitByPath(QApplication::applicationDirPath() + "/../../../Brushes/");
-    // ASV->show();
-    ctl_assetview *GV = new ctl_assetview(ASV);
-    GV->setParent(this);
-    GV->setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint);
-    // GV->show();
+    //// Brush image selector. looks like it causes some bugs.
+//
+    //ctl_AssetScene *ASV;
+    //ASV = new ctl_AssetScene;
+    //ASV->InitByPath(QApplication::applicationDirPath() + "/Brushes/");
+    //  //ASV->show();
+//
+    //ctl_assetview *GV = new ctl_assetview(ASV);
+    //GV->setParent(this);
+    //GV->setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint);
+    //GV->show();
+
     // ActionExecutor->NewLog();
     // ActionExecutor->OpenLog("/Users/Devastator/QTProjects/MHP/debug/pics/log5.ELI");
     CHAT->GetIntchatMsg("HUIHUI=" + QString::number(1 % 3));
@@ -609,8 +613,8 @@ Strk.pos2=Strk.packpos2.ToPointF();
         sect.Stroke.pos2=lastpos;
          lastpos=CalcLastPos(sect);
 
-        STM->ExecSection(sect,true);
-        ChatLine->setText(QString::number(STM->offset));
+        StrokeMaster->ExecSection(sect,true);
+        ChatLine->setText(QString::number(StrokeMaster->offset));
         Chat->append("ugjgjf");
      }
      else
@@ -732,14 +736,14 @@ void MHPwindow::keyPressEvent(QKeyEvent *event)
    }*/
     else if (KBLINK->KBstate[ekBrushSizeP] == true)
     {
-        g_Brush->rad_out += 0.1;
-        g_Brush->rad_in += 0.1;
+        Brush->rad_out += 0.1;
+        Brush->rad_in += 0.1;
     }
     else if (KBLINK->KBstate[ekBrushSizeM] == true)
     {
 
-        g_Brush->rad_out -= 0.1;
-        g_Brush->rad_in -= 0.1;
+        Brush->rad_out -= 0.1;
+        Brush->rad_in -= 0.1;
     }
     if (event->key() == Qt::Key_BraceLeft)
     {
@@ -763,7 +767,7 @@ void MHPwindow::keyPressEvent(QKeyEvent *event)
     {
         float reshue = BControls->CtlHue->GetValue() + 0.005;
         reshue = reshue - floor(reshue);
-        //        g_Brush->col.setHslF(reshue,g_Brush->col.hslSaturationF(),g_Brush->col.valueF());
+        //        Brush->col.setHslF(reshue,Brush->col.hslSaturationF(),Brush->col.valueF());
         BControls->CtlHue->SetValF(reshue);
     }
     else if (KBLINK->KBstate[ekFastBrush] == true)
@@ -783,7 +787,7 @@ void MHPwindow::keyPressEvent(QKeyEvent *event)
         float reshue = BControls->CtlHue->GetValue() - 0.005;
         reshue = reshue - ceil(reshue - 1);
         // if (reshue<0) reshue+=1;
-        // g_Brush->col.setHslF(reshue,g_Brush->col.hslSaturationF(),g_Brush->col.valueF());
+        // Brush->col.setHslF(reshue,Brush->col.hslSaturationF(),Brush->col.valueF());
         BControls->CtlHue->SetValF(reshue);
     }
     else if (KBLINK->KBstate[ekActualPixels] == true)
@@ -876,7 +880,7 @@ void MHPwindow::GetClient()
 void MHPwindow::RedrawCol()
 {
     // please
-    QColor col = g_PaintColor->UseCol;
+    QColor col = PaintColor->UseCol;
     float step = RngConv(M_PI / 6, 0, M_PI, 0, 1);
     BControls->CtlHue->Gslider->grad->setColorAt(0, QColor::fromHslF(QColor(Qt::red).hueF(), col.hslSaturationF(), col.lightnessF()));
     BControls->CtlHue->Gslider->grad->setColorAt(0 + step, QColor::fromHslF(QColor(Qt::yellow).hueF(), col.hslSaturationF(), col.lightnessF()));
@@ -901,7 +905,7 @@ void MHPwindow::RedrawCol()
 }
 void MHPwindow::GetColor(QColor col)
 { // get color from various sources ike canvas cpicker etc.
-    g_PaintColor->SetCol(col);
+    PaintColor->SetCol(col);
 
     BControls->CtlHue->SetValF(col.hslHueF());
     BControls->CtlSat->SetValF(col.hslSaturationF());

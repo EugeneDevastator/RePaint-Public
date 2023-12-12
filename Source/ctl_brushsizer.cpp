@@ -12,9 +12,9 @@ BrushSizer::BrushSizer(QWidget *parent)
     logfile.close();
     logfile.open(QFile::Append);
 
-    /*g_Brush=new BrushData;
-    g_Brush->rad_out=20;
-    g_Brush->rad_in=2;*/
+    /*Brush=new BrushData;
+    Brush->rad_out=20;
+    Brush->rad_in=2;*/
 
     ARTM = new ArtMaster();
     // ARTM->ForceSingleCore();
@@ -62,8 +62,8 @@ void BrushSizer::Redraw()
 {
 
     float hsize = BrushImg.width() / 2;
-    // rad_out=g_Brush->rad_out;
-    // rad_in=g_Brush->rad_in;
+    // rad_out=Brush->rad_out;
+    // rad_in=Brush->rad_in;
 
     QPainter painter(&BrushImg);
     painter.setPen(Qt::NoPen);
@@ -91,12 +91,12 @@ void BrushSizer::Redraw()
     ts.pos2.setY(hsize);
     /*
         BrushData ViewBrush;
-        ViewBrush.rad_in=g_Brush->rad_in;
-        ViewBrush.rad_out=g_Brush->rad_out;
-        ViewBrush.SolidityOfOpacity=g_Brush->SolidityOfOpacity;
+        ViewBrush.rad_in=Brush->rad_in;
+        ViewBrush.rad_out=Brush->rad_out;
+        ViewBrush.SolidityOfOpacity=Brush->SolidityOfOpacity;
         ViewBrush.Solidity=1;
         ViewBrush.compmode=QPainter::CompositionMode_SourceOver;
-        ViewBrush.FadeCurveExp=g_Brush->FadeCurveExp;
+        ViewBrush.FadeCurveExp=Brush->FadeCurveExp;
         ViewBrush.col=Qt::black;
         ViewBrush.rot=rad2deg(offang);
         ViewBrush.Opacity=1;
@@ -110,7 +110,7 @@ void BrushSizer::Redraw()
     g_Brush->col = Qt::black;
     g_Brush->scale = 1;
     g_Brush->x2y = 0.5;
-    // g_Brush->compmode=QPainter::CompositionMode_SourceOver;
+    // Brush->compmode=QPainter::CompositionMode_SourceOver;
     ActionData act;
     act.Stroke = ts;
     act.Brush.Realb = *g_Brush;
