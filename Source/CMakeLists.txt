@@ -214,7 +214,9 @@ add_executable(Source
         smudge.jpg
         strokemaster.cpp
         strokemaster.h
-        version.h)
+        version.h
+        BrushModel.h
+        BrushModel.cpp)
 
 qt5_add_resources(SOURCE_FILES qresource.qrc)
 

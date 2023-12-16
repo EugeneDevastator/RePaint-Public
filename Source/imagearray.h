@@ -8,6 +8,7 @@
 #include <QTabletEvent>
 #include "Brushes.h"
 #include <QMoveEvent>
+#include <cstddef>
 #include "ctl_bparam.h"
 #include "BrushEditorPresenter.h"
 #include "c_keylink.h"
@@ -15,7 +16,7 @@
 #include "geomaster.h"
 //class d_Stroke;
 
-enum eModes{
+enum NavigationMode{
     mNone,
     mPaint,
     mPan,
@@ -31,13 +32,14 @@ class ImageArray : public QWidget
 {
     Q_OBJECT
 
+   private:
+      ClientBrush *g_Brush;
 
-
-public:
-    explicit ImageArray(QWidget *parent = 0);
+   public:
+    explicit ImageArray(ClientBrush *pBrush, BrushEditorPresenter *brushEditor, c_KeyLink *keyb);
     //void resizeImage(QImage *image, const QSize &newSize);
  //   void DrawBrush(QPointF pos,int rad,float Opacity);
-    ClientBrush *g_Brush;
+
     d_Stroke pstroke;
     c_KeyLink *GlobalKB;
     qint8 locked;

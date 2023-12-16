@@ -260,6 +260,7 @@ class MHPwindow : public QWidget {
 
       void wheelEvent(QWheelEvent *event);
       //void MainImage::mouseMoveEvent(QMouseEvent *event);
+      void SetAppMetaInfo();
 };
 
 #endif // MHPWINDOW_H

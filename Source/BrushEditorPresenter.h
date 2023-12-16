@@ -18,17 +18,21 @@
 #include "ctl_friendlist.h"
 #include "ctl_BMselector.h"
 #include "ArtMaster.h"
+// BrushEditorModel.h
 
 
 class BrushEditorPresenter : public bctl_WidgetHolder
 {
     Q_OBJECT
+
+   private:
+      ClientBrush *InternalBrush;
 public:
   //  ArtMaster *ARTM;
     ctl_friendlist *Flist;
 
-    explicit BrushEditorPresenter(ClientBrush *GG_brush , QWidget *parent= 0);
-    ClientBrush *g_Brush;
+    explicit BrushEditorPresenter(ClientBrush *mainBrush , QWidget *parent= 0);
+
     b_SmartColor *g_PaintColor;
     b_SmartColor *g_EraseColor;
     QList <QString> LCMNames;

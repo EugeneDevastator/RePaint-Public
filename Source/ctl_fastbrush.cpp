@@ -1,7 +1,8 @@
 #include "ctl_fastbrush.h"
 #include <QtGui>
 
-ctl_FastBrush::ctl_FastBrush(QWidget *parent) : QWidget(parent)
+ctl_FastBrush::ctl_FastBrush(ClientBrush *brush,QWidget *parent) :
+QWidget(parent), g_Brush(brush)
 {
     // Brush =new BrushData;
     ZoomK = new float;
@@ -131,13 +132,13 @@ void ctl_FastBrush::mousePressEvent(QMouseEvent *event)
     ang = AtanXY(event->pos().x() - midp, event->pos().y() - midp);
     float d30 = M_PI * 30 / 180;
     if (fabs(((ang + M_PI) * 180 / M_PI) - g_Brush->resangle) < 5)
-        mmode = 4;
+        brushRegulationMode = 4;
     else if ((ang > d30) & (ang < d30 * 5))
-        mmode = 1;
+        brushRegulationMode = 1;
     else if ((ang < d30) & (ang > (-M_PI * 0.5)))
-        mmode = 2;
+        brushRegulationMode = 2;
     else if ((ang > d30 * 5) | (ang < (-M_PI * 0.5)))
-        mmode = 3;
+        brushRegulationMode = 3;
 }
 
 void ctl_FastBrush::tabletEvent(QTabletEvent *event)
@@ -152,24 +153,24 @@ void ctl_FastBrush::tabletEvent(QTabletEvent *event)
     if (event->type() == QEvent::TabletPress)
     {
         if (fabs(((ang + M_PI) * 180 / M_PI) - g_Brush->resangle) < 5)
-            mmode = 4;
+            brushRegulationMode = 4;
         else if ((ang > d30) & (ang < d30 * 5))
-            mmode = 1;
+            brushRegulationMode = 1;
         else if ((ang < d30) & (ang > (-M_PI * 0.5)))
-            mmode = 2;
+            brushRegulationMode = 2;
         else if ((ang > d30 * 5) | (ang < (-M_PI * 0.5)))
-            mmode = 3;
+            brushRegulationMode = 3;
     }
     if (event->type() == QEvent::TabletMove)
     {
-        if (mmode > 0)
+        if (brushRegulationMode > 0)
         {
             ParsePos(event->pos());
         }
     }
     if (event->type() == QEvent::TabletRelease)
     {
-        mmode = 0;
+        brushRegulationMode = 0;
     }
 }
 void ctl_FastBrush::ParsePos(QPoint pos)
@@ -199,7 +200,7 @@ void ctl_FastBrush::ParsePos(QPoint pos)
     if ((ang > d30 * 5) | (ang < (-M_PI * 0.5)))
         mode = 3;
 
-    if (mmode == 1)
+    if (brushRegulationMode == 1)
     { // radius
         float rel = g_Brush->rad_in / g_Brush->rad_out;
         if (!((ang > d30) & (ang < d30 * 5)))
@@ -208,7 +209,7 @@ void ctl_FastBrush::ParsePos(QPoint pos)
         g_Brush->rad_out = rad;
         g_Brush->rad_in = g_Brush->rad_out * rel;
     }
-    if (mmode == 2)
+    if (brushRegulationMode == 2)
     { // rad rel
         g_Brush->rad_in = qMin(rad, g_Brush->rad_out);
         if (mode != 2)
@@ -222,7 +223,7 @@ void ctl_FastBrush::ParsePos(QPoint pos)
 
         emit SendRel(rel);
     }
-    if (mmode == 3)
+    if (brushRegulationMode == 3)
     { // curve
         qreal ir = qMin(rad, g_Brush->rad_out);
         if (mode != 3)
@@ -231,7 +232,7 @@ void ctl_FastBrush::ParsePos(QPoint pos)
         g_Brush->crv = tcrv;
         emit SendCrv(1 - tcrv);
     }
-    if (mmode == 4)
+    if (brushRegulationMode == 4)
     {
         ang = (ang + M_PI) * 180 / M_PI;
         if ((absrad > anglerad + 32) | (rad < 20))

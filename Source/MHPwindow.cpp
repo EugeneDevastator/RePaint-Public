@@ -24,11 +24,11 @@ MHPwindow::MHPwindow()
  CtlTest->SetIcon(RESPATH+"/res/ctlRad.png");
      */
     Dedicated = false;
+
     QFile logfile("d:/mhplog.log");
     logfile.open(QFile::ReadWrite | QFile::Truncate);
 
     QPixmap SplashPic(RESPATH + "/res/splash.png");
-
     QSplashScreen splash(SplashPic);
     splash.show();
     splash.setPixmap(SplashPic);
@@ -36,37 +36,37 @@ MHPwindow::MHPwindow()
     // splash.resize(500,500);
     // splash.move(500,200);
     QApplication::processEvents();
-
     QString spath;
     spath = RESPATH + "res/icon16.png";
     this->setWindowIcon(QIcon(RESPATH + "/res/icon16.png"));
-
-    qRegisterMetaType<ActionData>("ActionData");
-
-    QApplication::setApplicationVersion("Repaint Beta");
-    setWindowTitle(QApplication::applicationVersion());
-    QCoreApplication::setOrganizationName("Repaint");
-    QCoreApplication::setOrganizationDomain("Repaint.me");
-    QCoreApplication::setApplicationName("Repaint");
-    QCoreApplication::setApplicationVersion("BETA");
-    AppSettings = new QSettings("Repaint.ini", QSettings::IniFormat); //, QSettings::UserScope,
-                                                                      //  "Repaint", "username maybe"); // Eyelips
+    SetAppMetaInfo();
 
     SnapIdx = 0;
     ActiveLayer = 0;
     PansHidden = false;
-    MainImage = new ImageArray();
+
+    // Root level Dependencies
+    KBLINK = new c_KeyLink();
+    Brush = new ClientBrush;
+
+    Brush->sol2op = 1;
+    Brush->rad_out = 20;
+    Brush->rad_in = 10;
+    Brush->resangle = 0.0;
+
+    BControls = new BrushEditorPresenter(Brush);
+
+    AllPanels.append(BControls);
+
+    MainImage = new ImageArray(Brush, BControls,KBLINK);
+
     DlgAbout = new QDialog();
 
     //--------------- MASTERS INIT --------------
 
     PaintColor = new b_SmartColor();
     EraserColor = new b_SmartColor();
-    Brush = new ClientBrush;
-    Brush->sol2op = 1;
-    Brush->rad_out = 20;
-    Brush->rad_in = 10;
-    Brush->resangle = 0.0;
+
 
     bool singlecore = false;
     ActionExecutor = new ActionMaster(MainImage, singlecore, this);
@@ -81,7 +81,7 @@ MHPwindow::MHPwindow()
           }
     // ARTM->ForceSingleCore();
  */
-    KBLINK = new c_KeyLink();
+
     //--------------- PANELS INIT
     CHAT = new pnl_Chat;
     CHAT->setAccessibleName("Chat");
@@ -98,10 +98,6 @@ MHPwindow::MHPwindow()
     AllPanels.append(FileMenu);
     DlgNew = new dlg_NewCanvas(MainImage);
 
-    BControls = new BrushEditorPresenter(Brush, this);
-    BControls->setAccessibleName("BrushControls");
-    BControls->setWindowTitle("Brush DNA");
-    AllPanels.append(BControls);
 
     NetControls = new pnl_NetControls();
     NetControls->setAccessibleName("NetControls");
@@ -120,16 +116,11 @@ MHPwindow::MHPwindow()
 
     PaintColor->SetCol(Qt::black);
     EraserColor->SetCol(Qt::white);
-    BControls->g_Brush = Brush;
     //  BControls->BrushControl->Brush=Brush;
 
     //------------- end of fast panel init;
 
-    MainImage->g_Brush = Brush;
-    MainImage->SpacingCtl = BControls->CtlSpc;
-    MainImage->SpacingJitCtl = BControls->CtlSpcJit;
-    MainImage->RadCtl = BControls->CtlRad;
-    MainImage->ScaleCtl = BControls->CtlScale;
+
 
     logfile.write("\n third init block complete-1");
     logfile.close();
@@ -330,8 +321,7 @@ MHPwindow::MHPwindow()
     logfile.close();
     logfile.open(QFile::Append);
 
-    MainImage->GlobalKB = KBLINK;
-    MainImage->BControls = BControls;
+
 
     FileMenu->BtnSnap->setEnabled(false);
     FileMenu->BtnSave->setEnabled(false);
@@ -513,7 +503,21 @@ MHPwindow::MHPwindow()
 
     SwitchPinPanels();
 
-} // EOI
+}
+
+void MHPwindow::SetAppMetaInfo() {
+    qRegisterMetaType<ActionData>("ActionData");
+    QApplication::setApplicationVersion("v1.01");
+    setWindowTitle(QApplication::applicationVersion());
+    QCoreApplication::setOrganizationName("Repaint");
+    QCoreApplication::setOrganizationDomain("Repaint.me");
+    QCoreApplication::setApplicationName("Repaint");
+    QCoreApplication::setApplicationVersion("Release 1.0");
+    AppSettings = new QSettings("Repaint.ini", QSettings::IniFormat); //, QSettings::UserScope,
+//  "Repaint", "username maybe"); // Eyelips
+
+}
+// EOI
 
 void MHPwindow::ShowQP()
 {

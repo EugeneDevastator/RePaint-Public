@@ -20,8 +20,7 @@ class pnl_QuickControl : public QWidget
         Q_OBJECT
 
 public:
-    explicit pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrush *gbrush, ImageArray *mimage);
-
+    explicit pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrush *mainBrush, ImageArray *mimage);
     Ctl_BParam *QuickOp;
     Ctl_BParam *QuickSol;
     Ctl_BParam *QuickSop;

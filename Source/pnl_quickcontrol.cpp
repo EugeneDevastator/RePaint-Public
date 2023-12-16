@@ -16,31 +16,27 @@ void pnl_QuickControl::linkSliders(Ctl_BParam *slave, Ctl_BParam *master)
     slave->MLayout->setMargin(1);
 }
 
-pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrush *gbrush, ImageArray *mimage)
+pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrush *mainBrush, ImageArray *mimage)
+ :  MImage(mimage)
 {
-
+  //  Check for null dependencies and throw an exception if any are null
+ if (!BCTLS || !mainBrush || !mimage) {
+     throw std::invalid_argument("One or more dependencies are null");
+ }
     QFile logfile("d:/mhplog.log");
     logfile.open(QFile::Append);
+    this->setParent(MImage);
+    // Rest of your initialization code that depends on MImage
 
-
-    if (MImage) {
-        MImage = mimage;
-        this->setParent(MImage);
-        // Rest of your initialization code that depends on MImage
-    } else {
-        // Handle the case when MImage is null
-    }
     QuickOp = new Ctl_BParam(this);
     QuickSol = new Ctl_BParam(this);
     QuickSop = new Ctl_BParam(this);
     QuickCop = new Ctl_BParam(this);
     QuickPow = new Ctl_BParam(this);
 
-    FastBrush = new ctl_FastBrush;
-    // FastBrush->show();
-    FastBrush->setParent(this);
+    FastBrush = new ctl_FastBrush(mainBrush,this);
+    FastBrush->show();
     // FastBrush->setWindowFlags(Qt::Tool|Qt::CustomizeWindowHint|Qt::WindowMinimizeButtonHint);
-    FastBrush->g_Brush = gbrush;
     FastBrush->ZoomK = &MImage->ZoomK;
     connect(FastBrush, SIGNAL(SendRel(float)), BCTLS->CtlRadRel, SLOT(SetValF(float)));
     connect(FastBrush, SIGNAL(SendCrv(float)), BCTLS->CtlCrv, SLOT(SetValF(float)));
