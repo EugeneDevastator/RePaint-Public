@@ -193,7 +193,7 @@ struct d_Stroke// : public QObject
 struct d_StrokePars {
    public:
 // everything is in range 0-1;
-      qreal Pars[25];
+    qreal Pars[25];
 };
 
 struct d_TParam {
@@ -305,7 +305,6 @@ float GenCurveF(float val, float midp); //generates blended curve for 0-1 range
 
 
 qreal Dist2D(QPointF pos1, QPointF pos2);
-float AtanXY(float x, float y);
 float rad2deg(float rads);
 float Discrete(float inp, float range); //makes range discrete by range,like 10,20,30...
 bool isnear(float val, float val2, float range);

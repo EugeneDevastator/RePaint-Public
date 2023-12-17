@@ -354,29 +354,6 @@ qreal Dist2D(QPointF pos1, QPointF pos2) {
 void MulPos(QPointF *pos1, float mul) {
 }
 
-float AtanXY(float x, float y) {
-
-    double ang;
-    signed int sg;
-    sg = -1;
-    if (y > 0)
-        sg = 0;
-    if (x == 0 && y == 0)
-        ang = 0;
-    else if (x == 0)
-        ang = M_PI_2 + (sg + 1) / 2 * M_PI;
-    else if (x > 0 && y < 0)
-        ang = M_PI * 2 + atan(y / x);
-    else if (x < 0)
-        ang = M_PI + atan(y / x);
-    else
-        ang = atan(y / x);
-
-    // ang=ang*180/M_PI;
-    return ang - M_PI;
-    // TODO: Add your source code here
-}
-
 float rad2deg(float rads) {
     return rads * 180 / M_PI;
 }

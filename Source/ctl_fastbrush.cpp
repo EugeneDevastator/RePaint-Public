@@ -1,6 +1,7 @@
 #include "ctl_fastbrush.h"
 #include "BrushEngine/ClientBrushStamp.hpp"
 #include "BrushEngine/LegacySharedBrush.hpp"
+#include "ReMath/ReMath.hpp"
 #include <QtGui>
 
 ctl_FastBrush::ctl_FastBrush(ClientBrushStamp *brush, QWidget *parent) :

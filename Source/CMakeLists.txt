@@ -120,6 +120,7 @@ add_executable(Source
         sets/Presets.dat_
         sets/Presets.dat_old
         sets/sizes.dat
+        ReMath/ReMath.hpp
         NetworkDTO/NetworkDTO.hpp
         BrushEngine/NetBrushStamp.hpp
         # reverse it:

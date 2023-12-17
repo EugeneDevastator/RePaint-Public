@@ -1,4 +1,5 @@
 #include "ctl_brushsizer.h"
+#include "ReMath/ReMath.hpp"
 #include <QtGui>
 
 BrushSizer::BrushSizer(QWidget *parent)

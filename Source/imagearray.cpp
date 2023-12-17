@@ -1,5 +1,6 @@
 #include "imagearray.h"
 #include "BrushEngine/ClientBrushStamp.hpp"
+#include "ReMath/ReMath.hpp"
 #include <QtGui>
 #include <QtWidgets/QDesktopWidget>
 #include <QtWidgets/QFileDialog>
@@ -432,7 +433,6 @@ void ImageArray::SpacingFilter(d_Stroke *strk) {
     {
         currspars.Pars[Velocity] = RngConv(stdist, 0, maxvel, 0, 1);
         // stpars.Pars[Velocity]=lastspars.Pars[Velocity]*0.5;
-
         float dir = AtanXY((strk->pos1.x() - strk->pos2.x()), strk->pos1.y() - strk->pos2.y());
 //    float dir2=AtanXY((strk.pos2.x()-strk.pos3.x()),strk.pos2.y()-strk.pos3.y());
         QVector2D Hvv(strk->pos1.x() - strk->pos2.x(), strk->pos1.y() - strk->pos2.y());
