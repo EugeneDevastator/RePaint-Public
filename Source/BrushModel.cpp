@@ -1,5 +1,5 @@
 #include "BrushModel.h"
-#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/ClientBrushStamp.hpp"
 
 BrushModel::BrushModel() {
     // Initialize the brush and other properties

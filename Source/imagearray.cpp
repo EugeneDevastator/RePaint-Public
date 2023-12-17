@@ -1,5 +1,5 @@
 #include "imagearray.h"
-#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/ClientBrushStamp.hpp"
 #include <QtGui>
 #include <QtWidgets/QDesktopWidget>
 #include <QtWidgets/QFileDialog>

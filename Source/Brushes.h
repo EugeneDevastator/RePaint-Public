@@ -14,6 +14,7 @@
 #include "b_smartcolor.h"
 #include "BrushEngine/NetBrushStamp.hpp"
 #include "BrushEngine/LegacySharedBrush.hpp"
+#include "NetworkDTO/NetworkDTO.hpp"
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QPushButton>
 #include <qbytearray.h>
@@ -170,30 +171,12 @@ struct g_KeyStates {
 
 };
 
-struct PackedFloat {
-   qint16 IntVal;
-   quint8 FVal;
-
-   qreal GetVal();
-   void SetVal(double val);
-};
-
-struct d_PointF {
-   PackedFloat xpos;
-   PackedFloat ypos;
-
-   qreal x();
-   qreal y();
-   void SetByQPointF(QPointF src);
-   QPointF ToPointF();
-};
-
 struct d_Stroke// : public QObject
 {
 
    public:
-      d_PointF packpos1;
-      d_PointF packpos2;
+      NetVector2f packpos1;
+      NetVector2f packpos2;
       QPointF pos1;
       QPointF pos2;
       QPointF pos3; //used only for internal interpolation.
@@ -337,7 +320,7 @@ QRgb QcToRGB(QColor col);
 qreal Blend2(qreal from, qreal to, qreal k);
 QRgb BlendRGB(QRgb from, QRgb to, qreal k);
 QColor BlendQCOL(QColor from, QColor to, qreal k);
-#endif // BRUSHES_H
+
 
 QPointF CalcLastPos(StrokeSection sect);
 // --------------- functions for random;
@@ -348,3 +331,5 @@ qreal RNDf(qreal range);
 QString DSZstring(QByteArray ba);
 QByteArray SZstring(QString st);
 ClientBrushStamp BlendBrushes(ClientBrushStamp Bfrom, ClientBrushStamp Bto, float k);
+
+#endif // BRUSHES_H

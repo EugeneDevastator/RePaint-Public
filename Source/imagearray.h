@@ -14,7 +14,7 @@
 #include "c_keylink.h"
 #include "ctl_BMselector.h"
 #include "geomaster.h"
-#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/ClientBrushStamp.hpp"
 //class d_Stroke;
 
 enum NavigationMode{

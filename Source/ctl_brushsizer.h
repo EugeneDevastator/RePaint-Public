@@ -7,7 +7,7 @@
 #include <QtWidgets/QWidget>
 #include "ArtMaster.h"
 #include "Brushes.h"
-#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/ClientBrushStamp.hpp"
 #include "BrushEngine/LegacySharedBrush.hpp"
 
 class BrushSizer : public QWidget

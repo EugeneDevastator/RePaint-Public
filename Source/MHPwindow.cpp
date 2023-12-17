@@ -4,7 +4,7 @@
 #include <QTabletEvent>
 #include <QtWidgets/QFileDialog>
 #include "geomaster.h"
-#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/ClientBrushStamp.hpp"
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QSplashScreen>
 // #include <QDomDocument>
@@ -374,7 +374,7 @@ MHPwindow::MHPwindow()
 
     // ---- testing spacing
 
-    // CHAT->ChatLine->setText(QString::number(sizeof(d_PointF))+"qpointf"+QString::number(sizeof(act.Brush.rad_in)) +" ral:"+QString::number(bas.size()));
+    // CHAT->ChatLine->setText(QString::number(sizeof(NetVector2f))+"qpointf"+QString::number(sizeof(act.Brush.rad_in)) +" ral:"+QString::number(bas.size()));
 
     // BControls->BrushControl->Redraw();
     // QRect screen = QApplication::desktop()->screenGeometry();

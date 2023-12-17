@@ -5,7 +5,7 @@
 #include <QImage>
 #include "Brushes.h"
 #include "ArtMaster.h"
-#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/ClientBrushStamp.hpp"
 #include "BrushEngine/LegacySharedBrush.hpp"
 
 class ctl_FastBrush : public QWidget

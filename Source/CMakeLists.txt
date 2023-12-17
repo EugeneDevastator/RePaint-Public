@@ -120,6 +120,11 @@ add_executable(Source
         sets/Presets.dat_
         sets/Presets.dat_old
         sets/sizes.dat
+        NetworkDTO/NetworkDTO.hpp
+        BrushEngine/NetBrushStamp.hpp
+        # reverse it:
+        BrushEngine/ClientBrushStamp.hpp
+        BrushEngine/LegacySharedBrush.hpp
         abrush.bmp
         ActionMaster.cpp
         ActionMaster.h
@@ -216,7 +221,8 @@ add_executable(Source
         strokemaster.h
         version.h
         BrushModel.h
-        BrushModel.cpp)
+        BrushModel.cpp
+)
 
 qt5_add_resources(SOURCE_FILES qresource.qrc)
 

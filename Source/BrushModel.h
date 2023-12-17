@@ -21,7 +21,7 @@
 #include "ctl_friendlist.h"
 #include "ctl_BMselector.h"
 #include "ArtMaster.h"
-#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/ClientBrushStamp.hpp"
 #include "BrushEngine/LegacySharedBrush.hpp"
 // BrushEditorModel.h
 

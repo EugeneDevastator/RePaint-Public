@@ -1,6 +1,6 @@
 #include "BrushEditorPresenter.h"
 #include "ctl_bparam.h"
-#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/ClientBrushStamp.hpp"
 #include "BrushEngine/LegacySharedBrush.hpp"
 
 BrushEditorPresenter::BrushEditorPresenter(ClientBrushStamp *mainBrush, QWidget *parent)

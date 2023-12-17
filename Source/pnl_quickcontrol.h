@@ -13,7 +13,7 @@
 #include "ctl_BMselector.h"
 #include "ctl_fastbrush.h"
 #include "imagearray.h"
-#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/ClientBrushStamp.hpp"
 
 class pnl_QuickControl : public QWidget
      {

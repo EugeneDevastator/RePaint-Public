@@ -1,5 +1,5 @@
 #include "Brushes.h"
-#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/ClientBrushStamp.hpp"
 #include <QPainter>
 #include <math.h>
 #include <QtGlobal>
@@ -15,35 +15,6 @@ QString EGlobals::str1 = "asdasd";
 // QString RESPATH::append(RESPATH);
 // static QString RESPATH(QApplication::applicationDirPath());
 QList<QString> EGlobals::PipeNames;
-
-void PackedFloat::SetVal(double val) {
-    IntVal = (qint16) (floor(val));
-    FVal = (quint8) floor((val - floor(val)) * 255);
-}
-
-qreal PackedFloat::GetVal() {
-    return (qreal) (IntVal + FVal / 255.0);
-}
-
-void d_PointF::SetByQPointF(QPointF src) {
-    xpos.SetVal(src.x());
-    ypos.SetVal(src.y());
-}
-
-QPointF d_PointF::ToPointF() {
-    QPointF res;
-    res.setX(xpos.GetVal());
-    res.setY(ypos.GetVal());
-    return res;
-}
-
-qreal d_PointF::x() {
-    return xpos.GetVal();
-}
-
-qreal d_PointF::y() {
-    return ypos.GetVal();
-}
 
 QString DSZstring(QByteArray ba) {
     QString st;

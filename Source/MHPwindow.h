@@ -54,7 +54,7 @@
 #include "pnl_quickcontrol.h"
 #include "pnl_filemenu.h"
 #include "pnl_chat.h"
-#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/ClientBrushStamp.hpp"
 #include "BrushEngine/LegacySharedBrush.hpp"
 
 QT_BEGIN_NAMESPACE

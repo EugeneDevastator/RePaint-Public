@@ -1,5 +1,5 @@
 #include "ctl_fastbrush.h"
-#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/ClientBrushStamp.hpp"
 #include "BrushEngine/LegacySharedBrush.hpp"
 #include <QtGui>
 
