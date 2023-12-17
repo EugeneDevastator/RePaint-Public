@@ -35,31 +35,31 @@ struct NetBrushStamp {
       quint8 preserveop; //preserve opacity
       QRgb col;
 
-void  SerializeInto(QDataStream *stream) {
-    *stream << RadiusInner.IntVal;
-    *stream << RadiusInner.FVal;
-    *stream << RadiusOuter.IntVal;
-    *stream << RadiusOuter.FVal;
-    *stream << BlendMode;
-    *stream << col;
-    *stream << CloneOpacity;
-    *stream << FadeCurveExp;
-    *stream << MaskID;
-    *stream << NoiseID;
+void  SerializeInto(QDataStream &stream) {
+    stream << RadiusInner.IntVal;
+    stream << RadiusInner.FVal;
+    stream << RadiusOuter.IntVal;
+    stream << RadiusOuter.FVal;
+    stream << BlendMode;
+    stream << col;
+    stream << CloneOpacity;
+    stream << FadeCurveExp;
+    stream << MaskID;
+    stream << NoiseID;
 
-    *stream << noiseidx;
-    *stream << seed;
+    stream << noiseidx;
+    stream << seed;
 
-    *stream << pipeID;
-    *stream << resangle;
-    *stream << scale;
-    *stream << seed;
+    stream << pipeID;
+    stream << resangle;
+    stream << scale;
+    stream << seed;
 
-    *stream << Solidity;
-    *stream << SolidityOfOpacity;
-    *stream << ProportionsX2Y;
-    *stream << preserveop;
-    *stream << pwr;
+    stream << Solidity;
+    stream << SolidityOfOpacity;
+    stream << ProportionsX2Y;
+    stream << preserveop;
+    stream << pwr;
 }
 
 void  Deserialize(QDataStream &stream) {

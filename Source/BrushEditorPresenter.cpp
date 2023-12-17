@@ -394,9 +394,9 @@ ActionData BrushEditorPresenter::ParseBrush(d_Stroke Strk, d_StrokePars stpars) 
         act.Brush.ClientStamp.bmidx = 1;
     }
 
-    act.Brush.SelfPack();
+    //act.Brush.SelfPack();
+    // thats quite strange, might be needed.
 
-//emit SendAction(act);
     return act;
 
 

@@ -149,44 +149,42 @@ void ActionData::DeSerialize(QByteArray src) {
     // now brush
     Stroke.pos1 = Stroke.packpos1.ToPointF();
     Stroke.pos2 = Stroke.packpos2.ToPointF();
-
-    Brush.DeSerialize(&ba);
-
+    Brush.DeSerialize(ba);
     ba >> ToolID;
     ba >> layer;
 }
 
 //--------------------------  SECTION SERIALIZATION;
 void StrokeSection::DeSerialize(QByteArray src) {
-    QDataStream ba(&src, QIODevice::ReadWrite);
-    Stroke.DeSerialize(&ba);
-    Brush.DeSerialize(&ba);
-    BrushFrom.DeSerialize(&ba);
-    ba >> ToolID;
-    ba >> BrushID;
-    ba >> NoiseID;
-    ba >> Noisemode;
+    QDataStream stream(&src, QIODevice::ReadWrite);
+    Stroke.DeSerialize(&stream);
+    Brush.DeSerialize(stream);
+    BrushFrom.DeSerialize(stream);
+    stream >> ToolID;
+    stream >> BrushID;
+    stream >> NoiseID;
+    stream >> Noisemode;
 
-    ba >> startseed;
-    ba >> layer;
-    ba >> spacing;
-    ba >> scatter; // fixit!
-    ba >> rRadout;
-    ba >> rRadrel;
-    ba >> rScale;
-    ba >> rScaleRel;
-    ba >> rAngle;
-    ba >> rSpacing;
-    ba >> rSpread;
-    ba >> rOp;
-    ba >> rSol;
-    ba >> rSol2;
-    ba >> rCrv;
-    ba >> rCop;
-    ba >> rPwr;
-    ba >> rHue;
-    ba >> rSat;
-    ba >> rLit;
+    stream >> startseed;
+    stream >> layer;
+    stream >> spacing;
+    stream >> scatter; // fixit!
+    stream >> rRadout;
+    stream >> rRadrel;
+    stream >> rScale;
+    stream >> rScaleRel;
+    stream >> rAngle;
+    stream >> rSpacing;
+    stream >> rSpread;
+    stream >> rOp;
+    stream >> rSol;
+    stream >> rSol2;
+    stream >> rCrv;
+    stream >> rCop;
+    stream >> rPwr;
+    stream >> rHue;
+    stream >> rSat;
+    stream >> rLit;
 }
 
 QByteArray StrokeSection::Serialize() {
@@ -194,8 +192,8 @@ QByteArray StrokeSection::Serialize() {
     qba->clear();
     QDataStream ba(qba, QIODevice::ReadWrite);
     Stroke.Serialize(&ba);
-    Brush.Serialize(&ba);
-    BrushFrom.Serialize(&ba);
+    Brush.Serialize(ba);
+    BrushFrom.Serialize(ba);
     ba << ToolID;
     ba << BrushID;
     ba << NoiseID;
