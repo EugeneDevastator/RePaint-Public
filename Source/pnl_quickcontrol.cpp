@@ -16,7 +16,7 @@ void pnl_QuickControl::linkSliders(Ctl_BParam *slave, Ctl_BParam *master)
     slave->MLayout->setMargin(1);
 }
 
-pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrush *mainBrush, ImageArray *mimage)
+pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp *mainBrush, ImageArray *mimage)
  :  MImage(mimage)
 {
   //  Check for null dependencies and throw an exception if any are null

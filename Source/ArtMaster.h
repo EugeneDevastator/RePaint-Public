@@ -16,9 +16,7 @@
 #include "brushes.h"
 #include "ctl_BMselector.h"
 #include "layerstack.h"
-
-
-
+#include "BrushEngine/LegacySharedBrush.hpp"
 
 class ArtMaster : public QObject
 {

@@ -8,6 +8,7 @@
 #include "LayersPanelPresenter.h"
 #include "imagearray.h"
 #include "ArtThread.h"
+#include "BrushEngine/LegacySharedBrush.hpp"
 
 
 

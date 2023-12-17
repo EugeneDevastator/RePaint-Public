@@ -13,7 +13,7 @@ QByteArray AuthPacket::Serialize()
 
 // proper way of stream handling by gpt:
 /*
- * QByteArray AuthPacket::Serialize()
+ * QByteArray AuthPacket::SerializeInto()
 {
     QByteArray bytes;
     QDataStream stream(&bytes, QIODevice::ReadWrite);

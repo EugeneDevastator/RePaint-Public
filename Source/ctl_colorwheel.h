@@ -7,6 +7,7 @@
 #include <QPoint>
 #include "bctl_imagewidget.h"
 #include "Brushes.h"
+#include "BrushEngine/LegacySharedBrush.hpp"
 
 class ctl_ColorWheel : public bctl_ImageWidget
 {

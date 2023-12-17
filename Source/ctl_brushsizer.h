@@ -7,7 +7,8 @@
 #include <QtWidgets/QWidget>
 #include "ArtMaster.h"
 #include "Brushes.h"
-
+#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/LegacySharedBrush.hpp"
 
 class BrushSizer : public QWidget
 {
@@ -22,7 +23,7 @@ public:
     float offang;
 
     QImage BrushImg;
-    ClientBrush *g_Brush;
+    ClientBrushStamp *g_Brush;
    void Redraw();
 public slots:
 //    void GetBrush(BrushData br);

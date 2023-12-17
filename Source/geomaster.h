@@ -3,7 +3,7 @@
 
 #include <QtWidgets/QWidget>
 #include "Brushes.h"
-
+#include "BrushEngine/LegacySharedBrush.hpp"
 
 struct fatpoint{
    BrushData props;

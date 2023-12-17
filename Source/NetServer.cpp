@@ -283,7 +283,7 @@ void NetServer::S_DelFromRoom(NetSocket *client)
                 us.UserState=suRoomFree;*/
                 S_SetUserStatus(NR->RemoteClients[0], suRoomFree); // marking new owner
                 // foreach (NetSocket *sck,NR->RemoteClients)
-                // G_SendData(sdUserStat,us.Serialize(),sck);
+                // G_SendData(sdUserStat,us.SerializeInto(),sck);
                 //   G_SendUserStatus(NR->RemoteClients.at(0)->RegName,suRoomFree,sck);
             }
 

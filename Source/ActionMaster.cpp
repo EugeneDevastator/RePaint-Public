@@ -1,4 +1,5 @@
 #include "ActionMaster.h"
+#include "BrushEngine/LegacySharedBrush.hpp"
 #include <QtWidgets/QFileDialog>
 
 ActionMaster::ActionMaster(ImageArray *iar, bool forcesinglecore, QObject *parent) : QThread(parent)
@@ -259,8 +260,8 @@ void ActionMaster::UnpackSection(StrokeSection Sect, bool local)
 
     qreal stdist = Dist2D(Sect.Stroke.pos1, Sect.Stroke.pos2);
 
-    int rad = Sect.BrushFrom.Realb.rad_out * Sect.BrushFrom.Realb.scale;
-    int endradius = Sect.Brush.Realb.rad_out * Sect.BrushFrom.Realb.scale;
+    int rad = Sect.BrushFrom.ClientStamp.rad_out * Sect.BrushFrom.ClientStamp.scale;
+    int endradius = Sect.Brush.ClientStamp.rad_out * Sect.BrushFrom.ClientStamp.scale;
 
     qreal dx = Sect.Stroke.pos1.x() - Sect.Stroke.pos2.x();
     qreal dy = Sect.Stroke.pos1.y() - Sect.Stroke.pos2.y();
@@ -286,7 +287,7 @@ void ActionMaster::UnpackSection(StrokeSection Sect, bool local)
 
     // what if length < than rads?
     // qreal rrang=Sect.spacing*Sect.Brush.rad_out*Sect.Brush.scale;
-    qreal rrang = Sect.Brush.Realb.rad_out * Sect.Brush.Realb.scale * (Sect.scatter / 51.0);
+    qreal rrang = Sect.Brush.ClientStamp.rad_out * Sect.Brush.ClientStamp.scale * (Sect.scatter / 51.0);
     // rrang=0;
 
     quint16 n = 0;
@@ -296,7 +297,7 @@ void ActionMaster::UnpackSection(StrokeSection Sect, bool local)
         {
             n = n + 1;
             ;
-            rnflw = RawRnd(Sect.BrushFrom.Realb.seed + n * 2, 1024) * rrang * 2 - rrang; //(qrand()/32767.0*rrang*2)-rrang;
+            rnflw = RawRnd(Sect.BrushFrom.ClientStamp.seed + n * 2, 1024) * rrang * 2 - rrang; //(qrand()/32767.0*rrang*2)-rrang;
             rnside = 0;                                                                  // 0.0;//(qrand()/32767.0*rrang*2)-rrang;
 
             // original equo
@@ -310,7 +311,7 @@ void ActionMaster::UnpackSection(StrokeSection Sect, bool local)
             //------- send actions to thread
             qreal k = nextlen / stdist;
             BrushData Cbrush = Sect.BrushFrom;
-            Cbrush.Realb = BlendBrushes(Sect.BrushFrom.Realb, Sect.Brush.Realb, k);
+            Cbrush.ClientStamp = BlendBrushes(Sect.BrushFrom.ClientStamp, Sect.Brush.ClientStamp, k);
 
             newact->layer = Sect.layer;
             newact->startseed = Sect.startseed;
@@ -322,25 +323,25 @@ void ActionMaster::UnpackSection(StrokeSection Sect, bool local)
             if (Sect.Noisemode == 0) // random
             {
 
-                newact->Brush.Realb.noisex = RawRnd(Sect.BrushFrom.Realb.seed + n * 3, 1024) * 1024;
-                newact->Brush.Realb.noisey = RawRnd(Sect.BrushFrom.Realb.seed + n + 21, 1024) * 1024;
+                newact->Brush.ClientStamp.noisex = RawRnd(Sect.BrushFrom.ClientStamp.seed + n * 3, 1024) * 1024;
+                newact->Brush.ClientStamp.noisey = RawRnd(Sect.BrushFrom.ClientStamp.seed + n + 21, 1024) * 1024;
             }
             else if (Sect.Noisemode == 1)
             { // constant
-                //  act.Brush.Realb.seed=45698;
-                newact->Brush.Realb.noisex = 34;
-                newact->Brush.Realb.noisey = 76;
+                //  act.Brush.ClientStamp.seed=45698;
+                newact->Brush.ClientStamp.noisex = 34;
+                newact->Brush.ClientStamp.noisey = 76;
             }
             else if (Sect.Noisemode == 2)
             { // stencil
-                newact->Brush.Realb.noisex = newact->Stroke.pos1.x();
-                newact->Brush.Realb.noisey = newact->Stroke.pos1.y();
+                newact->Brush.ClientStamp.noisex = newact->Stroke.pos1.x();
+                newact->Brush.ClientStamp.noisey = newact->Stroke.pos1.y();
             }
 
-            newact->Brush.Realb.noisex -= 1024 * floor(newact->Brush.Realb.noisex / 1024);
-            newact->Brush.Realb.noisey -= 1024 * floor(newact->Brush.Realb.noisey / 1024);
-            newact->Brush.Realb.noisex = abs(newact->Brush.Realb.noisex);
-            newact->Brush.Realb.noisey = abs(newact->Brush.Realb.noisey);
+            newact->Brush.ClientStamp.noisex -= 1024 * floor(newact->Brush.ClientStamp.noisex / 1024);
+            newact->Brush.ClientStamp.noisey -= 1024 * floor(newact->Brush.ClientStamp.noisey / 1024);
+            newact->Brush.ClientStamp.noisex = abs(newact->Brush.ClientStamp.noisex);
+            newact->Brush.ClientStamp.noisey = abs(newact->Brush.ClientStamp.noisey);
 
             newact->layer = Sect.layer;
             /*  actionpair ap;
@@ -612,21 +613,21 @@ void ActionMaster::OpenLog(QIODevice *iodev)
             sect.Stroke.pos1.setY(((qreal)sect.Stroke.pos1.y() * MainImage->ViewCanvas[0].height()) / baseSize.height());
             sect.Stroke.pos2.setX(((qreal)sect.Stroke.pos2.x() * MainImage->ViewCanvas[0].width()) / baseSize.width());
             sect.Stroke.pos2.setY(((qreal)sect.Stroke.pos2.y() * MainImage->ViewCanvas[0].height()) / baseSize.height());
-            sect.BrushFrom.Realb.rad_out = ((qreal)sect.BrushFrom.Realb.rad_out * MainImage->ViewCanvas[0].width()) / baseSize.width();
-            sect.BrushFrom.Realb.rad_in = ((qreal)sect.BrushFrom.Realb.rad_in * MainImage->ViewCanvas[0].width()) / baseSize.width();
-            sect.Brush.Realb.rad_out = ((qreal)sect.Brush.Realb.rad_out * MainImage->ViewCanvas[0].width()) / baseSize.width();
-            sect.Brush.Realb.rad_in = ((qreal)sect.Brush.Realb.rad_in * MainImage->ViewCanvas[0].width()) / baseSize.width();
+            sect.BrushFrom.ClientStamp.rad_out = ((qreal)sect.BrushFrom.ClientStamp.rad_out * MainImage->ViewCanvas[0].width()) / baseSize.width();
+            sect.BrushFrom.ClientStamp.rad_in = ((qreal)sect.BrushFrom.ClientStamp.rad_in * MainImage->ViewCanvas[0].width()) / baseSize.width();
+            sect.Brush.ClientStamp.rad_out = ((qreal)sect.Brush.ClientStamp.rad_out * MainImage->ViewCanvas[0].width()) / baseSize.width();
+            sect.Brush.ClientStamp.rad_in = ((qreal)sect.Brush.ClientStamp.rad_in * MainImage->ViewCanvas[0].width()) / baseSize.width();
             // sect.scatter=((qreal)sect.scatter*MainImage->ViewCanvas[0].width())/baseSize.width();
             qreal minrad = 3.0;
-            if (sect.Brush.Realb.rad_out < minrad)
+            if (sect.Brush.ClientStamp.rad_out < minrad)
             {
-                sect.Brush.Realb.opacity *= (sect.Brush.Realb.rad_out) / minrad;
-                sect.Brush.Realb.rad_out = (minrad + sect.Brush.Realb.rad_out) * 0.5;
+                sect.Brush.ClientStamp.opacity *= (sect.Brush.ClientStamp.rad_out) / minrad;
+                sect.Brush.ClientStamp.rad_out = (minrad + sect.Brush.ClientStamp.rad_out) * 0.5;
             }
-            if (sect.BrushFrom.Realb.rad_out < minrad)
+            if (sect.BrushFrom.ClientStamp.rad_out < minrad)
             {
-                sect.BrushFrom.Realb.opacity *= (sect.BrushFrom.Realb.rad_out) / minrad;
-                sect.BrushFrom.Realb.rad_out = (minrad + sect.BrushFrom.Realb.rad_out) * 0.5;
+                sect.BrushFrom.ClientStamp.opacity *= (sect.BrushFrom.ClientStamp.rad_out) / minrad;
+                sect.BrushFrom.ClientStamp.rad_out = (minrad + sect.BrushFrom.ClientStamp.rad_out) * 0.5;
             }
             // LocalSects.append(sect);
             this->ExecSection(sect);

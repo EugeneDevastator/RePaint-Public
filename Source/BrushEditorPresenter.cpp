@@ -1,7 +1,9 @@
 #include "BrushEditorPresenter.h"
 #include "ctl_bparam.h"
+#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/LegacySharedBrush.hpp"
 
-BrushEditorPresenter::BrushEditorPresenter(ClientBrush *mainBrush, QWidget *parent)
+BrushEditorPresenter::BrushEditorPresenter(ClientBrushStamp *mainBrush, QWidget *parent)
 {
 
     setAccessibleName("BrushControls");
@@ -320,55 +322,55 @@ ActionData BrushEditorPresenter::ParseBrush(d_Stroke Strk, d_StrokePars stpars) 
     BrushData nb;
     ActionData act;
 
-    nb.Realb.opacity = 0.8;
+    nb.ClientStamp.opacity = 0.8;
     act.Brush = nb;
     qreal op = CtlOp->GetModValue(stpars);
-    act.Brush.Realb.opacity = op;
-    act.Brush.Realb.opacity = CtlOp->GetModValue(stpars);
-    act.Brush.Realb.rad_out = InternalBrush->rad_out * CtlRad->GetModValue(stpars);//*stpars.pressure;
+    act.Brush.ClientStamp.opacity = op;
+    act.Brush.ClientStamp.opacity = CtlOp->GetModValue(stpars);
+    act.Brush.ClientStamp.rad_out = InternalBrush->rad_out * CtlRad->GetModValue(stpars);//*stpars.pressure;
     qreal minrad = 3.0;
-    if (act.Brush.Realb.rad_out < minrad) {
-        act.Brush.Realb.opacity *= (act.Brush.Realb.rad_out) / minrad;
-        act.Brush.Realb.rad_out = (minrad + act.Brush.Realb.rad_out) * 0.5;
+    if (act.Brush.ClientStamp.rad_out < minrad) {
+        act.Brush.ClientStamp.opacity *= (act.Brush.ClientStamp.rad_out) / minrad;
+        act.Brush.ClientStamp.rad_out = (minrad + act.Brush.ClientStamp.rad_out) * 0.5;
     }
-    act.Brush.Realb.rad_in = act.Brush.Realb.rad_out * CtlRadRel->GetModValue(
+    act.Brush.ClientStamp.rad_in = act.Brush.ClientStamp.rad_out * CtlRadRel->GetModValue(
             stpars);//Brush->rad_in*CtlRad->GetModValue(stpars);//*stpars.pressure;
 
 
-    act.Brush.Realb.resangle = InternalBrush->resangle + CtlAng->GetModValue(stpars);
-    if ((act.Brush.Realb.resangle == 45) | (act.Brush.Realb.resangle == -45) | (act.Brush.Realb.resangle == 135) |
-        (act.Brush.Realb.resangle == 225) | (act.Brush.Realb.resangle == 315))
-        act.Brush.Realb.resangle = act.Brush.Realb.resangle + 0.00001;
+    act.Brush.ClientStamp.resangle = InternalBrush->resangle + CtlAng->GetModValue(stpars);
+    if ((act.Brush.ClientStamp.resangle == 45) | (act.Brush.ClientStamp.resangle == -45) | (act.Brush.ClientStamp.resangle == 135) |
+        (act.Brush.ClientStamp.resangle == 225) | (act.Brush.ClientStamp.resangle == 315))
+        act.Brush.ClientStamp.resangle = act.Brush.ClientStamp.resangle + 0.00001;
 
     QColor DrawCol = QColor::fromHslF(CtlHue->GetModValue(stpars),
                                       CtlSat->GetModValue(stpars),
                                       CtlLit->GetModValue(stpars)
     );
 
-    act.Brush.Realb.col = qRgba(DrawCol.red(), DrawCol.green(), DrawCol.blue(), round(act.Brush.Realb.opacity * 255));
+    act.Brush.ClientStamp.col = qRgba(DrawCol.red(), DrawCol.green(), DrawCol.blue(), round(act.Brush.ClientStamp.opacity * 255));
 
 //if (stpars.Pars[csERASER]==1) act.Brush.col = EraserColor->UseCol;
 
-    act.Brush.Realb.crv = CtlCrv->GetModValue(stpars);
-    act.Brush.Realb.cop = CtlCop->GetModValue(stpars);
-    act.Brush.Realb.sol = CtlSol->GetModValue(stpars);
-    act.Brush.Realb.sol2op = CtlSol2->GetModValue(stpars);
-    act.Brush.Realb.x2y = CtlScaleRel->GetModValue(stpars);
-    act.Brush.Realb.scale = CtlScale->GetModValue(stpars);
-    act.Brush.Realb.scale = CtlScale->GetModValue(stpars);
+    act.Brush.ClientStamp.crv = CtlCrv->GetModValue(stpars);
+    act.Brush.ClientStamp.cop = CtlCop->GetModValue(stpars);
+    act.Brush.ClientStamp.sol = CtlSol->GetModValue(stpars);
+    act.Brush.ClientStamp.sol2op = CtlSol2->GetModValue(stpars);
+    act.Brush.ClientStamp.x2y = CtlScaleRel->GetModValue(stpars);
+    act.Brush.ClientStamp.scale = CtlScale->GetModValue(stpars);
+    act.Brush.ClientStamp.scale = CtlScale->GetModValue(stpars);
 //act.Brush.compmode= //ARTM->BMmodes.at(CtlCompMode->currentIndex());
-    act.Brush.Realb.bmidx = CtlCompMode->GetIdx();
-    act.Brush.Realb.noiseidx = CtlNoiseMode->currentIndex();
+    act.Brush.ClientStamp.bmidx = CtlCompMode->GetIdx();
+    act.Brush.ClientStamp.noiseidx = CtlNoiseMode->currentIndex();
     if (CtlNoiseMode->currentIndex() == 0) //random
     {
-        act.Brush.Realb.seed = RNDf(65535);
-        act.Brush.Realb.noisex = RawRnd(act.Brush.Realb.seed, 1024);
-        act.Brush.Realb.noisey = RawRnd(act.Brush.Realb.seed + 21, 1024);
+        act.Brush.ClientStamp.seed = RNDf(65535);
+        act.Brush.ClientStamp.noisex = RawRnd(act.Brush.ClientStamp.seed, 1024);
+        act.Brush.ClientStamp.noisey = RawRnd(act.Brush.ClientStamp.seed + 21, 1024);
         //  act.Brush.noisex=(qrand()/(float)RAND_MAX)*(1024);
         //  act.Brush.noisey=(qrand()/(float)RAND_MAX)*(1024);
 
     } else if (CtlNoiseMode->currentIndex() == 1) { //constant
-        act.Brush.Realb.seed = 45698;
+        act.Brush.ClientStamp.seed = 45698;
         //act.Brush.noisex=34;
         //act.Brush.noisey=76;
     } else if (CtlNoiseMode->currentIndex() == 2) { //stencil
@@ -376,20 +378,20 @@ ActionData BrushEditorPresenter::ParseBrush(d_Stroke Strk, d_StrokePars stpars) 
         //act.Brush.noisey=Strk.pos1.y();
     }
     act.Noisemode = CtlNoiseMode->currentIndex();
-    act.Brush.Realb.noisex -= 1024 * floor(act.Brush.Realb.noisex / 1024);
-    act.Brush.Realb.noisey -= 1024 * floor(act.Brush.Realb.noisey / 1024);
+    act.Brush.ClientStamp.noisex -= 1024 * floor(act.Brush.ClientStamp.noisex / 1024);
+    act.Brush.ClientStamp.noisey -= 1024 * floor(act.Brush.ClientStamp.noisey / 1024);
 //if (act.Brush.noisex<0) act.Brush.noisex-=1024*ceil(act.Brush.noisex/1024);
 //if (act.Brush.noisey<0) act.Brush.noisey-=1024*ceil(act.Brush.noisey/1024);
-    if (act.Brush.Realb.noisex < act.Brush.Realb.rad_out) act.Brush.Realb.noisex += 1024;
-    if (act.Brush.Realb.noisey < act.Brush.Realb.rad_out) act.Brush.Realb.noisey += 1024;
-    act.Brush.Realb.pipeID = plCFNSR;
-    if (chkFastMode->isChecked()) act.Brush.Realb.pipeID = plRS;
+    if (act.Brush.ClientStamp.noisex < act.Brush.ClientStamp.rad_out) act.Brush.ClientStamp.noisex += 1024;
+    if (act.Brush.ClientStamp.noisey < act.Brush.ClientStamp.rad_out) act.Brush.ClientStamp.noisey += 1024;
+    act.Brush.ClientStamp.pipeID = plCFNSR;
+    if (chkFastMode->isChecked()) act.Brush.ClientStamp.pipeID = plRS;
 
     act.ToolID = CtlTools->ToolID;
-    act.Brush.Realb.pwr = CtlPwr->GetModValue(stpars);
+    act.Brush.ClientStamp.pwr = CtlPwr->GetModValue(stpars);
     act.Stroke = Strk;
     if (stpars.Pars[csERASER] == 1) {
-        act.Brush.Realb.bmidx = 1;
+        act.Brush.ClientStamp.bmidx = 1;
     }
 
     act.Brush.SelfPack();

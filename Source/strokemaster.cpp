@@ -70,13 +70,13 @@ void StrokeMaster::GetRawStroke(d_Stroke Strk, d_StrokePars currpars, d_StrokePa
     Sect.ToolID = nact.ToolID;
     if (currpars.Pars[csERASER] == 1)
     {
-        Sect.Brush.Realb.bmidx = 1;
-        Sect.BrushFrom.Realb.bmidx = 1;
+        Sect.Brush.ClientStamp.bmidx = 1;
+        Sect.BrushFrom.ClientStamp.bmidx = 1;
     }
     if (LP->BtnPresOp->isChecked())
     {
-        Sect.Brush.Realb.preserveop = 1;
-        Sect.BrushFrom.Realb.preserveop = 1;
+        Sect.Brush.ClientStamp.preserveop = 1;
+        Sect.BrushFrom.ClientStamp.preserveop = 1;
     }
 
     if (isNew)

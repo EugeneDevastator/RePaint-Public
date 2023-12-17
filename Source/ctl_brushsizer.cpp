@@ -113,7 +113,7 @@ void BrushSizer::Redraw()
     // Brush->compmode=QPainter::CompositionMode_SourceOver;
     ActionData act;
     act.Stroke = ts;
-    act.Brush.Realb = *g_Brush;
+    act.Brush.ClientStamp = *g_Brush;
     // act.Brush.noisex=2;
     // act.Brush.noisey=2;
     act.ToolID = eBrush;

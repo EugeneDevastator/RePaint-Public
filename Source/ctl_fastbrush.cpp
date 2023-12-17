@@ -1,7 +1,9 @@
 #include "ctl_fastbrush.h"
+#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/LegacySharedBrush.hpp"
 #include <QtGui>
 
-ctl_FastBrush::ctl_FastBrush(ClientBrush *brush,QWidget *parent) :
+ctl_FastBrush::ctl_FastBrush(ClientBrushStamp *brush, QWidget *parent) :
 QWidget(parent), g_Brush(brush)
 {
     // Brush =new BrushData;
@@ -114,7 +116,7 @@ void ctl_FastBrush::paintEvent(QPaintEvent *event)
 void ctl_FastBrush::ReBrush(ActionData act)
 {
     *DBR = act.Brush;
-    DBR->Realb.scale = DBR->Realb.scale * (*ZoomK);
+    DBR->ClientStamp.scale = DBR->ClientStamp.scale * (*ZoomK);
     gotbrush = true;
     if (repainted == true)
     {

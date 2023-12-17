@@ -1,11 +1,12 @@
 #include "imagearray.h"
+#include "BrushEngine/BrushStamp.hpp"
 #include <QtGui>
 #include <QtWidgets/QDesktopWidget>
 #include <QtWidgets/QFileDialog>
 #include <QRect>
 #include <QFile>
 
-ImageArray::ImageArray(ClientBrush *pBrush, BrushEditorPresenter *brushEditor, c_KeyLink *keyb) :
+ImageArray::ImageArray(ClientBrushStamp *pBrush, BrushEditorPresenter *brushEditor, c_KeyLink *keyb) :
         g_Brush(pBrush), GlobalKB(keyb), BControls(brushEditor) {
     SpacingCtl = brushEditor->CtlSpc;
     SpacingJitCtl = brushEditor->CtlSpcJit;

@@ -21,6 +21,8 @@
 #include "ctl_friendlist.h"
 #include "ctl_BMselector.h"
 #include "ArtMaster.h"
+#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/LegacySharedBrush.hpp"
 // BrushEditorModel.h
 
 class BrushModel {
@@ -31,7 +33,7 @@ class BrushModel {
       d_ToolPreset GenPreset();
 
    private:
-      ClientBrush *g_Brush;
+      ClientBrushStamp *g_Brush;
       // Add other brush-related properties here
 };
 

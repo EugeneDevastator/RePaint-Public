@@ -4,6 +4,7 @@
 #include <QTabletEvent>
 #include <QtWidgets/QFileDialog>
 #include "geomaster.h"
+#include "BrushEngine/BrushStamp.hpp"
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QSplashScreen>
 // #include <QDomDocument>
@@ -47,7 +48,7 @@ MHPwindow::MHPwindow()
 
     // Root level Dependencies
     KBLINK = new c_KeyLink();
-    Brush = new ClientBrush;
+    Brush = new ClientBrushStamp;
 
     Brush->sol2op = 1;
     Brush->rad_out = 20;
@@ -409,10 +410,10 @@ MHPwindow::MHPwindow()
     CHAT->Chat->append(QString::number(RawRnd(20, 0)) + " ");
     CHAT->Chat->append(QString::number(RawRnd(30, 0)) + " ");
 
-    // CHAT->Chat->append(QString::number(act.Serialize().count()));
+    // CHAT->Chat->append(QString::number(act.SerializeInto().count()));
 
     StrokeSection tsec1;
-    // tsec1.DeSerialize(act.Serialize());
+    // tsec1.DeSerialize(act.SerializeInto());
     int h = 0;
 
     // Applying settings to window geometries;

@@ -24,6 +24,7 @@
 #include <QImage>
 #include <QRgb>
 #include "layerstack.h"
+#include "BrushEngine/LegacySharedBrush.hpp"
 
 /*ArtMaster::ArtMaster(QObject *parent) :
     QObject(parent)*/
@@ -401,7 +402,7 @@ void ArtMaster::DoActionList(QImage *img, dotList *actlist, bool local = true)
         if ((Act->ToolID == eSmudge) | (Act->ToolID == eDisp) | (Act->ToolID == eCont))
         {
             // //clamp position please move outside
-            int twd = Act->Brush.Realb.rad_out * Act->Brush.Realb.scale;
+            int twd = Act->Brush.ClientStamp.rad_out * Act->Brush.ClientStamp.scale;
             float cx = qMin(Act->Stroke.pos2.x(), (qreal)img->width() - twd);
             cx = qMax(cx, (float)twd);
             float cy = qMin(Act->Stroke.pos2.y(), (qreal)img->height() - twd);
@@ -420,7 +421,7 @@ void ArtMaster::DoActionList(QImage *img, dotList *actlist, bool local = true)
         else if (Act->ToolID == eLine)
             DrawLine(img, Act->Stroke, Act->Brush);
         //     case 2: DrawSmudge(img,Act.Stroke,Act.Brush);
-        int realrad = Act->Brush.Realb.rad_out * Act->Brush.Realb.scale;
+        int realrad = Act->Brush.ClientStamp.rad_out * Act->Brush.ClientStamp.scale;
         // ActionData ac2;
         // ac2=Act;
         // emit ConfirmAction(ac2);
@@ -436,7 +437,7 @@ void ArtMaster::DoAction(QImage *img, ActionData Act, bool local = true)
     if ((Act.ToolID == eSmudge) | (Act.ToolID == eDisp) | (Act.ToolID == eCont))
     {
         // //clamp position please move outside
-        int twd = Act.Brush.Realb.rad_out * Act.Brush.Realb.scale;
+        int twd = Act.Brush.ClientStamp.rad_out * Act.Brush.ClientStamp.scale;
         float cx = qMin(Act.Stroke.pos2.x(), (qreal)img->width() - twd);
         cx = qMax(cx, (float)twd);
         float cy = qMin(Act.Stroke.pos2.y(), (qreal)img->height() - twd);
@@ -455,7 +456,7 @@ void ArtMaster::DoAction(QImage *img, ActionData Act, bool local = true)
     else if (Act.ToolID == eLine)
         DrawLine(img, Act.Stroke, Act.Brush);
     //     case 2: DrawSmudge(img,Act.Stroke,Act.Brush);
-    int realrad = Act.Brush.Realb.rad_out * Act.Brush.Realb.scale;
+    int realrad = Act.Brush.ClientStamp.rad_out * Act.Brush.ClientStamp.scale;
     // ActionData ac2;
     // ac2=Act;
     // emit ConfirmAction(ac2);
@@ -469,7 +470,7 @@ void ArtMaster::DoAction(QImage *img, ActionData Act, bool local = true)
 void ArtMaster::DrawLine(QImage *img, d_Stroke STRK, BrushData BRSH)
 {
 
-    float wd = BRSH.Realb.rad_out * 0.5;
+    float wd = BRSH.ClientStamp.rad_out * 0.5;
     float bigrad = Dist2D(STRK.pos2, STRK.pos3);
     int xoff = wd;
     int yoff = wd;
@@ -491,7 +492,7 @@ void ArtMaster::DrawLine(QImage *img, d_Stroke STRK, BrushData BRSH)
     PST2.lineTo(QPoint(xoff + dx23 + dx12, yoff + dy23 + dy12));
 
     // float bigrad=Dist2D(STRK.pos1,STRK.pos2);
-    float mul = BRSH.Realb.rad_out / bigrad * 0.5;
+    float mul = BRSH.ClientStamp.rad_out / bigrad * 0.5;
 
     QLinearGradient Grad;
     Grad.setSpread(QGradient::ReflectSpread);
@@ -506,24 +507,24 @@ void ArtMaster::DrawLine(QImage *img, d_Stroke STRK, BrushData BRSH)
     // Grad.setStart(STRK.pos2.x(),STRK.pos2.y());
     // Grad.setFinalStop((STRK.pos1.y()-STRK.pos2.y())*mul+STRK.pos2.x(),(-STRK.pos1.x()+STRK.pos2.x())*mul+STRK.pos2.y());
 
-    QColor col1 = BRSH.Realb.col;
+    QColor col1 = BRSH.ClientStamp.col;
     col1.setAlpha(0.0);
-    Grad.setColorAt(0, BRSH.Realb.col);
+    Grad.setColorAt(0, BRSH.ClientStamp.col);
     Grad.setColorAt(1, col1);
-    Grad.setColorAt((float)BRSH.Realb.rad_in / BRSH.Realb.rad_out, BRSH.Realb.col);
+    Grad.setColorAt((float)BRSH.ClientStamp.rad_in / BRSH.ClientStamp.rad_out, BRSH.ClientStamp.col);
 
-    QImage Bimg(QSize(BRSH.Realb.rad_out + abs(dx23), BRSH.Realb.rad_out + abs(dy23)), QImage::Format_ARGB32);
+    QImage Bimg(QSize(BRSH.ClientStamp.rad_out + abs(dx23), BRSH.ClientStamp.rad_out + abs(dy23)), QImage::Format_ARGB32);
     Bimg.fill(qRgba(0, 0, 0, 0));
     QPainter Bpainter(&Bimg);
     Bpainter.setCompositionMode(QPainter::CompositionMode_Source);
     // first stroke:
     QPen np;
     np.color() = Qt::black;
-    np.setWidth(BRSH.Realb.rad_out);
+    np.setWidth(BRSH.ClientStamp.rad_out);
     np.setCapStyle(Qt::RoundCap);
     np.setJoinStyle(Qt::RoundJoin);
     np.setBrush(QBrush(Grad));
-    Bpainter.setOpacity(BRSH.Realb.opacity);
+    Bpainter.setOpacity(BRSH.ClientStamp.opacity);
     Bpainter.strokePath(PST, np);
     // antifilling:
     np.setBrush(Qt::red);
@@ -544,12 +545,12 @@ void ArtMaster::DrawSmudge(QImage *img, d_Stroke STRK, BrushData BRSH)
     fpos.setX(fpos.x() - floor(fpos.x()));
     fpos.setY(fpos.y() - floor(fpos.y()));
 
-    int wd = BRSH.Realb.rad_out * 2;
-    float tscale = BRSH.Realb.scale;
-    int twd = BRSH.Realb.rad_out * tscale;
+    int wd = BRSH.ClientStamp.rad_out * 2;
+    float tscale = BRSH.ClientStamp.scale;
+    int twd = BRSH.ClientStamp.rad_out * tscale;
     QColor col1;
     // col1.setRgba(qRed(BRSH.col),qBlue(BRSH.col),qGreen(BRSH.col),1);
-    col1 = BRSH.Realb.col;
+    col1 = BRSH.ClientStamp.col;
 
     // QRect Trect= QRect(STRK.pos2.x()-BRSH.rad_out,STRK.pos2.y()-BRSH.rad_out,STRK.pos2.x()+BRSH.rad_out,STRK.pos2.y()+BRSH.rad_out);
     QRect Trect = QRect(STRK.pos2.x() - twd, STRK.pos2.y() - twd, STRK.pos2.x() + twd, STRK.pos2.y() + twd); // scaled rect for correct mask application
@@ -570,13 +571,13 @@ void ArtMaster::DrawSmudge(QImage *img, d_Stroke STRK, BrushData BRSH)
     QPainter B2painter(&Bimg2);
     B2painter.setPen(Qt::NoPen);
     //-- opacity mask transformations
-    float x2y = BRSH.Realb.x2y;
+    float x2y = BRSH.ClientStamp.x2y;
     float y2x = 1 - (x2y - 0.5) * 2;
     y2x = qMin(y2x, (float)1);
     x2y = qMin(x2y * 2, (float)1);
 
     B2painter.translate(twd, twd);
-    B2painter.rotate(BRSH.Realb.resangle);
+    B2painter.rotate(BRSH.ClientStamp.resangle);
     B2painter.scale(tscale * x2y, tscale * y2x);
     B2painter.translate(-twd, -twd);
     B2painter.setOpacity(1);
@@ -603,7 +604,7 @@ void ArtMaster::DrawSmudge(QImage *img, d_Stroke STRK, BrushData BRSH)
 
     // resaturating with brush color, EXCLUDING transparent pixels!;
     Cpainter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
-    Cpainter.setOpacity(1.0 - BRSH.Realb.cop);
+    Cpainter.setOpacity(1.0 - BRSH.ClientStamp.cop);
     Cpainter.fillRect(Cimg.rect(), col1);
 
     Cpainter.setCompositionMode(QPainter::CompositionMode_DestinationIn); // applying pregenerated mask
@@ -615,11 +616,11 @@ void ArtMaster::DrawSmudge(QImage *img, d_Stroke STRK, BrushData BRSH)
     painter.setPen(Qt::NoPen);
 
     painter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
-    painter.setOpacity(BRSH.Realb.opacity);
+    painter.setOpacity(BRSH.ClientStamp.opacity);
     painter.drawImage(STRK.pos1.x() - twd, STRK.pos1.y() - twd, Acut);
 
-    painter.setCompositionMode(BMsel.BMmodes.at(BRSH.Realb.bmidx)); // QPainter::CompositionMode_Darken);
-    painter.setOpacity(BRSH.Realb.opacity);
+    painter.setCompositionMode(BMsel.BMmodes.at(BRSH.ClientStamp.bmidx)); // QPainter::CompositionMode_Darken);
+    painter.setOpacity(BRSH.ClientStamp.opacity);
     painter.drawImage(STRK.pos1.x() - twd, STRK.pos1.y() - twd, Cimg);
 
     /*
@@ -648,9 +649,9 @@ void ArtMaster::DrawBrush(QImage *img, d_Stroke STRK, BrushData BRSH)
     fpos.setX(fpos.x() - floor(fpos.x()));
     fpos.setY(fpos.y() - floor(fpos.y()));
 
-    int wd = BRSH.Realb.rad_out * 2;
-    float tscale = BRSH.Realb.scale;
-    int twd = BRSH.Realb.rad_out * tscale;
+    int wd = BRSH.ClientStamp.rad_out * 2;
+    float tscale = BRSH.ClientStamp.scale;
+    int twd = BRSH.ClientStamp.rad_out * tscale;
 
     QRect Trect = QRect(STRK.pos1.x() - twd, STRK.pos1.y() - twd, STRK.pos1.x() + twd, STRK.pos1.y() + twd); // scaled rect for correct mask application
 
@@ -669,13 +670,13 @@ void ArtMaster::DrawBrush(QImage *img, d_Stroke STRK, BrushData BRSH)
     QPainter B2painter(&Bimg2);
     B2painter.setPen(Qt::NoPen);
     //-- opacity mask transformations
-    float x2y = BRSH.Realb.x2y;
+    float x2y = BRSH.ClientStamp.x2y;
     float y2x = 1 - (x2y - 0.5) * 2;
     y2x = qMin(y2x, (float)1);
     x2y = qMin(x2y * 2, (float)1);
 
     B2painter.translate(twd, twd);
-    B2painter.rotate(BRSH.Realb.resangle);
+    B2painter.rotate(BRSH.ClientStamp.resangle);
     B2painter.scale(tscale * x2y, tscale * y2x);
     B2painter.translate(-twd, -twd);
     B2painter.setOpacity(1);
@@ -706,11 +707,11 @@ void ArtMaster::DrawBrush(QImage *img, d_Stroke STRK, BrushData BRSH)
     QPainter painter(img);
     painter.setPen(Qt::NoPen);
 
-    painter.setCompositionMode(BMsel.BMmodes.at(BRSH.Realb.bmidx)); // QPainter::CompositionMode_Darken);
-    painter.setOpacity(BRSH.Realb.opacity);
+    painter.setCompositionMode(BMsel.BMmodes.at(BRSH.ClientStamp.bmidx)); // QPainter::CompositionMode_Darken);
+    painter.setOpacity(BRSH.ClientStamp.opacity);
     painter.drawImage(STRK.pos1.x() - twd, STRK.pos1.y() - twd, Bimg2); // was bimg2
 
-    if (BRSH.Realb.preserveop == 1)
+    if (BRSH.ClientStamp.preserveop == 1)
     {
         Cpainter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
         Cpainter.setOpacity(1);
@@ -737,8 +738,8 @@ void ArtMaster::DrawBrushDev(QPaintDevice *img, d_Stroke STRK, BrushData BRSH)
     // painter.setRenderHint(QPainter::Antialiasing,true);
     // painter.setRenderHint(QPainter::SmoothPixmapTransform,true);
     // painter.setCompositionMode(BRSH.compmode);//(QPainter::CompositionMode_SourceOver);
-    painter.setCompositionMode(BMsel.BMmodes.at(BRSH.Realb.bmidx));
-    painter.setOpacity(BRSH.Realb.opacity);
+    painter.setCompositionMode(BMsel.BMmodes.at(BRSH.ClientStamp.bmidx));
+    painter.setOpacity(BRSH.ClientStamp.opacity);
 
     // painter.drawImage(STRK.pos1,Bimg);
     // QMatrix m;
@@ -750,18 +751,18 @@ void ArtMaster::DrawBrushDev(QPaintDevice *img, d_Stroke STRK, BrushData BRSH)
 
     QImage Bimg2(GenBMask(BRSH, fpos.x(), fpos.y()));
 
-    float x2y = BRSH.Realb.x2y;
+    float x2y = BRSH.ClientStamp.x2y;
     float y2x = 1 - (x2y - 0.5) * 2;
     y2x = qMin(y2x, (float)1);
     x2y = qMin(x2y * 2, (float)1);
     // painter.setRenderHints(QPainter::SmoothPixmapTransform);
     painter.translate(STRK.pos1.x(), STRK.pos1.y());
-    painter.rotate(BRSH.Realb.resangle);
-    painter.scale(x2y * ((BRSH.Realb.scale)), y2x * ((BRSH.Realb.scale)));
+    painter.rotate(BRSH.ClientStamp.resangle);
+    painter.scale(x2y * ((BRSH.ClientStamp.scale)), y2x * ((BRSH.ClientStamp.scale)));
     painter.translate(-STRK.pos1.x(), -STRK.pos1.y());
     // painter.translate(fpos);
 
-    int decrad = ceil(BRSH.Realb.rad_out);
+    int decrad = ceil(BRSH.ClientStamp.rad_out);
     // if (decrad<2) decrad=1;
     int drwx = floor(STRK.pos1.x()) - decrad;
     int drwy = floor(STRK.pos1.y()) - decrad;
@@ -772,9 +773,9 @@ void ArtMaster::DrawBrushDev(QPaintDevice *img, d_Stroke STRK, BrushData BRSH)
 // --------------------------  L E V E L    B R U S H  ---------------------------------
 void ArtMaster::LvlBrush(QImage *img, d_Stroke STRK, BrushData BRSH)
 {
-    int wd = BRSH.Realb.rad_out * 2;
-    float tscale = BRSH.Realb.scale;
-    int twd = BRSH.Realb.rad_out * tscale;
+    int wd = BRSH.ClientStamp.rad_out * 2;
+    float tscale = BRSH.ClientStamp.scale;
+    int twd = BRSH.ClientStamp.rad_out * tscale;
 
     QPointF fpos = STRK.pos1;
     fpos.setX(fpos.x() - floor(fpos.x()));
@@ -795,11 +796,11 @@ void ArtMaster::LvlBrush(QImage *img, d_Stroke STRK, BrushData BRSH)
 
     QImage Cimg(QSize(twd * 2, twd * 2), QImage::Format_ARGB32);
     QPainter Cpainter(&Cimg);
-    QColor col1 = BRSH.Realb.col;
+    QColor col1 = BRSH.ClientStamp.col;
     Cpainter.fillRect(Cimg.rect(), col1);
-    if (BRSH.Realb.cop > 0)
+    if (BRSH.ClientStamp.cop > 0)
     {
-        Cpainter.setOpacity(BRSH.Realb.cop);
+        Cpainter.setOpacity(BRSH.ClientStamp.cop);
         Cpainter.drawImage(QPoint(0, 0), *img, Trect);
     }
     int salr;
@@ -816,11 +817,11 @@ void ArtMaster::LvlBrush(QImage *img, d_Stroke STRK, BrushData BRSH)
 
     // now creating ordinary mask
 
-    QRadialGradient BGrad(QPoint(BRSH.Realb.rad_out, BRSH.Realb.rad_out), BRSH.Realb.rad_out);
+    QRadialGradient BGrad(QPoint(BRSH.ClientStamp.rad_out, BRSH.ClientStamp.rad_out), BRSH.ClientStamp.rad_out);
     col1.setAlpha(0.0);
-    BGrad.setColorAt(0, BRSH.Realb.col);
+    BGrad.setColorAt(0, BRSH.ClientStamp.col);
     BGrad.setColorAt(1, col1);
-    BGrad.setColorAt((float)BRSH.Realb.rad_in / BRSH.Realb.rad_out, BRSH.Realb.col);
+    BGrad.setColorAt((float)BRSH.ClientStamp.rad_in / BRSH.ClientStamp.rad_out, BRSH.ClientStamp.col);
 
     QImage Bimg(GenBMask(BRSH, fpos.x(), fpos.y()));
     /*
@@ -845,13 +846,13 @@ void ArtMaster::LvlBrush(QImage *img, d_Stroke STRK, BrushData BRSH)
     Bimg2.fill(qRgba(255, 1, 1, 0));
     QPainter B2painter(&Bimg2);
     //-- opacity mask transformations
-    float x2y = BRSH.Realb.x2y;
+    float x2y = BRSH.ClientStamp.x2y;
     float y2x = 1 - (x2y - 0.5) * 2;
     y2x = qMin(y2x, (float)1);
     x2y = qMin(x2y * 2, (float)1);
 
     B2painter.translate(twd, twd);
-    B2painter.rotate((BRSH.Realb.resangle));
+    B2painter.rotate((BRSH.ClientStamp.resangle));
     B2painter.scale(tscale * x2y, tscale * y2x);
     B2painter.translate(-twd, -twd);
     //-- end opacity transforms
@@ -919,8 +920,8 @@ void ArtMaster::LvlBrush(QImage *img, d_Stroke STRK, BrushData BRSH)
 
     QPainter painter(img);
     // painter.setCompositionMode(BRSH.compmode);//QPainter::CompositionMode_Darken);
-    painter.setCompositionMode(BMsel.BMmodes.at(BRSH.Realb.bmidx));
-    painter.setOpacity(BRSH.Realb.opacity);
+    painter.setCompositionMode(BMsel.BMmodes.at(BRSH.ClientStamp.bmidx));
+    painter.setOpacity(BRSH.ClientStamp.opacity);
     // painter.drawImage(STRK.pos1,Bimg);
 
     //    painter.translate(STRK.pos1.x(),STRK.pos1.y());
@@ -934,12 +935,12 @@ void ArtMaster::LvlBrush(QImage *img, d_Stroke STRK, BrushData BRSH)
 void ArtMaster::DrawDisp(QImage *img, d_Stroke STRK, BrushData BRSH)
 {
 
-    qreal pwr = BRSH.Realb.pwr;
+    qreal pwr = BRSH.ClientStamp.pwr;
     pwr = pwr * 2;
-    int wd = BRSH.Realb.rad_out * 2;
-    float tscale = BRSH.Realb.scale;
+    int wd = BRSH.ClientStamp.rad_out * 2;
+    float tscale = BRSH.ClientStamp.scale;
 
-    int twd = BRSH.Realb.rad_out * tscale;
+    int twd = BRSH.ClientStamp.rad_out * tscale;
 
     float x2y;
     float y2x;
@@ -951,11 +952,11 @@ void ArtMaster::DrawDisp(QImage *img, d_Stroke STRK, BrushData BRSH)
 
     QImage Cimg(QSize(twd * 2, twd * 2), QImage::Format_ARGB32);
     QPainter Cpainter(&Cimg);
-    QColor col1 = BRSH.Realb.col;
+    QColor col1 = BRSH.ClientStamp.col;
     Cpainter.fillRect(Cimg.rect(), col1);
-    if (BRSH.Realb.cop > 0)
+    if (BRSH.ClientStamp.cop > 0)
     {
-        Cpainter.setOpacity(BRSH.Realb.cop);
+        Cpainter.setOpacity(BRSH.ClientStamp.cop);
         Cpainter.drawImage(QPoint(0, 0), *img, Trect);
     }
 
@@ -966,7 +967,7 @@ void ArtMaster::DrawDisp(QImage *img, d_Stroke STRK, BrushData BRSH)
     QImage *DMask = new QImage(QSize(twd * 2, twd * 2), QImage::Format_ARGB32);
     QPainter DMpainter(DMask);
     DMpainter.fillRect(DMask->rect(), QColor::fromRgbF(0.5, 0.5, 0.5));
-    x2y = BRSH.Realb.x2y;
+    x2y = BRSH.ClientStamp.x2y;
     y2x = 1 - (x2y - 0.5) * 2;
     y2x = qMin(y2x, (float)1);
     x2y = qMin(x2y * 2, (float)1);
@@ -977,7 +978,7 @@ void ArtMaster::DrawDisp(QImage *img, d_Stroke STRK, BrushData BRSH)
 
     DMpainter.scale(dratio, dratio);
     DMpainter.translate(DSMask->width() / 2, DSMask->width() / 2);
-    DMpainter.rotate(BRSH.Realb.resangle);
+    DMpainter.rotate(BRSH.ClientStamp.resangle);
     DMpainter.translate(-DSMask->width() / 2, -DSMask->width() / 2);
     // DMpainter.translate(-twd,-twd);
 
@@ -1041,11 +1042,11 @@ void ArtMaster::DrawDisp(QImage *img, d_Stroke STRK, BrushData BRSH)
 
     // -- Disp APPLICATION MASK
 
-    QRadialGradient BGrad(QPoint(BRSH.Realb.rad_out, BRSH.Realb.rad_out), BRSH.Realb.rad_out);
+    QRadialGradient BGrad(QPoint(BRSH.ClientStamp.rad_out, BRSH.ClientStamp.rad_out), BRSH.ClientStamp.rad_out);
     col1.setAlpha(0.0);
-    BGrad.setColorAt(0, BRSH.Realb.col);
+    BGrad.setColorAt(0, BRSH.ClientStamp.col);
     BGrad.setColorAt(1, col1);
-    BGrad.setColorAt((float)BRSH.Realb.rad_in / BRSH.Realb.rad_out, BRSH.Realb.col);
+    BGrad.setColorAt((float)BRSH.ClientStamp.rad_in / BRSH.ClientStamp.rad_out, BRSH.ClientStamp.col);
 
     QImage Bimg(GenBMask(BRSH, fpos.x(), fpos.y()));
 
@@ -1071,12 +1072,12 @@ Bpainter.end();
     Bimg2.fill(qRgba(255, 1, 1, 0));
     QPainter B2painter(&Bimg2);
     //-- opacity mask transformations
-    x2y = BRSH.Realb.x2y;
+    x2y = BRSH.ClientStamp.x2y;
     y2x = 1 - (x2y - 0.5) * 2;
     y2x = qMin(y2x, (float)1);
     x2y = qMin(x2y * 2, (float)1);
     B2painter.translate(twd, twd);
-    B2painter.rotate(BRSH.Realb.resangle);
+    B2painter.rotate(BRSH.ClientStamp.resangle);
     B2painter.scale(tscale * x2y, tscale * y2x);
     B2painter.translate(-twd, -twd);
     //-- end opacity transforms
@@ -1089,7 +1090,7 @@ Bpainter.end();
 
     QImage Acut(Dimg); // and taking for alpha cutting;
     QPainter ACpaint(&Acut);
-    ACpaint.fillRect(Acut.rect(), BRSH.Realb.col);
+    ACpaint.fillRect(Acut.rect(), BRSH.ClientStamp.col);
     ACpaint.setCompositionMode(QPainter::CompositionMode_DestinationOut);
     ACpaint.drawImage(0, 0, Bimg2);
     ACpaint.setCompositionMode(QPainter::CompositionMode_SourceOver);
@@ -1105,11 +1106,11 @@ Bpainter.end();
 
     QPainter painter(img);
     painter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
-    painter.setOpacity(BRSH.Realb.opacity);
+    painter.setOpacity(BRSH.ClientStamp.opacity);
     painter.drawImage(STRK.pos1.x() - twd, STRK.pos1.y() - twd, Acut);
 
-    painter.setCompositionMode(BMsel.BMmodes.at(BRSH.Realb.bmidx)); // QPainter::CompositionMode_Darken);
-    painter.setOpacity(BRSH.Realb.opacity);
+    painter.setCompositionMode(BMsel.BMmodes.at(BRSH.ClientStamp.bmidx)); // QPainter::CompositionMode_Darken);
+    painter.setOpacity(BRSH.ClientStamp.opacity);
     painter.drawImage(STRK.pos1.x() - twd, STRK.pos1.y() - twd, Dimg); // Dimg is right one
     //    painter.drawImage(STRK.pos1.x()-twd,STRK.pos1.y()-twd,Acut);
 
@@ -1169,10 +1170,10 @@ QImage ArtMaster::GenBMask(BrushData BRSH, float fx, float fy)
 {
 
     bool sub3 = false;
-    int wd = ceil(BRSH.Realb.rad_out * 2) + 2; // big dia +1 pixel;
-    qreal cposx = ceil(BRSH.Realb.rad_out) + fx;
-    qreal cposy = ceil(BRSH.Realb.rad_out) + fy;
-    qreal crad = BRSH.Realb.rad_out; // radius
+    int wd = ceil(BRSH.ClientStamp.rad_out * 2) + 2; // big dia +1 pixel;
+    qreal cposx = ceil(BRSH.ClientStamp.rad_out) + fx;
+    qreal cposy = ceil(BRSH.ClientStamp.rad_out) + fy;
+    qreal crad = BRSH.ClientStamp.rad_out; // radius
     if (wd < 5)
         sub3 = true;
 
@@ -1194,14 +1195,14 @@ QImage ArtMaster::GenBMask(BrushData BRSH, float fx, float fy)
     pn.setWidth(0);
     Bpainter.setPen(pn);
 
-    QColor col0 = BRSH.Realb.col;
+    QColor col0 = BRSH.ClientStamp.col;
     if (wd >= 0)
     {
         // int drawrad=ceil(BRSH.rad_out);
         // float rmul=RngConv(drawrad-(BRSH.rad_out),1,0,1,(float)drawrad/floor(BRSH.rad_out));
         // float rmul = BRSH.rad_out/255;
         QRadialGradient BGrad(QPointF(cposx, cposy), crad); // QPoint(drawrad,drawrad),drawrad);
-        QColor col1 = BRSH.Realb.col;
+        QColor col1 = BRSH.ClientStamp.col;
 
         col0.toRgb().setAlpha(1);
 
@@ -1210,11 +1211,11 @@ QImage ArtMaster::GenBMask(BrushData BRSH, float fx, float fy)
         // col1=QColor::fromRgba(qRgba(255,255,255,0));
 
         BGrad.setColorAt(0, col0);
-        if (BRSH.Realb.pipeID == plRS)
+        if (BRSH.ClientStamp.pipeID == plRS)
         {
             QColor midcol = col0;
             midcol.setAlpha(0.5);
-            BGrad.setColorAt((BRSH.Realb.rad_in / BRSH.Realb.rad_out), col0);
+            BGrad.setColorAt((BRSH.ClientStamp.rad_in / BRSH.ClientStamp.rad_out), col0);
         }
         BGrad.setColorAt(1, col1);
         // Bpainter.setRenderHints(QPainter::SmoothPixmapTransform);
@@ -1239,19 +1240,19 @@ QImage ArtMaster::GenBMask(BrushData BRSH, float fx, float fy)
     // -- EOB new image code
     // ------------------- noise cycle -------------
 
-    float sol = BRSH.Realb.sol;           // 0=full dissolve 1= opaque.
-    float sol2op = 1 - BRSH.Realb.sol2op; // 0=opacity is the same, 1 = full dissolvance
-    float fop = BRSH.Realb.crv;
+    float sol = BRSH.ClientStamp.sol;           // 0=full dissolve 1= opaque.
+    float sol2op = 1 - BRSH.ClientStamp.sol2op; // 0=opacity is the same, 1 = full dissolvance
+    float fop = BRSH.ClientStamp.crv;
 
-    if (BRSH.Realb.pipeID == plCFNSR)
+    if (BRSH.ClientStamp.pipeID == plCFNSR)
     {
-        GenClamp(&Bimg, 1 - (BRSH.Realb.rad_in / BRSH.Realb.rad_out), 0);
+        GenClamp(&Bimg, 1 - (BRSH.ClientStamp.rad_in / BRSH.ClientStamp.rad_out), 0);
         if (fop <= 0)
             this->GenFocalInv(&Bimg, fabs(fop));
         else if (fop <= 1)
             this->GenFocal(&Bimg, fop);
         if (!((sol == 1) & (sol2op == 0)))
-            GenSolidityP(&Bimg, sol, sol2op, BRSH.Realb.noisex, BRSH.Realb.noisey);
+            GenSolidityP(&Bimg, sol, sol2op, BRSH.ClientStamp.noisex, BRSH.ClientStamp.noisey);
     }
 
     Bpainter.setBrush(col0);

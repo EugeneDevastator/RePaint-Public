@@ -54,6 +54,8 @@
 #include "pnl_quickcontrol.h"
 #include "pnl_filemenu.h"
 #include "pnl_chat.h"
+#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/LegacySharedBrush.hpp"
 
 QT_BEGIN_NAMESPACE
 class QLabel;
@@ -193,7 +195,7 @@ class MHPwindow : public QWidget {
       QSettings *AppSettings;
 
       //bctl_HoverBrush *HoverBrush;
-      ClientBrush *Brush;
+      ClientBrushStamp *Brush;
       b_SmartColor *PaintColor;
       b_SmartColor *EraserColor;
       pnl_QuickControl *QuickPanel;

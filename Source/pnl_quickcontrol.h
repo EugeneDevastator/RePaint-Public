@@ -13,14 +13,14 @@
 #include "ctl_BMselector.h"
 #include "ctl_fastbrush.h"
 #include "imagearray.h"
-
+#include "BrushEngine/BrushStamp.hpp"
 
 class pnl_QuickControl : public QWidget
      {
         Q_OBJECT
 
 public:
-    explicit pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrush *mainBrush, ImageArray *mimage);
+    explicit pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp *mainBrush, ImageArray *mimage);
     Ctl_BParam *QuickOp;
     Ctl_BParam *QuickSol;
     Ctl_BParam *QuickSop;

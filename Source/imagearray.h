@@ -14,6 +14,7 @@
 #include "c_keylink.h"
 #include "ctl_BMselector.h"
 #include "geomaster.h"
+#include "BrushEngine/BrushStamp.hpp"
 //class d_Stroke;
 
 enum NavigationMode{
@@ -33,10 +34,10 @@ class ImageArray : public QWidget
     Q_OBJECT
 
    private:
-      ClientBrush *g_Brush;
+      ClientBrushStamp *g_Brush;
 
    public:
-    explicit ImageArray(ClientBrush *pBrush, BrushEditorPresenter *brushEditor, c_KeyLink *keyb);
+    explicit ImageArray(ClientBrushStamp *pBrush, BrushEditorPresenter *brushEditor, c_KeyLink *keyb);
     //void resizeImage(QImage *image, const QSize &newSize);
  //   void DrawBrush(QPointF pos,int rad,float Opacity);
 

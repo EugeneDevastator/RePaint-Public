@@ -1,8 +1,9 @@
 #include "BrushModel.h"
+#include "BrushEngine/BrushStamp.hpp"
 
 BrushModel::BrushModel() {
     // Initialize the brush and other properties
-    g_Brush = new ClientBrush;
+    g_Brush = new ClientBrushStamp;
     // Add other initialization code as required
 }
 

@@ -17,8 +17,8 @@ class bctl_DblSlider : public bctl_ImageWidget
 
 public:
     explicit bctl_DblSlider(QWidget *parent = 0);
-    /*cParam VisParam;
-    cParam Param;*/
+    /*BrushDialConfig VisParam;
+    BrushDialConfig Param;*/
     int ActivePick;
     int Range;
     float jitter;

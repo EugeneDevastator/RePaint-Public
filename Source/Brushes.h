@@ -12,6 +12,8 @@
 #include <QTabletEvent>
 #include <signal.h>
 #include "b_smartcolor.h"
+#include "BrushEngine/NetBrushStamp.hpp"
+#include "BrushEngine/LegacySharedBrush.hpp"
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QPushButton>
 #include <qbytearray.h>
@@ -126,7 +128,7 @@ class EGlobals {
 
 };
 
-class cParam {
+class BrushDialConfig {
    public:
       float basemax;
       float basemin;
@@ -186,10 +188,6 @@ struct d_PointF {
    QPointF ToPointF();
 };
 
-struct BrushData;
-struct ClientBrush;
-struct NetworkPackedBrush;
-
 struct d_Stroke// : public QObject
 {
 
@@ -241,92 +239,6 @@ struct BrushParameterSettings {
    QPainter::CompositionMode compmode;
    bool usecol;
    int ctlid;
-};
-
-struct NetworkPackedBrush {
-   public:
-      PackedFloat RadiusInner;
-      PackedFloat RadiusOuter;
-      quint8 FadeCurveExp;  // curvature
-      quint16 resangle;
-      quint8 ProportionsX2Y;  //proportions [0-0.5]=[0-1] by x, [0.5-1]=[1-0] by y;
-      quint8 scale; //
-
-      quint8 CloneOpacity;  // clone opacity
-      quint8 pwr;
-      quint8 Solidity;  // solidity // rename to dissolvance
-      quint8 SolidityOfOpacity; // solidity2opacity mod // rename to consistency.
-
-
-      quint16 seed;
-
-      quint16 noisex;  //internal
-      quint16 noisey;  // internal
-
-
-      quint8 NoiseID; // noise id;
-      quint8 MaskID;
-      quint8 pipeID;
-
-      //  QPainter::CompositionMode compmode;
-      quint8 BlendMode; //blendmode index;
-      quint8 noiseidx;
-      quint8 preserveop; //preserve opacity
-      QRgb col;
-
-};
-
-struct ClientBrush {
-   public:
-      float rad_in;
-      float rad_out;
-      qreal opacity;
-      double resangle;
-
-      qreal crv;  // curvature
-      //   quint16 resangle;
-      qreal x2y;  //proportions [0-0.5]=[0-1] by x, [0.5-1]=[1-0] by y;
-      qreal scale; //
-
-      qreal cop;  // clone opacity
-      qreal pwr;
-      qreal sol;  // solidity // rename to dissolvance
-      qreal sol2op; // solidity2opacity mod // rename to consistency.
-
-
-      quint16 seed;
-
-      quint16 noisex;  //internal
-      quint16 noisey;  // internal
-
-
-      quint8 NoiseID; // noise id;
-      quint8 MaskID;
-      quint8 pipeID;
-
-      //  QPainter::CompositionMode compmode;
-      quint8 bmidx; //blendmode index;
-      quint8 noiseidx;
-      quint8 preserveop; //preserve opacity
-      QRgb col;
-};
-
-struct BrushData {
-      // struct NetworkPackedBrush;
-      //   struct ClientBrush;
-   public:
-      NetworkPackedBrush Pack;
-      ClientBrush Realb;
-
-      QByteArray Serialize();
-      void Serialize(QDataStream *ba);
-      void DeSerialize(QByteArray *src);
-      void DeSerialize(QDataStream *ba);
-
-      void SelfPack();
-      void SelfUnpack();
-      //QImage Mask;
-
 };
 
 struct ActionData //: public QObject
@@ -435,4 +347,4 @@ quint16 RND(quint16 range);
 qreal RNDf(qreal range);
 QString DSZstring(QByteArray ba);
 QByteArray SZstring(QString st);
-ClientBrush BlendBrushes(ClientBrush Bfrom, ClientBrush Bto, float k);
+ClientBrushStamp BlendBrushes(ClientBrushStamp Bfrom, ClientBrushStamp Bto, float k);

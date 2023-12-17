@@ -5,14 +5,16 @@
 #include <QImage>
 #include "Brushes.h"
 #include "ArtMaster.h"
+#include "BrushEngine/BrushStamp.hpp"
+#include "BrushEngine/LegacySharedBrush.hpp"
 
 class ctl_FastBrush : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ctl_FastBrush(ClientBrush *brush, QWidget *parent = 0);
+    explicit ctl_FastBrush(ClientBrushStamp *brush, QWidget *parent = 0);
     QImage *ViewCanvas;
-    ClientBrush *g_Brush;
+    ClientBrushStamp *g_Brush;
       int midp;
       float ang;
       float *ZoomK;

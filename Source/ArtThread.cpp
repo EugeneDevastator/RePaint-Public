@@ -166,7 +166,7 @@ void ArtThread::ExecAction(QImage *img, ActionData Act, bool local)
     if ((Act.ToolID == eSmudge) | (Act.ToolID == eDisp) | (Act.ToolID == eCont))
     {
         // //clamp position please move outside
-        int twd = Act.Brush.Realb.rad_out * Act.Brush.Realb.scale;
+        int twd = Act.Brush.ClientStamp.rad_out * Act.Brush.ClientStamp.scale;
         float cx = qMin(Act.Stroke.pos2.x(), (qreal)img->width() - twd);
         cx = qMax(cx, (float)twd);
         float cy = qMin(Act.Stroke.pos2.y(), (qreal)img->height() - twd);
