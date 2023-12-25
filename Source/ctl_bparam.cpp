@@ -8,12 +8,11 @@ BrushDialWidget::BrushDialWidget(DialModel *model,QWidget *parent) :
         Model = model;
     else {
         Model = new DialModel(0,1,1);
-
-        // Slider=new bctl_ImageWidget;
-        Model->PenState = 0;
-        Model->PenMode = 0;
-        Model->OutMode = 1;
     }
+    Model->PenState = 0;
+    Model->PenMode = 0;
+    Model->OutMode = 1;
+
     oldSlider = new QSlider(Qt::Horizontal);
 
     Slider = new DialSliderWidget;
@@ -105,7 +104,6 @@ BrushDialWidget::BrushDialWidget(DialModel *model,QWidget *parent) :
 
 
     // oldSlider->setStyle();
-    ResetValue();
     Slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     LbIcon = new QLabel;
     MLayout = new QBoxLayout(QBoxLayout::LeftToRight);

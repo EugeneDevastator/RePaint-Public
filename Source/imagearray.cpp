@@ -10,12 +10,12 @@
 ImageArray::ImageArray(ClientBrushStamp *pBrush, BrushEditorPresenter *brushEditor, c_KeyLink *keyb) :
         g_Brush(pBrush), GlobalKB(keyb), BControls(brushEditor) {
     SpacingCtl = brushEditor->CtlSpc;
-    SpacingJitCtl = brushEditor->CtlSpcJit;
+    SpacingJitCtl = brushEditor->CtlScatter;
     RadCtl = brushEditor->CtlRad;
     ScaleCtl = brushEditor->CtlScale;
     //MainImage->InternalBrush = Brush;
     //MainImage->SpacingCtl = BControls->CtlSpc;
-    //MainImage->SpacingJitCtl = BControls->CtlSpcJit;
+    //MainImage->SpacingJitCtl = BControls->CtlScatter;
     //MainImage->RadCtl = BControls->CtlRad;
     //MainImage->ScaleCtl = BControls->CtlScale;
     this->setCursor(Qt::CrossCursor);

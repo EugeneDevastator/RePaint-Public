@@ -70,6 +70,7 @@ public slots:
 protected:
    void enterEvent(QEvent *event);
 
-  };
+      void SetUpSliderFromMain(BrushDialWidget *slave, BrushDialWidget *master);
+};
 
 #endif // PNL_QUICKCONTROL_H

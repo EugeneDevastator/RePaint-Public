@@ -60,7 +60,7 @@ public:
     BrushDialWidget *CtlScale;
     BrushDialWidget *CtlAng;
     BrushDialWidget *CtlSpc; // spacing
-    BrushDialWidget *CtlSpcJit;
+    BrushDialWidget *CtlScatter;
     BrushDialWidget *Ctl;
     BrushDialWidget *CtlOp;
     BrushDialWidget *CtlCop;

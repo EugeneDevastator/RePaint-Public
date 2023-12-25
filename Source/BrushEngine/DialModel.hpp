@@ -38,23 +38,11 @@ class DialModel : public QObject {
       float MinBound=0;
 
    public:
-      explicit DialModel(float minOutput = 0, float maxOutput = 1, float defaultValue = 0.5, QObject *parent = nullptr)
-              : QObject(parent) {
-          MaxBound = maxOutput;
-          MinBound = minOutput;
-          DefaultValue = defaultValue;
-          MinCursorNorm=0;
-          Jitter = 0;
-
-          DefaultCursorNorm = DefaultValue / GetBoundRange();
-          RuntimeCursorNorm = DefaultCursorNorm;
-          MaxCursorNorm = DefaultCursorNorm;
-      }
 
       int OutMode=1;
 
       float DefaultValue=128;
-      float DefaultCursorNorm=1;
+      float DefaultMaxCursorNorm=1;
       float PenMul=1;
 
       float RuntimeCursorNorm=0.5;
@@ -65,13 +53,26 @@ class DialModel : public QObject {
       int PenMode=0;
       int PenState=0; // state off, direct, inverse
 
+      explicit DialModel(float minOutput = 0, float maxOutput = 1, float defaultValue = 0.5, QObject *parent = nullptr)
+              : QObject(parent) {
+          MaxBound = maxOutput;
+          MinBound = minOutput;
+          DefaultValue = defaultValue;
+          MinCursorNorm=0;
+          Jitter = 0;
+
+          DefaultMaxCursorNorm = DefaultValue / GetBoundRange();
+          RuntimeCursorNorm = DefaultMaxCursorNorm;
+          MaxCursorNorm = DefaultMaxCursorNorm;
+      }
+
       float GetBoundRange() {
           return MaxBound - MinBound;
       }
       void ResetValue(){
           MinCursorNorm=0;
-          MaxCursorNorm=DefaultCursorNorm;
-          RuntimeCursorNorm = DefaultCursorNorm;
+          MaxCursorNorm=DefaultMaxCursorNorm;
+          RuntimeCursorNorm = DefaultMaxCursorNorm;
           emit ChangedSignal();
       }
       float GetValueInRange(float t) {
@@ -87,7 +88,7 @@ class DialModel : public QObject {
       }
 
       float GetValueAtMax() {
-        return MaxBound * GetBoundRange() + MaxCursorNorm;
+        return MinBound + MaxCursorNorm * GetBoundRange();
       }
 
       float GetCurrentMin() {
@@ -107,13 +108,8 @@ class DialModel : public QObject {
 
       void Reset(){
           MinCursorNorm=0;
-          MaxCursorNorm=1;
+          MaxCursorNorm=DefaultMaxCursorNorm;
           Jitter=0;
-          emit ChangedSignal();
-      }
-
-      void SetMaxCursor(float maxNormal) {
-          MaxCursorNorm = maxNormal;
           emit ChangedSignal();
       }
 
@@ -139,7 +135,10 @@ class DialModel : public QObject {
    signals:
       void ChangedSignal();
    public slots:
-
+      void SetMaxCursor(float maxNormal) {
+          MaxCursorNorm = maxNormal;
+          emit ChangedSignal();
+      }
 };
 
 #endif //SOURCE_DIALMODEL_HPP

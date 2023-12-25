@@ -93,7 +93,7 @@ BrushEditorPresenter::BrushEditorPresenter(ClientBrushStamp *mainBrush, QWidget 
 
     qDebug() << ("bcontrols part 1-3 done");
 
-    CtlRad = new BrushDialWidget();
+    CtlRad = new BrushDialWidget(new DialModel(1,256,35));
     CtlRad->setToolTip("Radius control");
 
     CtlRadRel = new BrushDialWidget(new DialModel(0,0.9899,0.5));
@@ -109,18 +109,15 @@ BrushEditorPresenter::BrushEditorPresenter(ClientBrushStamp *mainBrush, QWidget 
 
     CtlScale = new BrushDialWidget(new DialModel(0.1,5,1));
     CtlScale->setToolTip("Scale");
-
     CtlScale->Slider->DsRange = 0.2;
-
-    CtlScale->Model->ResetValue();
 
     CtlSpc = new BrushDialWidget(new DialModel(0.05,2,0.3));
     CtlSpc->setToolTip("Spacing");
 
-    CtlSpcJit = new BrushDialWidget(new DialModel(0,5,0));
-    CtlSpcJit->setToolTip("Scattering");
+    CtlScatter = new BrushDialWidget(new DialModel(0, 5, 0));
+    CtlScatter->setToolTip("Scattering");
 
-    CtlOp = new BrushDialWidget;
+    CtlOp = new BrushDialWidget(new DialModel(0,1,1));
     CtlOp->setToolTip("Opacity");
 
     CtlCop = new BrushDialWidget(new DialModel(0.8,1,1));
@@ -138,10 +135,10 @@ BrushEditorPresenter::BrushEditorPresenter(ClientBrushStamp *mainBrush, QWidget 
 //CtlCrv->Slider->grad=CtlPwr->Slider->grad;
 
 
-    CtlSol = new BrushDialWidget(new DialModel(0,1,0));
+    CtlSol = new BrushDialWidget(new DialModel(0,1,1));
     CtlSol->setToolTip("Solidity");
 
-    CtlSol2 = new BrushDialWidget(new DialModel(0,1,0));
+    CtlSol2 = new BrushDialWidget(new DialModel(0,1,1));
     CtlSol2->setToolTip("Binarity");
 
     CtlCrv = new BrushDialWidget(new DialModel(-1,1,0));
@@ -161,7 +158,7 @@ BrushEditorPresenter::BrushEditorPresenter(ClientBrushStamp *mainBrush, QWidget 
     CtlScaleRel->SetIcon(AppPath + "/res/ctlScaleRel.png");
     CtlScale->SetIcon(AppPath + "/res/ctlScale.png");
     CtlAng->SetIcon(AppPath + "/res/ctlAng.png");
-    CtlSpcJit->SetIcon(AppPath + "/res/ctlSpcJit.png");
+    CtlScatter->SetIcon(AppPath + "/res/ctlSpcJit.png");
     CtlSpc->SetIcon(AppPath + "/res/ctlSpc.png");
     CtlOp->SetIcon(AppPath + "/res/ctlop.png");
     CtlCop->SetIcon(AppPath + "/res/ctlcop.png");
@@ -210,7 +207,7 @@ BrushEditorPresenter::BrushEditorPresenter(ClientBrushStamp *mainBrush, QWidget 
     LtLeftToolbar->addWidget(CtlScaleRel);
     LtLeftToolbar->addWidget(CtlAng);
     LtLeftToolbar->addWidget(CtlSpc);
-    LtLeftToolbar->addWidget(CtlSpcJit);
+    LtLeftToolbar->addWidget(CtlScatter);
     LtLeftToolbar->addWidget(CtlCompMode);
     LtLeftToolbar->addWidget(CtlNoiseMode);
     LtLeftToolbar->addWidget(CtlOp);
@@ -259,7 +256,7 @@ BrushEditorPresenter::BrushEditorPresenter(ClientBrushStamp *mainBrush, QWidget 
     Controllers.append(CtlScale);
     Controllers.append(CtlAng);
     Controllers.append(CtlSpc); // spacing
-    Controllers.append(CtlSpcJit);
+    Controllers.append(CtlScatter);
     Controllers.append(CtlOp);
     Controllers.append(CtlCop);
     Controllers.append(CtlSol2);

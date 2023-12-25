@@ -66,7 +66,7 @@ void StrokeMaster::GetRawStroke(d_Stroke Strk, d_StrokePars currpars, d_StrokePa
 
     Sect.layer = LP->GetActiveLayer();
     Sect.spacing = BC->CtlSpc->GetModValue(currpars);
-    Sect.scatter = BC->CtlSpcJit->GetModValue(currpars) * (51);
+    Sect.scatter = BC->CtlScatter->GetModValue(currpars) * (51);
     Sect.ToolID = nact.ToolID;
     if (currpars.Pars[csERASER] == 1)
     {
