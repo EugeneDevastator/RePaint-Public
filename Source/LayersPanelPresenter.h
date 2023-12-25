@@ -28,7 +28,7 @@ public:
 
     ctl_BMselector *BMsel;
     QVBoxLayout *LT;
-    bctl_DblSlider *OpSlider;
+    DialSliderWidget *OpSlider;
     QComboBox *CbBmode;
     QList <LayerData> *LayerProps;
 

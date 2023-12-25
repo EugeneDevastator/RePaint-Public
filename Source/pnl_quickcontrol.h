@@ -21,23 +21,23 @@ class pnl_QuickControl : public QWidget
 
 public:
     explicit pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp *mainBrush, ImageArray *mimage);
-    Ctl_BParam *QuickOp;
-    Ctl_BParam *QuickSol;
-    Ctl_BParam *QuickSop;
-    Ctl_BParam *QuickCop;
-    Ctl_BParam *QuickPow;
+    BrushDialWidget *QuickOp;
+    BrushDialWidget *QuickSol;
+    BrushDialWidget *QuickSop;
+    BrushDialWidget *QuickCop;
+    BrushDialWidget *QuickPow;
 
-    Ctl_BParam *QuickHue;
-    Ctl_BParam *QuickSat;
-    Ctl_BParam *QuickLit;
-    Ctl_BParam *QuickScat;
-    Ctl_BParam *QuickSpc;
-    Ctl_BParam *QuickLen;
+    BrushDialWidget *QuickHue;
+    BrushDialWidget *QuickSat;
+    BrushDialWidget *QuickLit;
+    BrushDialWidget *QuickScat;
+    BrushDialWidget *QuickSpc;
+    BrushDialWidget *QuickLen;
 
-    Ctl_BParam *QuickSize;
-    Ctl_BParam *QuickScale;
-    Ctl_BParam *QuickRel;
-    Ctl_BParam *QuickRot;
+    BrushDialWidget *QuickSize;
+    BrushDialWidget *QuickScale;
+    BrushDialWidget *QuickRel;
+    BrushDialWidget *QuickRot;
 
     QWidget *FastPanelLeft;
     QWidget *FastPanelRight;
@@ -63,7 +63,6 @@ public:
 
 public slots:
 
-   void linkSliders(Ctl_BParam *slave, Ctl_BParam *master);
    void RealignPanel();
    void appear();
    void vanish();

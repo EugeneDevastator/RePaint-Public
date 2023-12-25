@@ -21,7 +21,7 @@ LayersPanelPresenter::LayersPanelPresenter(QWidget *parent)
 
     qDebug() << ("layer panel init part1");
 
-    OpSlider = new bctl_DblSlider;
+    OpSlider = new DialSliderWidget;
     OpSlider->setFixedHeight(32);
 
     LayerList = new QListWidget();

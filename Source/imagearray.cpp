@@ -335,7 +335,7 @@ Offy=qMin((int)((ViewCanvas[0].height()+hh/ZoomK))-51,Offy);
 
         float rad = g_Brush->rad_out * ZoomK * RadCtl->GetModValue(lastspars) * ScaleCtl->GetModValue(lastspars);
 
-        if (MMode == mRadSize) rad = g_Brush->rad_out * ZoomK;//*ScaleCtl->Gslider->clipmaxF;
+        if (MMode == mRadSize) rad = g_Brush->rad_out * ZoomK;//*ScaleCtl->Slider->clipmaxF;
         if (rad < 1) rad = g_Brush->rad_out * ZoomK;
 
         //painter.drawText(25,25,QString::number(dirtyRect.width())+" : "+QString::number(dirtyRect.height()));
@@ -346,7 +346,7 @@ Offy=qMin((int)((ViewCanvas[0].height()+hh/ZoomK))-51,Offy);
             painter.drawEllipse(BPos, rad, rad);
         }
         if (MMode == mCrv) {
-            rad = (1 - BControls->CtlCrv->GetValue()) * 0.5 * g_Brush->rad_out * ZoomK *
+            rad = (1 - BControls->CtlCrv->GetMaxValue()) * 0.5 * g_Brush->rad_out * ZoomK *
                   RadCtl->GetModValue(lastspars) * ScaleCtl->GetModValue(lastspars);
             if (rad < 1) rad = g_Brush->rad_out * ZoomK;
             painter.drawEllipse(BPos, rad, rad);
@@ -894,14 +894,14 @@ void ImageArray::ParseMovePosF(QPointF pos) {
         BPos = PPos;
         g_Brush->rad_in = Dist2D(PPos, pos) / ZoomK;
         g_Brush->rad_in = qMin(g_Brush->rad_in, (g_Brush->rad_out - 1));
-        BControls->CtlRadRel->SetValF(g_Brush->rad_in / g_Brush->rad_out);
+        BControls->CtlRadRel->Model->SetMaxCursor(g_Brush->rad_in / g_Brush->rad_out);
         BControls->BrushControl->saverel = (g_Brush->rad_in / g_Brush->rad_out);
 
     } else if (MMode == mCrv) {
         BPos = PPos;
         float rad_in = Dist2D(PPos, pos) / ZoomK;
         rad_in = qMin(rad_in, (g_Brush->rad_out));
-        BControls->CtlCrv->SetValF(1 - (rad_in / g_Brush->rad_out));
+        BControls->CtlCrv->Model->SetMaxCursor(1 - (rad_in / g_Brush->rad_out));
 
     } else {
 
@@ -915,7 +915,7 @@ void ImageArray::ParseMovePosF(QPointF pos) {
 
 
 
-//    int rad=ceil(Brush->rad_out*ScaleCtl->GetValue()*RadCtl->GetValue());
+//    int rad=ceil(Brush->rad_out*ScaleCtl->GetValue()*RadCtl->GetMaxValue());
 //    if (rad < 1) rad = 1;
 
     PPos3 = CalcPos(pos);
@@ -1031,7 +1031,7 @@ void ImageArray::mouseMoveEvent(QMouseEvent *event) {
        BPos=PPos;
        Brush->rad_in=Dist2D(PPos,event->pos())/ZoomK;
        Brush->rad_in=qMin(Brush->rad_in,(Brush->rad_out-1));
-       BControls->CtlRadRel->SetValF(Brush->rad_in/Brush->rad_out);
+       BControls->CtlRadRel->SetMaxValF(Brush->rad_in/Brush->rad_out);
        BControls->BrushControl->saverel=(Brush->rad_in/Brush->rad_out);
 
    }
@@ -1039,7 +1039,7 @@ void ImageArray::mouseMoveEvent(QMouseEvent *event) {
        BPos=PPos;
        float rad_in=Dist2D(PPos,event->pos())/ZoomK;
        rad_in=qMin(rad_in,(Brush->rad_out));
-       BControls->CtlCrv->SetValF(1-(rad_in/Brush->rad_out));
+       BControls->CtlCrv->SetMaxCursor(1-(rad_in/Brush->rad_out));
 
    }
     else {
@@ -1054,7 +1054,7 @@ void ImageArray::mouseMoveEvent(QMouseEvent *event) {
 
 
 
-//    int rad=ceil(Brush->rad_out*ScaleCtl->GetValue()*RadCtl->GetValue());
+//    int rad=ceil(Brush->rad_out*ScaleCtl->GetValue()*RadCtl->GetMaxValue());
 //    if (rad < 1) rad = 1;
 
     PPos3=CalcPosI(event->pos());

@@ -11,12 +11,12 @@
 #include "brushes.h"
 
 
-class bctl_DblSlider : public bctl_ImageWidget
+class DialSliderWidget : public bctl_ImageWidget
 {
     Q_OBJECT
 
 public:
-    explicit bctl_DblSlider(QWidget *parent = 0);
+    explicit DialSliderWidget(QWidget *parent = 0);
     /*BrushDialConfig VisParam;
     BrushDialConfig Param;*/
     int ActivePick;
@@ -41,7 +41,7 @@ public slots:
         void Redraw();
         void change();
         void ParsePoint(QPoint pos);
-        void GetVals(float maxf,float minf, float jit);
+        void SetValues(float maxf, float minf, float jit);
         void DrawFrame(QImage* img,QPainter *pnt, int x, int y, int w, int h,QColor SHD,QColor HL);
         void DrawFrame(QImage* img,QPainter *pnt,QRect rect,QColor SHD,QColor HL);
 protected:
@@ -55,7 +55,7 @@ signals:
         void Repainted();
         void ValChange(float maxf);
         void ValConfirm(float maxf);
-        void AllValChange(float maxf,float minf, float jit);
+       // void AllValChange(float maxf,float minf, float jit);
 
 
 };

@@ -28,64 +28,49 @@
 
 #include "bctl_dblslider.h"
 #include "Brushes.h"
+#include "BrushEngine/DialModel.hpp"
 
-class Ctl_BParam : public QWidget
-{
-    Q_OBJECT
-public:
-    explicit Ctl_BParam(QWidget *parent = 0);
+class BrushDialWidget : public QWidget {
+   Q_OBJECT
 
+   public:
+      explicit BrushDialWidget(DialModel *model = nullptr, QWidget *parent = 0);
 
-    float GetValue();
-    qreal GetModValue(d_StrokePars stpars);
-    int OutMode;
-    int IRange;
-    float OutMax;
-    float OutMin;
-    float OutDef;
-    float *linkedval;
-    float PenMul;
+      float GetMaxValue();
+      qreal GetModValue(d_StrokePars stpars);
+      //int OutMode;
+      //int IRange;
+      //float MaxBound;
+      //float MinBound;
+      //float DefaultValue;
+      //float *linkedval;
+      //float PenMul;
 
-    QBoxLayout *MLayout;
-    int PenMode;
-    int PenState; // state off, direct, inverse
-    QList <QIcon> PenIcons;
-    bctl_DblSlider *Gslider;
-    QLabel *LbIcon;
-    QStringList IcNames;
-    QStringList Names;
+      QBoxLayout *MLayout;
+      //int PenMode;
+      //int PenState; // state off, direct, inverse
+      QList<QIcon> PenIcons;
+      DialSliderWidget *Slider;
+      QLabel *LbIcon;
+      QStringList IcNames;
+      QStringList Names;
 
-    QToolButton *BtnPenMode;
-    QMenu *MnuPen;
-    QLineEdit *edline;
-    QSlider *slider;
-    QPushButton *btn;
+      QToolButton *BtnPenMode;
+      QMenu *MnuPen;
+      QLineEdit *ValueLabel;
+      QSlider *oldSlider;
+      QPushButton *btn;
 
-signals:
-       void SendPenMode(int mode);
-public slots:
-    void SetPenMode(QAction *mAct);
-    void SetPenModeNum(int mode);
-    void SetPenInv();
-    void SetRange(int x);
-    void SetMode(int x);
-
-    void SetValF(float y);
-    void Ed2Slide();
-    void Slide2Ed();
-    void ResetValue();
-    void SetIcon(QString pathstr);
-    void ApplyValue(float newval);
-    void SliderChange(float val);
-    void FlipOrder();
-
-private:
-
-
-protected:
-    void mousePressEvent(QMouseEvent *event);
-signals:
-    void NewValue(float maxf);
+      DialModel *Model;
+   public slots:
+      void SetIcon(QString pathstr);
+   private slots:
+      void SetPenMode(QAction *mAct);
+      void ResetValue();
+      void SliderChange(float val);
+      void HandleModelUpdate();
+   protected:
+      void mousePressEvent(QMouseEvent *event);
 };
 
 #endif // CTL_BPARAM_H

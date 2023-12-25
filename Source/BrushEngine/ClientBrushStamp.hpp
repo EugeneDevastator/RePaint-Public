@@ -8,35 +8,35 @@
 
 struct ClientBrushStamp {
    public:
-      float rad_in;
-      float rad_out;
-      qreal opacity;
-      double resangle;
+      float rad_in=0;
+      float rad_out=10;
+      qreal opacity=1;
+      double resangle=0;
 
-      qreal crv;  // curvature
+      qreal crv=0.5;  // curvature
       //   quint16 resangle;
-      qreal x2y;  //proportions [0-0.5]=[0-1] by x, [0.5-1]=[1-0] by y;
-      qreal scale; //
+      qreal x2y=1;  //proportions [0-0.5]=[0-1] by x, [0.5-1]=[1-0] by y;
+      qreal scale=1; //
 
-      qreal cop;  // clone opacity
-      qreal pwr;
-      qreal sol;  // solidity // rename to dissolvance
-      qreal sol2op; // solidity2opacity mod // rename to consistency.
+      qreal cop=1;  // clone opacity
+      qreal pwr=0.5;
+      qreal sol=0;  // solidity // rename to dissolvance
+      qreal sol2op=1; // solidity2opacity mod // rename to consistency.
 
       quint16 seed;
 
-      quint16 noisex;  //internal
-      quint16 noisey;  // internal
+      quint16 noisex=0;  //internal
+      quint16 noisey=0;  // internal
 
-      quint8 NoiseID; // noise id;
-      quint8 MaskID;
-      quint8 pipeID;
+      quint8 NoiseID=0; // noise id;
+      quint8 MaskID=0;
+      quint8 pipeID=0;
 
       //  QPainter::CompositionMode compmode;
-      quint8 bmidx; //blendmode index;
-      quint8 noiseidx;
-      quint8 preserveop; //preserve opacity
-      QRgb col;
+      quint8 bmidx=0; //blendmode index;
+      quint8 noiseidx=0;
+      quint8 preserveop=0; //preserve opacity
+      QRgb col=0;
 
       void ToNetBrush(NetBrushStamp &netBrushStamp) {
 

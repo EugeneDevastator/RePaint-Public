@@ -223,6 +223,7 @@ add_executable(Source
         version.h
         BrushModel.h
         BrushModel.cpp
+        BrushEngine/DialModel.hpp
 )
 
 qt5_add_resources(SOURCE_FILES qresource.qrc)

@@ -1,27 +1,32 @@
 #include "ctl_bparam.h"
 #include "Brushes.h"
-Ctl_BParam::Ctl_BParam(QWidget *parent) : QWidget(parent)
-{
-    qDebug() << "bparam start";
-    // Gslider=new bctl_ImageWidget;
-    IRange = 255 * 255;
-    OutMax = 1;
-    OutMin = 0;
-    OutDef = 1;
-    slider = new QSlider(Qt::Horizontal);
-    Gslider = new bctl_DblSlider;
-    // Gslider->setFixedHeight(24);
-    btn = new QPushButton;
+
+BrushDialWidget::BrushDialWidget(DialModel *model,QWidget *parent) :
+        QWidget(parent){
+
+    if(model)
+        Model = model;
+    else {
+        Model = new DialModel(0,1,1);
+
+        // Slider=new bctl_ImageWidget;
+        Model->PenState = 0;
+        Model->PenMode = 0;
+        Model->OutMode = 1;
+    }
+    oldSlider = new QSlider(Qt::Horizontal);
+
+    Slider = new DialSliderWidget;
+    // Slider->setFixedHeight(24);
     BtnPenMode = new QToolButton;
     BtnPenMode->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     MnuPen = new QMenu;
-    PenState = 0;
+
     QIcon Aicon;
     // QList <QString> IcNames;
     // QString IcNames[20];
     // QString Names[20];
-    for (int i = 0; i < 20; i++)
-    {
+    for (int i = 0; i < 20; i++) {
         // IcNames[i]="tct_nil";
         IcNames.append("nil");
         Names.append("nil");
@@ -82,54 +87,31 @@ Ctl_BParam::Ctl_BParam(QWidget *parent) : QWidget(parent)
     IcNames.append("tct_lenpx");        //+real len
     IcNames.append("tct_HVdir");        //+HV by direction
     IcNames.append("tct_HVrot");        //+ pen HV*/
-
-    qDebug() << "bparam names done";
     // QIcon nic;
     // QString path;
     int range = csSTOP;
-    int a = 10;
-    for (quint8 i = 0; i < range; i++)
-    {
-        // path=RESPATH+"/res/"+IcNames[i]+".png";
-        // qDebug()<<("bparam loop state at 0"+path);
-        // nic=QIcon(path);
-        qDebug() << ("bparam loop state at 1");
-        //   nic.addFile(IcNames[i]+"_i.png",QSize(19,19),QIcon::Selected,QIcon::Off);
-        //        nic.addFile("tct_off.png",QSize(19,19),QIcon::Disabled,QIcon::Off);
+    for (quint8 i = 0; i < range; i++) {
         PenIcons.append(QIcon(RESPATH + "/res/" + IcNames[i] + ".png"));
-        qDebug() << ("bparam loop state at 2");
         MnuPen->addAction(PenIcons.last(), Names[i]);
-        qDebug() << ("bparam loop state at 3");
         MnuPen->actions().at(i)->setProperty("val", i);
-        qDebug() << ("bparam loop state at 4");
         // MnuPen->actionAt(QPoint(i,i))->setProperty("val",i);
-        qDebug() << ("bparam loop done at" + QString::number(i) + " " + QString::number(PenIcons.count()));
     }
-    qDebug() << "bparam icons done";
-
     BtnPenMode->setMenu(MnuPen);
     BtnPenMode->setPopupMode(QToolButton::InstantPopup);
     BtnPenMode->setAttribute(Qt::WA_NoMousePropagation);
-    connect(MnuPen, SIGNAL(triggered(QAction *)), this, SLOT(SetPenMode(QAction *)));
-    connect(BtnPenMode, SIGNAL(clicked()), this, SLOT(SetPenInv()));
-    connect(Gslider, SIGNAL(ValChange(float)), this, SLOT(SliderChange(float)));
-    edline = new QLineEdit;
-    edline->setFixedWidth(24);
-    OutMode = 1;
-    SetRange(IRange);
-    slider->setMinimum(0);
-    slider->setMaximum(IRange);
-    // slider->setStyle();
+
+    ValueLabel = new QLineEdit;
+    ValueLabel->setFixedWidth(24);
+
+
+    // oldSlider->setStyle();
     ResetValue();
-    linkedval = new float;
-
-    qDebug() << "bparam part1 done";
-
+    Slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     LbIcon = new QLabel;
     MLayout = new QBoxLayout(QBoxLayout::LeftToRight);
     MLayout->setDirection(QBoxLayout::LeftToRight);
     MLayout->addWidget(LbIcon);
-    MLayout->addWidget(Gslider);
+    MLayout->addWidget(Slider);
     MLayout->addWidget(BtnPenMode);
     MLayout->setSpacing(4);
 
@@ -141,43 +123,30 @@ Ctl_BParam::Ctl_BParam(QWidget *parent) : QWidget(parent)
     MLayout->setAlignment(Qt::AlignCenter | Qt::AlignHCenter);
     BtnPenMode->setFixedWidth(48);
     BtnPenMode->setFixedHeight(23);
-    Gslider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    connect(slider, SIGNAL(valueChanged(int)), this, SLOT(Slide2Ed()));
-    qDebug() << "bparam end";
+
+    connect(MnuPen, SIGNAL(triggered(QAction * )), this, SLOT(SetPenMode(QAction * )));
+    connect(BtnPenMode, SIGNAL(clicked()), Model, SLOT(SetPenInv()));
+    connect(Slider, SIGNAL(ValChange(float)), this, SLOT(SliderChange(float)));
+    //connect(oldSlider, SIGNAL(valueChanged(int)), this, SLOT(HandleSliderUpdate()));
+    connect(Model, SIGNAL(ChangedSignal()), this, SLOT(HandleModelUpdate()));
+
+    HandleModelUpdate();
 }
 
-void Ctl_BParam::FlipOrder()
-{
-}
-
-void Ctl_BParam::SetPenMode(QAction *mAct)
-{
+void BrushDialWidget::SetPenMode(QAction *mAct) {
     //  BtnPenMode->icon()=mAct->icon();//setText(QString::number(mAct->property("val").toInt()));
-    PenMode = mAct->property("val").toInt();
-    BtnPenMode->setIcon(PenIcons.at(PenMode));
-    // BtnPenMode->setText(QString::number(PenMode));
-    PenState = 1;
-    emit SendPenMode(PenMode);
-}
-void Ctl_BParam::SetPenModeNum(int mode)
-{
-    //  BtnPenMode->icon()=mAct->icon();//setText(QString::number(mAct->property("val").toInt()));
-    PenMode = mode;
-    BtnPenMode->setIcon(PenIcons.at(mode));
-    // BtnPenMode->setText(QString::number(PenMode));
-    PenState = 1;
+    auto mode = mAct->property("val").toInt();
+    Model->SetPenModeNum(mAct->property("val").toInt());
 }
 
-void Ctl_BParam::SetPenInv()
-{
-    PenState++;
-    if (PenState == 2)
-        PenState = 0;
-    if (PenState == 0)
-        BtnPenMode->setIcon(PenIcons.at(PenMode).pixmap(QSize(24, 24), QIcon::Disabled, QIcon::Off));
-    else if (PenState == 1)
-        BtnPenMode->setIcon(PenIcons.at(PenMode).pixmap(QSize(24, 24), QIcon::Active, QIcon::Off));
+void BrushDialWidget::HandleModelUpdate() {
+    BtnPenMode->setIcon(PenIcons.at(Model->PenMode));
+
+    if (Model->PenState == 0)
+        BtnPenMode->setIcon(PenIcons.at(Model->PenMode).pixmap(QSize(24, 24), QIcon::Disabled, QIcon::Off));
+    else if (Model->PenState == 1)
+        BtnPenMode->setIcon(PenIcons.at(Model->PenMode).pixmap(QSize(24, 24), QIcon::Active, QIcon::Off));
     // else if (PenState==1) BtnPenMode->setIcon(PenIcons.at(PenMode).pixmap(QSize(24,24),QIcon::Selected,QIcon::Off));
     /*
     QImage np(BtnPenMode->iconSize(),QImage::Format_ARGB32);
@@ -186,95 +155,49 @@ void Ctl_BParam::SetPenInv()
     painter.drawImage(0,0,BtnPenMode->icon());
     //QPainter painter(&BtnPenMode->icon());
  //   BtnPenMode->;
-
 */
+    Slider->SetValues( Model->MaxCursorNorm,Model->MinCursorNorm, Model->Jitter);
+    ValueLabel->setText(QString::number(Model->GetValueAtMax()));
 }
 
 // ------------------------ SLIDER OPERATIONS ----------------------
 
-void Ctl_BParam::Ed2Slide()
-{
-}
-void Ctl_BParam::Slide2Ed()
-{
-    edline->setText(QString::number(this->GetValue()));
-}
-
-void Ctl_BParam::SetRange(int x)
-{
-    if (OutMode > 1)
-        OutMode = x;
-    slider->setMaximum(x);
-}
-void Ctl_BParam::SetMode(int x)
-{
-    if (x == 2)
-        OutMode = slider->maximum();
-}
-void Ctl_BParam::SetValF(float y)
-{
-
-    y = qMax(y, OutMin);
-    y = qMin(y, OutMax);
-    Gslider->GetVals(y, Gslider->clipminF, Gslider->jitter);
-    Gslider->change();
-    // Gslider->clipmaxF=y;
-    Gslider->Redraw();
-}
-
-float Ctl_BParam::GetValue()
-{
-    float OutR = OutMax - OutMin;
-    // return (float)(OutR/IRange)*slider->value()+OutMin;
-    return Gslider->clipmaxF * OutR + OutMin;
-
-    // return ((float)slider->value()/(float)OutMode);
-}
-
-qreal Ctl_BParam::GetModValue(d_StrokePars stpars)
-{
-    float cpar = 1;
-    if (PenState > 0)
-    {
-        if (PenMode > 0)
-            cpar = stpars.Pars[PenMode];
+qreal BrushDialWidget::GetModValue(d_StrokePars stpars) {
+    float modulationValue = 1;
+    if (Model->PenState > 0) {
+        if (Model->PenMode > 0)
+            modulationValue = stpars.Pars[Model->PenMode];
     }
-    float OutR = OutMax - OutMin;
-    float rng = Gslider->clipmaxF - Gslider->clipminF;
-    float respar = cpar * rng + Gslider->clipminF;
-    // float randm = ((float)qrand()/RAND_MAX)*(Gslider->jitter*2)-(Gslider->jitter);
-    float randm = (((float)qrand() / RAND_MAX) - 0.5) * 2 * Gslider->jitter;
+    float OutR = Model->GetBoundRange();
+    float sliderRange = Slider->clipmaxF - Slider->clipminF;
+    float respar = modulationValue * sliderRange + Slider->clipminF;
+    // float randm = ((float)qrand()/RAND_MAX)*(Slider->jitter*2)-(Slider->jitter);
+    float randm = (((float) qrand() / RAND_MAX) - 0.5) * 2 * Slider->jitter;
     float res = (respar + randm);
-    res = qMax(res, (float)0.0);
-    res = qMin(res, (float)1);
-    return res * OutR + OutMin;
-    // return (respar+rand)*OutR+OutMin;
+    res = qMax(res, (float) 0.0);
+    res = qMin(res, (float) 1);
+    return Model->GetValueInRange(res);
+    //return res * OutR + Model->MinBound;
 
-    // return ((float)slider->value()/(float)OutMode);
+
+    // return (respar+rand)*OutR+MinBound;
+    // return ((float)oldSlider->value()/(float)OutMode);
 }
 
-void Ctl_BParam::ResetValue()
-{
-    float OutR = OutMax - OutMin;
-
-    // slider->setValue((float)(OutDef-OutMin)*IRange/OutR);
-    Gslider->clipmaxF = (double)(OutDef - OutMin) / OutR;
-    // return ((float)slider->value()/(float)OutMode);
+void BrushDialWidget::ResetValue() {
+    Model->Reset();
 }
 
-void Ctl_BParam::SliderChange(float val)
-{
-    emit NewValue(GetValue());
+void BrushDialWidget::SliderChange(float val) {
+    Model->SetCursors(Slider->clipminF, Slider->clipmaxF, Slider->jitter);
+   // emit NewValue(GetMaxValue());
 }
 
-void Ctl_BParam::ApplyValue(float newval)
-{
-    float OutR = OutMax - OutMin;
-    slider->setValue((float)(newval - OutMin) * IRange / OutR);
-    // return ((float)slider->value()/(float)OutMode);
+float BrushDialWidget::GetMaxValue(){
+    return Model->GetValueAtMax();
 }
-void Ctl_BParam::SetIcon(QString pathstr)
-{
+
+void BrushDialWidget::SetIcon(QString pathstr) {
     QPixmap *pic = new QPixmap;
     pic->load(pathstr);
     LbIcon->setPixmap(*pic);
@@ -284,8 +207,7 @@ void Ctl_BParam::SetIcon(QString pathstr)
     // LbIcon->setFixedWidth(24);
 }
 
-void Ctl_BParam::mousePressEvent(QMouseEvent *event)
-{
+void BrushDialWidget::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton)
-        ResetValue();
+        Model->ResetValue();
 }

@@ -16,10 +16,10 @@ MHPwindow::MHPwindow()
     // cpik->show();
     PanelsPinned = true;
     this->hide();
-    /* Ctl_BParam *CtlTest=new Ctl_BParam; ///CtlScaleRel->setToolTip("Spacing");
-     CtlTest->OutMax=1;
-     CtlTest->OutMin=0;
-     CtlTest->OutDef=0.5;
+    /* BrushDialWidget *CtlTest=new BrushDialWidget; ///CtlScaleRel->setToolTip("Spacing");
+     CtlTest->MaxBound=1;
+     CtlTest->MinBound=0;
+     CtlTest->DefaultValue=0.5;
      CtlTest->ResetValue();
      CtlTest->show();
  CtlTest->SetIcon(RESPATH+"/res/ctlRad.png");
@@ -49,11 +49,11 @@ MHPwindow::MHPwindow()
     // Root level Dependencies
     KBLINK = new c_KeyLink();
     Brush = new ClientBrushStamp;
-
     Brush->sol2op = 1;
     Brush->rad_out = 20;
     Brush->rad_in = 10;
     Brush->resangle = 0.0;
+
 
     BControls = new BrushEditorPresenter(Brush);
 
@@ -196,12 +196,12 @@ MHPwindow::MHPwindow()
 
     QuickPanel = new pnl_QuickControl(BControls, Brush, MainImage);
     //  please connect with qp
-    connect(QuickPanel->QuickLit->Gslider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
-    connect(QuickPanel->QuickSat->Gslider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
-    connect(QuickPanel->QuickHue->Gslider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
-    connect(QuickPanel->QuickHue->Gslider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetHueF(float)));
-    connect(QuickPanel->QuickSat->Gslider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetSatF(float)));
-    connect(QuickPanel->QuickLit->Gslider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetLitF(float)));
+    connect(QuickPanel->QuickLit->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
+    connect(QuickPanel->QuickSat->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
+    connect(QuickPanel->QuickHue->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
+    connect(QuickPanel->QuickHue->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetHueF(float)));
+    connect(QuickPanel->QuickSat->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetSatF(float)));
+    connect(QuickPanel->QuickLit->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetLitF(float)));
 
     QuickPanel->RealignPanel();
 
@@ -287,13 +287,13 @@ MHPwindow::MHPwindow()
     qDebug() << ("MHPW connects part-6 done");
 
     // connect(CtlCol,SIGNAL(SendColor(QColor)),this,SLOT(GetColor(QColor)));
-    connect(BControls->CtlHue->Gslider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetHueF(float)));
-    connect(BControls->CtlSat->Gslider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetSatF(float)));
-    connect(BControls->CtlLit->Gslider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetLitF(float)));
+    connect(BControls->CtlHue->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetHueF(float)));
+    connect(BControls->CtlSat->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetSatF(float)));
+    connect(BControls->CtlLit->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetLitF(float)));
 
-    connect(BControls->CtlHue->Gslider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
-    connect(BControls->CtlSat->Gslider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
-    connect(BControls->CtlLit->Gslider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
+    connect(BControls->CtlHue->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
+    connect(BControls->CtlSat->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
+    connect(BControls->CtlLit->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
 
     connect(BControls->CtlLen, SIGNAL(NewValue(float)), MainImage, SLOT(SetLengths(float)));
     connect(CHAT->ChatLine, SIGNAL(returnPressed()), this, SLOT(SendChatMsg()));
@@ -636,10 +636,10 @@ void MHPwindow::GetPoly(QPolygonF Poly)
     QPainter Pnt(&MainImage->ViewCanvas[LayersPanel->GetActiveLayer()]);
     // QPainter Pnt(&ViewCanvas[0]);
     Pnt.setPen(Qt::NoPen);
-    Pnt.setBrush(QColor::fromHslF(BControls->CtlHue->GetValue(),
-                                  BControls->CtlSat->GetValue(),
-                                  BControls->CtlLit->GetValue()));
-    Pnt.setOpacity(BControls->CtlOp->GetValue());
+    Pnt.setBrush(QColor::fromHslF(BControls->CtlHue->GetMaxValue(),
+                                  BControls->CtlSat->GetMaxValue(),
+                                  BControls->CtlLit->GetMaxValue()));
+    Pnt.setOpacity(BControls->CtlOp->GetMaxValue());
     //  Pnt.setOpacity(1);
     Pnt.drawPolygon(Poly, Qt::WindingFill);
     MainImage->RepaintImgRect(Poly.boundingRect().toRect());
@@ -728,17 +728,15 @@ void MHPwindow::keyPressEvent(QKeyEvent *event)
                         ,
                         BControls->CtlSat->GetValue()
                         ,
-                        BControls->CtlLit->GetValue()
+                        BControls->CtlLit->GetMaxValue()
                         ));
 
            CtlCol->DrawSliders(CtlCol->LColor);
            DlgCol->setGeometry(QRect(p,QSize(DlgCol->width(),DlgCol->height())));
            DlgCol->show();
  //  DlgCol->pos()=QPoint(90,90);//QCursor::pos();
-
-
-
    }*/
+
     else if (KBLINK->KBstate[ekBrushSizeP] == true)
     {
         Brush->rad_out += 0.1;
@@ -752,28 +750,28 @@ void MHPwindow::keyPressEvent(QKeyEvent *event)
     }
     if (event->key() == Qt::Key_BraceLeft)
     {
-        BControls->CtlCrv->ApplyValue(BControls->CtlCrv->GetValue() - 0.01);
+      //  BControls->CtlCrv->ApplyValue(BControls->CtlCrv->GetMaxValue() - 0.01);
     }
     else if (event->key() == Qt::Key_BraceRight)
     {
-        BControls->CtlCrv->ApplyValue(BControls->CtlCrv->GetValue() + 0.01);
+     //   BControls->CtlCrv->ApplyValue(BControls->CtlCrv->GetMaxValue() + 0.01);
     }
     else if (KBLINK->KBstate[ekLitP] == true)
     {
 
-        BControls->CtlLit->SetValF(BControls->CtlLit->GetValue() + 0.01);
+        BControls->CtlLit->Model->SetMaxCursor(BControls->CtlLit->GetMaxValue() + 0.01);
     }
     else if (KBLINK->KBstate[ekLitM] == true)
     {
 
-        BControls->CtlLit->SetValF(BControls->CtlLit->GetValue() - 0.01);
+        BControls->CtlLit->Model->SetMaxCursor(BControls->CtlLit->GetMaxValue() - 0.01);
     }
     else if (KBLINK->KBstate[ekHueP] == true)
     {
-        float reshue = BControls->CtlHue->GetValue() + 0.005;
+        float reshue = BControls->CtlHue->GetMaxValue() + 0.005;
         reshue = reshue - floor(reshue);
         //        Brush->col.setHslF(reshue,Brush->col.hslSaturationF(),Brush->col.valueF());
-        BControls->CtlHue->SetValF(reshue);
+        BControls->CtlHue->Model->SetMaxCursor(reshue);
     }
     else if (KBLINK->KBstate[ekFastBrush] == true)
     {
@@ -789,11 +787,11 @@ void MHPwindow::keyPressEvent(QKeyEvent *event)
     }
     else if (KBLINK->KBstate[ekHueM] == true)
     {
-        float reshue = BControls->CtlHue->GetValue() - 0.005;
+        float reshue = BControls->CtlHue->GetMaxValue() - 0.005;
         reshue = reshue - ceil(reshue - 1);
         // if (reshue<0) reshue+=1;
         // Brush->col.setHslF(reshue,Brush->col.hslSaturationF(),Brush->col.valueF());
-        BControls->CtlHue->SetValF(reshue);
+        BControls->CtlHue->Model->SetMaxCursor(reshue);
     }
     else if (KBLINK->KBstate[ekActualPixels] == true)
     {
@@ -857,9 +855,9 @@ void MHPwindow::keyPressEvent(QKeyEvent *event)
     }
 
     else if (KBLINK->KBstate[ekSatP] == true)
-        BControls->CtlSat->SetValF(BControls->CtlSat->GetValue() + 0.01);
+        BControls->CtlSat->Model->SetMaxCursor(BControls->CtlSat->GetMaxValue() + 0.01);
     else if (KBLINK->KBstate[ekSatM] == true)
-        BControls->CtlSat->SetValF(BControls->CtlSat->GetValue() - 0.01);
+        BControls->CtlSat->Model->SetMaxCursor(BControls->CtlSat->GetMaxValue() - 0.01);
 }
 void MHPwindow::ImgOpen()
 {
@@ -887,24 +885,24 @@ void MHPwindow::RedrawCol()
     // please
     QColor col = PaintColor->UseCol;
     float step = RngConv(M_PI / 6, 0, M_PI, 0, 1);
-    BControls->CtlHue->Gslider->grad->setColorAt(0, QColor::fromHslF(QColor(Qt::red).hueF(), col.hslSaturationF(), col.lightnessF()));
-    BControls->CtlHue->Gslider->grad->setColorAt(0 + step, QColor::fromHslF(QColor(Qt::yellow).hueF(), col.hslSaturationF(), col.lightnessF()));
-    BControls->CtlHue->Gslider->grad->setColorAt(0 + step * 2, QColor::fromHslF(QColor(Qt::green).hueF(), col.hslSaturationF(), col.lightnessF()));
-    BControls->CtlHue->Gslider->grad->setColorAt(0 + step * 3, QColor::fromHslF(QColor(Qt::cyan).hueF(), col.hslSaturationF(), col.lightnessF()));
-    BControls->CtlHue->Gslider->grad->setColorAt(0 + step * 4, QColor::fromHslF(QColor(Qt::blue).hueF(), col.hslSaturationF(), col.lightnessF()));
-    BControls->CtlHue->Gslider->grad->setColorAt(0 + step * 5, QColor::fromHslF(QColor(QColor::fromRgbF(1, 0, 1, 1)).hueF(), col.hslSaturationF(), col.lightnessF()));
-    BControls->CtlHue->Gslider->grad->setColorAt(1, QColor::fromHslF(QColor(Qt::red).hueF(), col.hslSaturationF(), col.lightnessF()));
+    BControls->CtlHue->Slider->grad->setColorAt(0, QColor::fromHslF(QColor(Qt::red).hueF(), col.hslSaturationF(), col.lightnessF()));
+    BControls->CtlHue->Slider->grad->setColorAt(0 + step, QColor::fromHslF(QColor(Qt::yellow).hueF(), col.hslSaturationF(), col.lightnessF()));
+    BControls->CtlHue->Slider->grad->setColorAt(0 + step * 2, QColor::fromHslF(QColor(Qt::green).hueF(), col.hslSaturationF(), col.lightnessF()));
+    BControls->CtlHue->Slider->grad->setColorAt(0 + step * 3, QColor::fromHslF(QColor(Qt::cyan).hueF(), col.hslSaturationF(), col.lightnessF()));
+    BControls->CtlHue->Slider->grad->setColorAt(0 + step * 4, QColor::fromHslF(QColor(Qt::blue).hueF(), col.hslSaturationF(), col.lightnessF()));
+    BControls->CtlHue->Slider->grad->setColorAt(0 + step * 5, QColor::fromHslF(QColor(QColor::fromRgbF(1, 0, 1, 1)).hueF(), col.hslSaturationF(), col.lightnessF()));
+    BControls->CtlHue->Slider->grad->setColorAt(1, QColor::fromHslF(QColor(Qt::red).hueF(), col.hslSaturationF(), col.lightnessF()));
 
-    BControls->CtlSat->Gslider->grad->setColorAt(0, QColor::fromHslF(col.hslHueF(), 0, col.lightnessF()));
-    BControls->CtlSat->Gslider->grad->setColorAt(1, QColor::fromHslF(col.hslHueF(), 1, col.lightnessF()));
+    BControls->CtlSat->Slider->grad->setColorAt(0, QColor::fromHslF(col.hslHueF(), 0, col.lightnessF()));
+    BControls->CtlSat->Slider->grad->setColorAt(1, QColor::fromHslF(col.hslHueF(), 1, col.lightnessF()));
 
-    BControls->CtlLit->Gslider->grad->setColorAt(0, QColor::fromHslF(0, 0, 0));
-    BControls->CtlLit->Gslider->grad->setColorAt(0.5, QColor::fromHslF(col.hslHueF(), col.hslSaturationF(), 0.5));
-    BControls->CtlLit->Gslider->grad->setColorAt(1, QColor::fromHslF(0, 0, 1));
+    BControls->CtlLit->Slider->grad->setColorAt(0, QColor::fromHslF(0, 0, 0));
+    BControls->CtlLit->Slider->grad->setColorAt(0.5, QColor::fromHslF(col.hslHueF(), col.hslSaturationF(), 0.5));
+    BControls->CtlLit->Slider->grad->setColorAt(1, QColor::fromHslF(0, 0, 1));
 
-    BControls->CtlSat->Gslider->Redraw();
-    BControls->CtlHue->Gslider->Redraw();
-    BControls->CtlLit->Gslider->Redraw();
+    BControls->CtlSat->Slider->Redraw();
+    BControls->CtlHue->Slider->Redraw();
+    BControls->CtlLit->Slider->Redraw();
 
     // QuickPanel->QuickHue->update();
 }
@@ -912,12 +910,12 @@ void MHPwindow::GetColor(QColor col)
 { // get color from various sources ike canvas cpicker etc.
     PaintColor->SetCol(col);
 
-    BControls->CtlHue->SetValF(col.hslHueF());
-    BControls->CtlSat->SetValF(col.hslSaturationF());
-    BControls->CtlLit->SetValF(col.lightnessF());
+    BControls->CtlHue->Model->SetMaxCursor(col.hslHueF());
+    BControls->CtlSat->Model->SetMaxCursor(col.hslSaturationF());
+    BControls->CtlLit->Model->SetMaxCursor(col.lightnessF());
     RedrawCol();
     // CtlCol->SetColor(col);
-    // CtlLit->SetValF(col.lightnessF());
+    // CtlLit->SetMaxCursor(col.lightnessF());
 }
 void MHPwindow::SendChatMsg()
 {

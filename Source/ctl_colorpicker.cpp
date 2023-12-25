@@ -34,8 +34,8 @@ void ctl_ColorPicker::RecalcMainGrad()
     */
     grad.setColorAt(0, QColor::fromHslF(0, 0, 0.5, 0));
     grad.setColorAt(1, QColor::fromHslF(0, 0, 0.5, 1));
-    // CtlSat->Gslider->grad->setColorAt(0,QColor::fromHslF(1,0,0.5));
-    // CtlSat->Gslider->grad->setColorAt(1,QColor::fromHslF(1,1,0.5));
+    // CtlSat->Slider->grad->setColorAt(0,QColor::fromHslF(1,0,0.5));
+    // CtlSat->Slider->grad->setColorAt(1,QColor::fromHslF(1,1,0.5));
 
     litgrad.setColorAt(0, QColor::fromHslF(0, 0, 0, 1));
     litgrad.setColorAt(0.4999, QColor::fromHslF(0, 0, 0, 0));

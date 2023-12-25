@@ -2,10 +2,9 @@
 #include <math.h>
 #include <QLinearGradient>
 
-bctl_DblSlider::bctl_DblSlider(QWidget *parent) : bctl_ImageWidget(parent)
+DialSliderWidget::DialSliderWidget(QWidget *parent) : bctl_ImageWidget(parent)
 {
     ActivePick = -1;
-    Range = 32767;
     DsRange = 0.25;
     clipminF = 0;
     clipmaxF = 1;
@@ -25,11 +24,9 @@ bctl_DblSlider::bctl_DblSlider(QWidget *parent) : bctl_ImageWidget(parent)
     midtone.setRgb(240, 240, 240);
 }
 
-void bctl_DblSlider::Redraw()
+void DialSliderWidget::Redraw()
 {
-
-    quint8 Soff = 2; // slider offset from the borders
-
+    quint8 Soff = 2; // oldSlider offset from the borders
     QPainter painter(&ViewImage);
     if (orient == 0)
     {
@@ -111,15 +108,13 @@ void bctl_DblSlider::Redraw()
       painter.drawRect(this->width()-1,1,1,this->height());
       painter.drawRect(1,this->height()-1,this->width(),1);
       */
-
     DrawFrame(&ViewImage, &painter, 0, 0, this->width(), this->height(), shade, midtone);
-
     update();
     emit Repainted();
 }
-// void bctl_DblSlider::paintEvent(QPaintEvent *event){}
+// void DialSliderWidget::paintEvent(QPaintEvent *event){}
 
-void bctl_DblSlider::mousePressEvent(QMouseEvent *event)
+void DialSliderWidget::mousePressEvent(QMouseEvent *event)
 {
 
     if (event->buttons() == Qt::LeftButton)
@@ -133,7 +128,7 @@ void bctl_DblSlider::mousePressEvent(QMouseEvent *event)
     // QApplication::processEvents(QEventLoop::AllEvents,10);
 }
 
-void bctl_DblSlider::ParsePoint(QPoint pos)
+void DialSliderWidget::ParsePoint(QPoint pos)
 {
     if (ActivePick > -1)
     {
@@ -179,18 +174,18 @@ void bctl_DblSlider::ParsePoint(QPoint pos)
         }
 
         emit ValChange(val);
-        emit AllValChange(clipmaxF, clipminF, jitter);
+     //   emit AllValChange(clipmaxF, clipminF, jitter);
     }
     Redraw();
     update();
     QApplication::processEvents(QEventLoop::AllEvents, 50);
 }
-void bctl_DblSlider::change()
+void DialSliderWidget::change()
 {
-    emit AllValChange(clipmaxF, clipminF, jitter);
+   // emit AllValChange(clipmaxF, clipminF, jitter);
 }
 
-void bctl_DblSlider::GetVals(float maxf, float minf, float jit)
+void DialSliderWidget::SetValues(float maxf, float minf, float jit)
 {
     clipmaxF = maxf;
     clipminF = minf;
@@ -199,7 +194,7 @@ void bctl_DblSlider::GetVals(float maxf, float minf, float jit)
     update();
 }
 
-void bctl_DblSlider::tabletEvent(QTabletEvent *event)
+void DialSliderWidget::tabletEvent(QTabletEvent *event)
 {
 
     if (event->type() == QEvent::TabletPress)
@@ -221,19 +216,19 @@ void bctl_DblSlider::tabletEvent(QTabletEvent *event)
     }
 }
 
-void bctl_DblSlider::mouseMoveEvent(QMouseEvent *event)
+void DialSliderWidget::mouseMoveEvent(QMouseEvent *event)
 {
 
     ParsePoint(event->pos());
 }
 
-void bctl_DblSlider::mouseReleaseEvent(QMouseEvent *event)
+void DialSliderWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     emit ValConfirm(clipmaxF);
     ActivePick = -1;
 }
 
-void bctl_DblSlider::resizeEvent(QResizeEvent *event)
+void DialSliderWidget::resizeEvent(QResizeEvent *event)
 {
     resizeImage(&ViewImage, this->size());
     int thin = qMin(this->width(), this->height());
@@ -242,12 +237,12 @@ void bctl_DblSlider::resizeEvent(QResizeEvent *event)
     update();
 }
 
-void bctl_DblSlider::DrawFrame(QImage *img, QPainter *pnt, QRect rect, QColor SHD, QColor HL)
+void DialSliderWidget::DrawFrame(QImage *img, QPainter *pnt, QRect rect, QColor SHD, QColor HL)
 {
     DrawFrame(img, pnt, rect.x(), rect.y(), rect.width(), rect.height(), SHD, HL);
 }
 
-void bctl_DblSlider::DrawFrame(QImage *img, QPainter *pnt, int x, int y, int w, int h, QColor SHD, QColor HL)
+void DialSliderWidget::DrawFrame(QImage *img, QPainter *pnt, int x, int y, int w, int h, QColor SHD, QColor HL)
 {
 
     //  QPainter pnt(img);

@@ -1,20 +1,5 @@
 #include "pnl_quickcontrol.h"
 
-void pnl_QuickControl::linkSliders(Ctl_BParam *slave, Ctl_BParam *master)
-{
-
-    slave->MLayout->setDirection(QBoxLayout::BottomToTop);
-    slave->Gslider->orient = 1;
-
-    connect(slave->Gslider, SIGNAL(AllValChange(float, float, float)), master->Gslider, SLOT(GetVals(float, float, float)));
-    connect(slave, SIGNAL(SendPenMode(int)), master, SLOT(SetPenModeNum(int)));
-    connect(master->Gslider, SIGNAL(AllValChange(float, float, float)), slave->Gslider, SLOT(GetVals(float, float, float)));
-    connect(master, SIGNAL(SendPenMode(int)), slave, SLOT(SetPenModeNum(int)));
-    slave->Gslider->GetVals(master->Gslider->clipmaxF, master->Gslider->clipminF, master->Gslider->jitter);
-    slave->Gslider->grad = master->Gslider->grad;
-    slave->LbIcon->setPixmap(*master->LbIcon->pixmap());
-    slave->MLayout->setMargin(1);
-}
 
 pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp *mainBrush, ImageArray *mimage)
  :  MImage(mimage)
@@ -28,11 +13,11 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp
     this->setParent(MImage);
     // Rest of your initialization code that depends on MImage
 
-    QuickOp = new Ctl_BParam(this);
-    QuickSol = new Ctl_BParam(this);
-    QuickSop = new Ctl_BParam(this);
-    QuickCop = new Ctl_BParam(this);
-    QuickPow = new Ctl_BParam(this);
+    QuickOp = new BrushDialWidget(BCTLS->CtlOp->Model,this);
+    QuickSol = new BrushDialWidget(BCTLS->CtlSol->Model,this);
+    QuickSop = new BrushDialWidget(BCTLS->CtlSol2->Model,this);
+    QuickCop = new BrushDialWidget(BCTLS->CtlCop->Model,this);
+    QuickPow = new BrushDialWidget(BCTLS->CtlPwr->Model,this);
 
     FastBrush = new ctl_FastBrush(mainBrush,this);
     FastBrush->show();
@@ -44,7 +29,7 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp
     connect(BCTLS, SIGNAL(SendAction(d_Action)), FastBrush, SLOT(ReBrush(d_Action)));
     FastBrush->setAttribute(Qt::WA_NoMousePropagation);
 
-    // connect(FastBrush,SIGNAL(SendCrv(float)),BControls->QuickCrv,SLOT(SetValF(float)));
+    // connect(FastBrush,SIGNAL(SendCrv(float)),BControls->QuickCrv,SLOT(SetMaxCursor(float)));
 
     logfile.write("\n fastpanel - part1 done");
     logfile.close();
@@ -53,34 +38,23 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp
     Lfpl = new QHBoxLayout;
     Lfpr = new QHBoxLayout;
 
-    linkSliders(QuickOp, BCTLS->CtlOp);
-    linkSliders(QuickSol, BCTLS->CtlSol);
-    linkSliders(QuickSop, BCTLS->CtlSol2);
-    linkSliders(QuickCop, BCTLS->CtlCop);
-    linkSliders(QuickPow, BCTLS->CtlPwr);
 
     // creating right panel
     logfile.write("\n fastpanel - part2 done");
     logfile.close();
     logfile.open(QFile::Append);
-    QuickHue = new Ctl_BParam;
-    QuickSat = new Ctl_BParam;
-    QuickLit = new Ctl_BParam;
-    QuickScat = new Ctl_BParam;
-    QuickSpc = new Ctl_BParam;
-    QuickLen = new Ctl_BParam;
+    QuickHue = new BrushDialWidget;
+    QuickSat = new BrushDialWidget;
+    QuickLit = new BrushDialWidget;
+    QuickScat = new BrushDialWidget;
+    QuickSpc = new BrushDialWidget;
+    QuickLen = new BrushDialWidget;
     logfile.write("\n fastpanel - part2-1 done");
-    QuickHue->Gslider->DsRange = 0.0833333;
-    linkSliders(QuickHue, BCTLS->CtlHue);
-    linkSliders(QuickSat, BCTLS->CtlSat);
-    linkSliders(QuickLit, BCTLS->CtlLit);
-    linkSliders(QuickScat, BCTLS->CtlSpcJit);
-    linkSliders(QuickSpc, BCTLS->CtlSpc);
-    linkSliders(QuickLen, BCTLS->CtlLen);
+    QuickHue->Slider->DsRange = 0.0833333;
 
-    connect(BCTLS->CtlLit->Gslider, SIGNAL(Repainted()), QuickLit->Gslider, SLOT(Redraw()));
-    connect(BCTLS->CtlSat->Gslider, SIGNAL(Repainted()), QuickSat->Gslider, SLOT(Redraw()));
-    connect(BCTLS->CtlHue->Gslider, SIGNAL(Repainted()), QuickHue->Gslider, SLOT(Redraw()));
+    connect(BCTLS->CtlLit->Slider, SIGNAL(Repainted()), QuickLit->Slider, SLOT(Redraw()));
+    connect(BCTLS->CtlSat->Slider, SIGNAL(Repainted()), QuickSat->Slider, SLOT(Redraw()));
+    connect(BCTLS->CtlHue->Slider, SIGNAL(Repainted()), QuickHue->Slider, SLOT(Redraw()));
 
     Lfpr->addWidget(QuickHue);
     Lfpr->addWidget(QuickSat);
@@ -99,12 +73,12 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp
     FastPanelRight->setFixedWidth((64 + 8) * 3);
     FastPanelRight->setFixedHeight(256 + 256);
 
-    QuickHue->Gslider->MaxCol = QColor::fromRgbF(1, 1, 1, 0);
-    QuickLit->Gslider->MaxCol = QColor::fromRgbF(1, 1, 1, 0);
-    QuickSat->Gslider->MaxCol = QColor::fromRgbF(1, 1, 1, 0);
-    QuickHue->Gslider->MinCol = QColor::fromRgbF(0, 0, 0, 0.5);
-    QuickLit->Gslider->MinCol = QColor::fromRgbF(0, 0, 0, 0.5);
-    QuickSat->Gslider->MinCol = QColor::fromRgbF(0, 0, 0, 0.5);
+    QuickHue->Slider->MaxCol = QColor::fromRgbF(1, 1, 1, 0);
+    QuickLit->Slider->MaxCol = QColor::fromRgbF(1, 1, 1, 0);
+    QuickSat->Slider->MaxCol = QColor::fromRgbF(1, 1, 1, 0);
+    QuickHue->Slider->MinCol = QColor::fromRgbF(0, 0, 0, 0.5);
+    QuickLit->Slider->MinCol = QColor::fromRgbF(0, 0, 0, 0.5);
+    QuickSat->Slider->MinCol = QColor::fromRgbF(0, 0, 0, 0.5);
 
     // upleft panel;
 
@@ -123,18 +97,14 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp
     FastPanelLeft->setFixedWidth(FastPanelRight->width());
     FastPanelLeft->setFixedHeight(FastPanelRight->height());
     //
-    QuickSize = new Ctl_BParam;
-    QuickScale = new Ctl_BParam;
-    QuickRel = new Ctl_BParam;
-    QuickRot = new Ctl_BParam;
+    QuickSize = new BrushDialWidget(BCTLS->CtlRad->Model,0);
+    QuickScale = new BrushDialWidget(BCTLS->CtlScale->Model,0);
+    QuickRel = new BrushDialWidget(BCTLS->CtlScaleRel->Model,0);
+    QuickRot = new BrushDialWidget(BCTLS->CtlAng->Model,0);
 
     logfile.write("\n fastpanel - part4 done");
     logfile.close();
     logfile.open(QFile::Append);
-    linkSliders(QuickSize, BCTLS->CtlRad);
-    linkSliders(QuickScale, BCTLS->CtlScale);
-    linkSliders(QuickRel, BCTLS->CtlScaleRel);
-    linkSliders(QuickRot, BCTLS->CtlAng);
 
     FastPanelGeo = new QWidget;
 
@@ -148,13 +118,13 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp
     logfile.close();
     logfile.open(QFile::Append);
     QuickSize->MLayout->setDirection(QBoxLayout::LeftToRight);
-    QuickSize->Gslider->orient = 0;
+    QuickSize->Slider->orient = 0;
     QuickScale->MLayout->setDirection(QBoxLayout::LeftToRight);
-    QuickScale->Gslider->orient = 0;
+    QuickScale->Slider->orient = 0;
     QuickRel->MLayout->setDirection(QBoxLayout::LeftToRight);
-    QuickRel->Gslider->orient = 0;
+    QuickRel->Slider->orient = 0;
     QuickRot->MLayout->setDirection(QBoxLayout::LeftToRight);
-    QuickRot->Gslider->orient = 0;
+    QuickRot->Slider->orient = 0;
 
     FastPanelGeo->setLayout(Lfpg);
     // FastPanelGeo->setint(this);
@@ -171,8 +141,8 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp
     logfile.open(QFile::Append);
 
     FastTrueOp = new ctl_trueop();
-    // FastTrueOp->rrel=&(BControls->CtlRadRel->Gslider->clipmaxF);
-    // FastTrueOp->FadeCurveExp=&(BControls->CtlCrv->Gslider->clipmaxF);
+    // FastTrueOp->rrel=&(BControls->CtlRadRel->Slider->clipmaxF);
+    // FastTrueOp->FadeCurveExp=&(BControls->CtlCrv->Slider->clipmaxF);
 
     FastTrueOp->setParent(this);
 
@@ -181,9 +151,9 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp
     connect(QuickOp, SIGNAL(NewValue(float)), FastTrueOp, SLOT(setop(float)));
     connect(QuickSpc, SIGNAL(NewValue(float)), FastTrueOp, SLOT(setspc(float)));
 
-    FastTrueOp->hue = &(BCTLS->CtlHue->Gslider->clipmaxF);
-    FastTrueOp->sat = &(BCTLS->CtlSat->Gslider->clipmaxF);
-    FastTrueOp->lit = &(BCTLS->CtlLit->Gslider->clipmaxF);
+    FastTrueOp->hue = &(BCTLS->CtlHue->Slider->clipmaxF);
+    FastTrueOp->sat = &(BCTLS->CtlSat->Slider->clipmaxF);
+    FastTrueOp->lit = &(BCTLS->CtlLit->Slider->clipmaxF);
 
     FastTools = new ctl_ToolSelector;
     FastTools->setParent(this);

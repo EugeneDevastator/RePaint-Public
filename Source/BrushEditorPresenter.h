@@ -50,29 +50,29 @@ public:
     ctl_ToolSelector *CtlTools;
     QCheckBox *chkFastMode;
      //QSizeGrip SzGrip;
-    Ctl_BParam *CtlLen;
-    Ctl_BParam *CtlPwr;
-    Ctl_BParam *CtlRad;
+    BrushDialWidget *CtlLen;
+    BrushDialWidget *CtlPwr;
+    BrushDialWidget *CtlRad;
 
-    Ctl_BParam *CtlRadRel;
+    BrushDialWidget *CtlRadRel;
 
-    Ctl_BParam *CtlScaleRel;
-    Ctl_BParam *CtlScale;
-    Ctl_BParam *CtlAng;
-    Ctl_BParam *CtlSpc; // spacing
-    Ctl_BParam *CtlSpcJit;
-    Ctl_BParam *Ctl;
-    Ctl_BParam *CtlOp;
-    Ctl_BParam *CtlCop;
-    Ctl_BParam *CtlSol2;
-    Ctl_BParam *CtlSol;
-    Ctl_BParam *CtlCrv;
+    BrushDialWidget *CtlScaleRel;
+    BrushDialWidget *CtlScale;
+    BrushDialWidget *CtlAng;
+    BrushDialWidget *CtlSpc; // spacing
+    BrushDialWidget *CtlSpcJit;
+    BrushDialWidget *Ctl;
+    BrushDialWidget *CtlOp;
+    BrushDialWidget *CtlCop;
+    BrushDialWidget *CtlSol2;
+    BrushDialWidget *CtlSol;
+    BrushDialWidget *CtlCrv;
 
-    Ctl_BParam *CtlHue;
-    Ctl_BParam *CtlSat;
-    Ctl_BParam *CtlLit;
+    BrushDialWidget *CtlHue;
+    BrushDialWidget *CtlSat;
+    BrushDialWidget *CtlLit;
 
-    QList <Ctl_BParam*> Controllers;
+    QList <BrushDialWidget*> Controllers;
 
     QVBoxLayout *LtLeftToolbar;
 

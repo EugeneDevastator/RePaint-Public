@@ -120,11 +120,11 @@ class ImageArray : public QWidget
     bool EnablePoly;
 
     BrushEditorPresenter *BControls;
-    Ctl_BParam *RadCtl;
-    Ctl_BParam *RadRelCtl;
-    Ctl_BParam *ScaleCtl;
-    Ctl_BParam *SpacingCtl;
-    Ctl_BParam *SpacingJitCtl;
+    BrushDialWidget *RadCtl;
+    BrushDialWidget *RadRelCtl;
+    BrushDialWidget *ScaleCtl;
+    BrushDialWidget *SpacingCtl;
+    BrushDialWidget *SpacingJitCtl;
     QRect RepaintRect;
     QRect RepaintiRect;
     int RepaintLayer;

@@ -93,89 +93,67 @@ BrushEditorPresenter::BrushEditorPresenter(ClientBrushStamp *mainBrush, QWidget 
 
     qDebug() << ("bcontrols part 1-3 done");
 
-    CtlRad = new Ctl_BParam();
+    CtlRad = new BrushDialWidget();
     CtlRad->setToolTip("Radius control");
-    CtlRadRel = new Ctl_BParam();
-    CtlRadRel->setToolTip("Radius control");
-    CtlRadRel->OutMax = 0.9899;
-    CtlRadRel->SetValF(0.5);
 
+    CtlRadRel = new BrushDialWidget(new DialModel(0,0.9899,0.5));
+    CtlRadRel->setToolTip("Radius control");
     qDebug() << ("bcontrols part 1-4 done");
 
-    CtlAng = new Ctl_BParam;
+    CtlAng = new BrushDialWidget(new DialModel(0,360,360));
     CtlAng->setToolTip("Angle control");
-    CtlAng->OutMax = 360;
-    CtlAng->OutMin = 0;
-    CtlAng->OutDef = 360;
-    CtlAng->ResetValue();
+
     // CtlAng->MLayout->setDirection(QBoxLayout::TopToBottom);
-    CtlScaleRel = new Ctl_BParam;
+    CtlScaleRel = new BrushDialWidget(new DialModel(0,1,0.5));
     CtlScaleRel->setToolTip("Spacing");
-    CtlScaleRel->OutMax = 1;
-    CtlScaleRel->OutMin = 0;
-    CtlScaleRel->OutDef = 0.5;
-    CtlScaleRel->ResetValue();
-    CtlScale = new Ctl_BParam;
+
+    CtlScale = new BrushDialWidget(new DialModel(0.1,5,1));
     CtlScale->setToolTip("Scale");
-    CtlScale->OutMax = 5;
-    CtlScale->OutMin = 0;
-    CtlScale->OutDef = 1;
-    CtlScale->Gslider->DsRange = 0.2;
 
-    CtlScale->ResetValue();
+    CtlScale->Slider->DsRange = 0.2;
 
-    CtlSpc = new Ctl_BParam;
+    CtlScale->Model->ResetValue();
+
+    CtlSpc = new BrushDialWidget(new DialModel(0.05,2,0.3));
     CtlSpc->setToolTip("Spacing");
-    CtlSpc->OutMax = 2;
-    CtlSpc->OutMin = 0.05;
-    CtlSpc->OutDef = 0.3;
-    CtlSpcJit = new Ctl_BParam;
+
+    CtlSpcJit = new BrushDialWidget(new DialModel(0,5,0));
     CtlSpcJit->setToolTip("Scattering");
-    CtlSpcJit->OutMax = 5;
-    CtlSpcJit->OutMin = 0;
-    CtlSpcJit->OutDef = 0;
-    CtlSpc->ResetValue();
-    CtlSpcJit->ResetValue();
-    CtlOp = new Ctl_BParam;
+
+    CtlOp = new BrushDialWidget;
     CtlOp->setToolTip("Opacity");
-    CtlCop = new Ctl_BParam;
+
+    CtlCop = new BrushDialWidget(new DialModel(0.8,1,1));
     CtlCop->setToolTip("Clone Opacity");
-    CtlCop->OutMin = 0.8;
-    CtlLen = new Ctl_BParam;
+
+    CtlLen = new BrushDialWidget(new DialModel(0,1024,256));
     CtlLen->setToolTip("Brush Length");
-    CtlLen->OutMax = 1024;
-    CtlLen->OutMin = 0;
-    CtlLen->OutDef = 256;
-    CtlLen->ResetValue();
-    CtlPwr = new Ctl_BParam;
+
+    CtlPwr = new BrushDialWidget(new DialModel(-1,1,0.5));
     CtlPwr->setToolTip("Tool Power");
-    CtlPwr->OutMax = 1;
-    CtlPwr->OutMin = -1;
-    CtlPwr->OutDef = 0.5;
-    CtlPwr->ResetValue();
 
     qDebug() << ("bcontrols part 1-5 done");
 
-//CtlRadRel->Gslider->grad=CtlPwr->Gslider->grad;
-//CtlCrv->Gslider->grad=CtlPwr->Gslider->grad;
+//CtlRadRel->Slider->grad=CtlPwr->Slider->grad;
+//CtlCrv->Slider->grad=CtlPwr->Slider->grad;
 
 
-    CtlSol = new Ctl_BParam;
+    CtlSol = new BrushDialWidget(new DialModel(0,1,0));
     CtlSol->setToolTip("Solidity");
-    CtlSol2 = new Ctl_BParam;
+
+    CtlSol2 = new BrushDialWidget(new DialModel(0,1,0));
     CtlSol2->setToolTip("Binarity");
-    CtlCrv = new Ctl_BParam;
-    CtlCrv->OutMax = 1;
-    CtlCrv->OutMin = -1;
-    CtlCrv->OutDef = 0;
+
+    CtlCrv = new BrushDialWidget(new DialModel(-1,1,0));
     CtlCrv->setToolTip("Curvature");
-    CtlCrv->ResetValue();
-    CtlHue = new Ctl_BParam;
+
+    CtlHue = new BrushDialWidget(new DialModel(0,1,0.45));
     CtlHue->setToolTip("Hue");
-    CtlHue->Gslider->DsRange = 0.0833333;
-    CtlSat = new Ctl_BParam;
+    CtlHue->Slider->DsRange = 0.0833333;
+
+    CtlSat = new BrushDialWidget((new DialModel(0,1,1)));
     CtlSat->setToolTip("Saturation");
-    CtlLit = new Ctl_BParam;
+    CtlLit = new BrushDialWidget((new DialModel(0,1,0)));
     CtlLit->setToolTip("Lightness");
 
     CtlRad->SetIcon(AppPath + "/res/ctlRad.png");
@@ -195,29 +173,25 @@ BrushEditorPresenter::BrushEditorPresenter(ClientBrushStamp *mainBrush, QWidget 
     CtlHue->SetIcon(AppPath + "/res/ctlhue.png");
     CtlSat->SetIcon(AppPath + "/res/ctlsat.png");
     CtlLit->SetIcon(AppPath + "/res/ctllit.png");
-    CtlLit->SetValF(0.5);
+    CtlLit->Model->SetMaxCursor(0.5);
 
     float step = RngConv(M_PI / 6, 0, M_PI, 0, 1);
-    CtlHue->Gslider->grad->setColorAt(0, Qt::red);
-    CtlHue->Gslider->grad->setColorAt(0 + step, Qt::yellow);
-    CtlHue->Gslider->grad->setColorAt(0 + step * 2, Qt::green);
-    CtlHue->Gslider->grad->setColorAt(0 + step * 3, Qt::cyan);
-    CtlHue->Gslider->grad->setColorAt(0 + step * 4, Qt::blue);
-    CtlHue->Gslider->grad->setColorAt(0 + step * 5, QColor::fromRgbF(1, 0, 1, 1));
-    CtlHue->Gslider->grad->setColorAt(1, Qt::red);
-    //CtlHue->Gslider->orient=1;
-    CtlSat->Gslider->grad->setColorAt(0, QColor::fromHslF(1, 0, 0.5));
-    CtlSat->Gslider->grad->setColorAt(1, QColor::fromHslF(1, 1, 0.5));
+    CtlHue->Slider->grad->setColorAt(0, Qt::red);
+    CtlHue->Slider->grad->setColorAt(0 + step, Qt::yellow);
+    CtlHue->Slider->grad->setColorAt(0 + step * 2, Qt::green);
+    CtlHue->Slider->grad->setColorAt(0 + step * 3, Qt::cyan);
+    CtlHue->Slider->grad->setColorAt(0 + step * 4, Qt::blue);
+    CtlHue->Slider->grad->setColorAt(0 + step * 5, QColor::fromRgbF(1, 0, 1, 1));
+    CtlHue->Slider->grad->setColorAt(1, Qt::red);
+    //CtlHue->Slider->orient=1;
+    CtlSat->Slider->grad->setColorAt(0, QColor::fromHslF(1, 0, 0.5));
+    CtlSat->Slider->grad->setColorAt(1, QColor::fromHslF(1, 1, 0.5));
 
-    CtlLit->Gslider->grad->setColorAt(0, QColor::fromHslF(0, 0, 0));
-    CtlLit->Gslider->grad->setColorAt(0.5, QColor::fromHslF(1, 1, 0.5));
-    CtlLit->Gslider->grad->setColorAt(1, QColor::fromHslF(0, 0, 1));
+    CtlLit->Slider->grad->setColorAt(0, QColor::fromHslF(0, 0, 0));
+    CtlLit->Slider->grad->setColorAt(0.5, QColor::fromHslF(1, 1, 0.5));
+    CtlLit->Slider->grad->setColorAt(1, QColor::fromHslF(0, 0, 1));
 
-    CtlHue->SetValF(0.35);
-    CtlSat->SetValF(1);
-    CtlLit->SetValF(0);
 
-    CtlCrv->ResetValue();
 
     LtLeftToolbar = new QVBoxLayout(this);
 //    LtLeftToolbar->setMargin(0);
@@ -298,14 +272,14 @@ BrushEditorPresenter::BrushEditorPresenter(ClientBrushStamp *mainBrush, QWidget 
     Controllers.append(CtlSat);
     Controllers.append(CtlLit);
 
-            foreach (Ctl_BParam *ct, Controllers) connect(ct->Gslider, SIGNAL(Repainted()), this, SLOT(BrushRequest()));
+    foreach (BrushDialWidget *ct, Controllers) connect(ct->Slider, SIGNAL(Repainted()), this, SLOT(BrushRequest()));
 /*
-    CtlPwr->Gslider->grad->setColorAt(0,QColor::fromHslF(0,0,1));
-    CtlPwr->Gslider->grad->setColorAt(0.5,QColor::fromHslF(0,0,0));
-    CtlPwr->Gslider->grad->setColorAt(1,QColor::fromHslF(0,0,1));
-    CtlScaleRel->Gslider->grad->setColorAt(0,QColor::fromHslF(0,0,1));
-    CtlScaleRel->Gslider->grad->setColorAt(0.5,QColor::fromHslF(0,0,0));
-    CtlScaleRel->Gslider->grad->setColorAt(1,QColor::fromHslF(0,0,1));
+    CtlPwr->Slider->grad->setColorAt(0,QColor::fromHslF(0,0,1));
+    CtlPwr->Slider->grad->setColorAt(0.5,QColor::fromHslF(0,0,0));
+    CtlPwr->Slider->grad->setColorAt(1,QColor::fromHslF(0,0,1));
+    CtlScaleRel->Slider->grad->setColorAt(0,QColor::fromHslF(0,0,1));
+    CtlScaleRel->Slider->grad->setColorAt(0.5,QColor::fromHslF(0,0,0));
+    CtlScaleRel->Slider->grad->setColorAt(1,QColor::fromHslF(0,0,1));
 */
     logfile.write("\n BCONTROLS INIT+++");
     logfile.close();
@@ -314,7 +288,7 @@ BrushEditorPresenter::BrushEditorPresenter(ClientBrushStamp *mainBrush, QWidget 
 
 
 void BrushEditorPresenter::SetRadRel(float rel) {
-    CtlRadRel->SetValF(rel);
+    CtlRadRel->Model->SetMaxCursor(rel);
 }
 
 ActionData BrushEditorPresenter::ParseBrush(d_Stroke Strk, d_StrokePars stpars) {
@@ -409,18 +383,18 @@ void BrushEditorPresenter::ApplyPreset(d_ToolPreset Preset) {
     CtlCompMode->SendChangedIdx(Preset.compmode);
 
     for (int i = 0; i < Controllers.count() - cshift; i++) { //min and max are for all but colors if needed.
-        Controllers[i]->Gslider->clipmaxF = Preset.pars[i].fmax;
-        Controllers[i]->Gslider->clipminF = Preset.pars[i].fmin;
+        Controllers[i]->Slider->clipmaxF = Preset.pars[i].fmax;
+        Controllers[i]->Slider->clipminF = Preset.pars[i].fmin;
     }
     for (int i = 0; i < Controllers.count(); i++) { //jitter is saved for everyone
-        Controllers[i]->Gslider->jitter = Preset.pars[i].fjit;
+        Controllers[i]->Slider->jitter = Preset.pars[i].fjit;
         //Controllers[i]->SetPenModeNum(Preset.pars[i].tmode);
     }
     CtlTools->Btns[Preset.toolid]->click();
 
-            foreach (Ctl_BParam *ctl, Controllers) {
-            ctl->Gslider->change();
-            ctl->Gslider->Redraw();
+            foreach (BrushDialWidget *ctl, Controllers) {
+            ctl->Slider->change();
+            ctl->Slider->Redraw();
         }
 
 }
@@ -431,12 +405,12 @@ d_ToolPreset BrushEditorPresenter::GenPreset() {
     Preset.compmode = CtlCompMode->GetIdx();
     Preset.toolid = CtlTools->ToolID;
     for (int i = 0; i < Controllers.count(); i++) { //min and max are for all but colors if needed.
-        Preset.pars[i].fmax = Controllers[i]->Gslider->clipmaxF;
-        Preset.pars[i].fmin = Controllers[i]->Gslider->clipminF;
+        Preset.pars[i].fmax = Controllers[i]->Slider->clipmaxF;
+        Preset.pars[i].fmin = Controllers[i]->Slider->clipminF;
     }
     for (int i = 0; i < Controllers.count(); i++) { //jitter is saved for everyone
-        Preset.pars[i].fjit = Controllers[i]->Gslider->jitter;
-        Preset.pars[i].tmode = Controllers[i]->PenMode;
+        Preset.pars[i].fjit = Controllers[i]->Slider->jitter;
+        Preset.pars[i].tmode = Controllers[i]->Model->PenMode;
 
     }
     return Preset;
