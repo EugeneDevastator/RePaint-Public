@@ -40,10 +40,10 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp
     QuickCop = new BrushDialWidget(BCTLS->CtlCop->Model,this);
     QuickPow = new BrushDialWidget(BCTLS->CtlPwr->Model,this);
 
-    FastBrush = new ctl_FastBrush(mainBrush,this);
+    FastBrush = new ctl_FastBrush(mainBrush,MImage,this);
     FastBrush->show();
     // FastBrush->setWindowFlags(Qt::Tool|Qt::CustomizeWindowHint|Qt::WindowMinimizeButtonHint);
-    FastBrush->ZoomK = &MImage->ZoomK;
+
     FastBrush->setAttribute(Qt::WA_NoMousePropagation);
 
     // connect(FastBrush,SIGNAL(SendCrv(float)),BControls->QuickCrv,SLOT(SetMaxCursor(float)));
@@ -220,9 +220,10 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp
 
     connect(FastBrush, SIGNAL(SendRel(float)), BCTLS->CtlRadRel->Model, SLOT(SetMaxCursor(float)));
     connect(FastBrush, SIGNAL(SendCrv(float)), BCTLS->CtlCrv->Model, SLOT(SetMaxCursor(float)));
+    //unused
     connect(FastBrush, SIGNAL(AskBrush()), BCTLS, SLOT(BrushRequest()));
-    connect(BCTLS, SIGNAL(SendAction(d_Action)), FastBrush, SLOT(ReBrush(d_Action)));
-
+    //connect(BCTLS, SIGNAL(SendAction(ActionData)), FastBrush, SLOT(ReBrush(ActionData)));
+    connect(BCTLS, SIGNAL(SendAction(ActionData)),FastBrush, SLOT(ReBrush(ActionData)));
     connect(FastTools, SIGNAL(ToolSelected(int)), BCTLS->CtlTools, SLOT(AssignTool(int)));
     connect(BCTLS->CtlTools, SIGNAL(ToolSelected(int)), FastTools, SLOT(AssignTool(int)));
     connect(QBmodes, SIGNAL(BMchanged(int)), BCTLS->CtlCompMode, SLOT(setBMbyint(int)));
