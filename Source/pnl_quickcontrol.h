@@ -18,30 +18,32 @@
 class pnl_QuickControl : public QWidget
      {
         Q_OBJECT
+        private:
+      BrushDialWidget *QuickOp;
+      BrushDialWidget *QuickSol;
+      BrushDialWidget *QuickSpc;
 
+      BrushDialWidget *QuickHue;
+      BrushDialWidget *QuickSat;
+      BrushDialWidget *QuickLit;
+
+      QWidget *FastPanelLeft;
+      QWidget *FastPanelRight;
+      QWidget *FastPanelGeo;
 public:
     explicit pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp *mainBrush, ImageArray *mimage);
-    BrushDialWidget *QuickOp;
-    BrushDialWidget *QuickSol;
+
     BrushDialWidget *QuickSop;
     BrushDialWidget *QuickCop;
     BrushDialWidget *QuickPow;
-
-    BrushDialWidget *QuickHue;
-    BrushDialWidget *QuickSat;
-    BrushDialWidget *QuickLit;
     BrushDialWidget *QuickScat;
-    BrushDialWidget *QuickSpc;
     BrushDialWidget *QuickLen;
-
     BrushDialWidget *QuickSize;
     BrushDialWidget *QuickScale;
     BrushDialWidget *QuickRel;
     BrushDialWidget *QuickRot;
 
-    QWidget *FastPanelLeft;
-    QWidget *FastPanelRight;
-    QWidget *FastPanelGeo;
+
     QWidget *FastBlends;
 
     ctl_trueop *FastTrueOp;

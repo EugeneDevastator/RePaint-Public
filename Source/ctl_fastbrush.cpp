@@ -32,6 +32,9 @@ void ctl_FastBrush::paintEvent(QPaintEvent *event)
 {
     // if (!repainted )
     {
+        if(!DBR)
+            return;
+
         /*QImage tmpbr(QSize(128,128),QImage::Format_ARGB32_Premultiplied);
         QPainter ip(&tmpbr);
         ip.setCompositionMode(QPainter::CompositionMode_Source);

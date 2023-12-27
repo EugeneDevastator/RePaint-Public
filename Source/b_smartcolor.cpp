@@ -1,11 +1,20 @@
 #include "b_smartcolor.h"
 
-b_SmartColor::b_SmartColor(QObject *parent) : QObject(parent)
+b_SmartColor::b_SmartColor(DialModel *hueDial, DialModel *satDial, DialModel *litDial, QObject *parent):
+HueDial(hueDial), SatDial(satDial), LitDial(litDial)
 {
     savehue = 0;
     savesat = 0;
     savelit = 0;
     UseCol = Qt::black;
+    connect(HueDial,SIGNAL(ChangedSignal()),this,SLOT(RefreshColor()));
+}
+void b_SmartColor::RefreshColor(){
+    savesat = SatDial->GetValueInRange(1);
+    savehue = HueDial->GetValueInRange(1);
+    savelit = LitDial->GetValueInRange(1);
+    UseCol = QColor::fromHslF(savehue, savesat, savelit);
+    emit NewColor(UseCol);
 }
 
 void b_SmartColor::LoadAll()
@@ -51,3 +60,5 @@ void b_SmartColor::SetCol(QColor col)
     UseCol = QColor::fromHslF(savehue, savesat, savelit);
     emit NewColor(UseCol);
 }
+
+

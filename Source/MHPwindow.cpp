@@ -56,7 +56,7 @@ MHPwindow::MHPwindow()
 
 
     BControls = new BrushEditorPresenter(Brush);
-
+    PaintColor = new b_SmartColor(BControls->CtlHue->Model,BControls->CtlSat->Model,BControls->CtlLit->Model);
     AllPanels.append(BControls);
 
     MainImage = new ImageArray(Brush, BControls,KBLINK);
@@ -65,8 +65,8 @@ MHPwindow::MHPwindow()
 
     //--------------- MASTERS INIT --------------
 
-    PaintColor = new b_SmartColor();
-    EraserColor = new b_SmartColor();
+
+    //EraserColor = new b_SmartColor();
 
 
     bool singlecore = false;
@@ -116,7 +116,7 @@ MHPwindow::MHPwindow()
     FriendList->NET = NET;
 
     PaintColor->SetCol(Qt::black);
-    EraserColor->SetCol(Qt::white);
+    //EraserColor->SetCol(Qt::white);
     //  BControls->BrushControl->Brush=Brush;
 
     //------------- end of fast panel init;
@@ -196,12 +196,12 @@ MHPwindow::MHPwindow()
 
     QuickPanel = new pnl_QuickControl(BControls, Brush, MainImage);
     //  please connect with qp
-    connect(QuickPanel->QuickLit->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
-    connect(QuickPanel->QuickSat->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
-    connect(QuickPanel->QuickHue->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
-    connect(QuickPanel->QuickHue->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetHueF(float)));
-    connect(QuickPanel->QuickSat->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetSatF(float)));
-    connect(QuickPanel->QuickLit->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetLitF(float)));
+    connect(BControls->CtlLit->Model, SIGNAL(ChangedSignal()), this, SLOT(RedrawCol()));
+    connect(BControls->CtlSat->Model, SIGNAL(ChangedSignal()), this, SLOT(RedrawCol()));
+    connect(BControls->CtlHue->Model, SIGNAL(ChangedSignal()), this, SLOT(RedrawCol()));
+    //connect(BControls->CtlHue->Model, SIGNAL(ChangedSignal()), PaintColor, SLOT(SetHueF(float)));
+    //connect(BControls->CtlSat->Model, SIGNAL(ChangedSignal()), PaintColor, SLOT(SetSatF(float)));
+    //connect(BControls->CtlLit->Model, SIGNAL(ChangedSignal()), PaintColor, SLOT(SetLitF(float)));
 
     QuickPanel->RealignPanel();
 
@@ -287,15 +287,15 @@ MHPwindow::MHPwindow()
     qDebug() << ("MHPW connects part-6 done");
 
     // connect(CtlCol,SIGNAL(SendColor(QColor)),this,SLOT(GetColor(QColor)));
-    connect(BControls->CtlHue->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetHueF(float)));
-    connect(BControls->CtlSat->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetSatF(float)));
-    connect(BControls->CtlLit->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetLitF(float)));
+    //connect(BControls->CtlHue->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetHueF(float)));
+    //connect(BControls->CtlSat->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetSatF(float)));
+    //connect(BControls->CtlLit->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetLitF(float)));
 
-    connect(BControls->CtlHue->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
-    connect(BControls->CtlSat->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
-    connect(BControls->CtlLit->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
+    //connect(BControls->CtlHue->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
+    //connect(BControls->CtlSat->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
+    //connect(BControls->CtlLit->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
 
-    connect(BControls->CtlLen, SIGNAL(NewValue(float)), MainImage, SLOT(SetLengths(float)));
+    connect(BControls->CtlLen->Model, SIGNAL(NewValue(float)), MainImage, SLOT(SetLengths(float)));
     connect(CHAT->ChatLine, SIGNAL(returnPressed()), this, SLOT(SendChatMsg()));
     // ----------------
     // connect(DlgLogin,SIGNAL(SendLogin(QString,QString)),this,SLOT(GetLogin(QString,QString)));

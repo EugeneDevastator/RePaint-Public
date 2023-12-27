@@ -36,9 +36,9 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp
     SetUpSliderFromMain(QuickSat,BCTLS->CtlSat);
     SetUpSliderFromMain(QuickLit,BCTLS->CtlLit);
 
-    QuickSop = new BrushDialWidget(BCTLS->CtlSol2->Model,this);
-    QuickCop = new BrushDialWidget(BCTLS->CtlCop->Model,this);
-    QuickPow = new BrushDialWidget(BCTLS->CtlPwr->Model,this);
+    //QuickSop = new BrushDialWidget(BCTLS->CtlSol2->Model,this);
+    //QuickCop = new BrushDialWidget(BCTLS->CtlCop->Model,this);
+    //QuickPow = new BrushDialWidget(BCTLS->CtlPwr->Model,this);
 
     FastBrush = new ctl_FastBrush(mainBrush,MImage,this);
     FastBrush->show();

@@ -134,6 +134,7 @@ class DialModel : public QObject {
 
    signals:
       void ChangedSignal();
+
    public slots:
       void SetMaxCursor(float maxNormal) {
           MaxCursorNorm = maxNormal;
