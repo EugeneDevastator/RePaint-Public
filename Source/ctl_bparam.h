@@ -64,9 +64,10 @@ class BrushDialWidget : public QWidget {
       DialModel *Model;
    public slots:
       void SetIcon(QString pathstr);
+      void Refresh();
    private slots:
       void SetPenMode(QAction *mAct);
-      void ResetValue();
+
       void SliderChange(float val);
       void HandleModelUpdate();
    protected:

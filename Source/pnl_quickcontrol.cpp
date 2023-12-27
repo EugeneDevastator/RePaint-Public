@@ -10,7 +10,7 @@ void pnl_QuickControl::SetUpSliderFromMain(BrushDialWidget *slave, BrushDialWidg
     slave->MLayout->setMargin(1);
 }
 
-pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp *mainBrush, ImageArray *mimage)
+pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp *mainBrush, ImageArray *mimage, b_SmartColor *mainColor)
  :  MImage(mimage)
 {
   //  Check for null dependencies and throw an exception if any are null
@@ -218,6 +218,8 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp
    // connect(QuickOp, SIGNAL(NewValue(float)), FastTrueOp, SLOT(setop(float)));
    // connect(QuickSpc, SIGNAL(NewValue(float)), FastTrueOp, SLOT(setspc(float)));
 
+
+
     connect(FastBrush, SIGNAL(SendRel(float)), BCTLS->CtlRadRel->Model, SLOT(SetMaxCursor(float)));
     connect(FastBrush, SIGNAL(SendCrv(float)), BCTLS->CtlCrv->Model, SLOT(SetMaxCursor(float)));
     //unused
@@ -230,6 +232,10 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp
     connect(BCTLS->CtlCompMode, SIGNAL(BMchanged(int)), QBmodes, SLOT(setBMbyint(int)));
     connect(QNmodes, SIGNAL(activated(int)), BCTLS->CtlNoiseMode, SLOT(setCurrentIndex(int)));
     connect(BCTLS->CtlNoiseMode, SIGNAL(activated(int)), QNmodes, SLOT(setCurrentIndex(int)));
+
+    connect(mainColor, SIGNAL(NewColor(QColor)), QuickLit, SLOT(Refresh()));
+    connect(mainColor, SIGNAL(NewColor(QColor)), QuickSat, SLOT(Refresh()));
+    connect(mainColor, SIGNAL(NewColor(QColor)), QuickHue, SLOT(Refresh()));
 }
 
 void pnl_QuickControl::RealignPanel()

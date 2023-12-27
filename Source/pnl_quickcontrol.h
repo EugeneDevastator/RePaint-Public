@@ -31,7 +31,7 @@ class pnl_QuickControl : public QWidget
       QWidget *FastPanelRight;
       QWidget *FastPanelGeo;
 public:
-    explicit pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp *mainBrush, ImageArray *mimage);
+    explicit pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp *mainBrush, ImageArray *mimage, b_SmartColor *mainColor);
 
     BrushDialWidget *QuickSop;
     BrushDialWidget *QuickCop;

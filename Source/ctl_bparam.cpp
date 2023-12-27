@@ -182,9 +182,6 @@ qreal BrushDialWidget::GetModValue(d_StrokePars stpars) {
     // return ((float)oldSlider->value()/(float)OutMode);
 }
 
-void BrushDialWidget::ResetValue() {
-    Model->Reset();
-}
 
 void BrushDialWidget::SliderChange(float val) {
     Model->SetCursors(Slider->clipminF, Slider->clipmaxF, Slider->jitter);
@@ -208,4 +205,8 @@ void BrushDialWidget::SetIcon(QString pathstr) {
 void BrushDialWidget::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton)
         Model->ResetValue();
+}
+
+void BrushDialWidget::Refresh() {
+    HandleModelUpdate();
 }

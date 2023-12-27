@@ -194,11 +194,13 @@ MHPwindow::MHPwindow()
     logfile.close();
     logfile.open(QFile::Append);
 
-    QuickPanel = new pnl_QuickControl(BControls, Brush, MainImage);
+    QuickPanel = new pnl_QuickControl(BControls, Brush, MainImage, PaintColor);
     //  please connect with qp
-    connect(BControls->CtlLit->Model, SIGNAL(ChangedSignal()), this, SLOT(RedrawCol()));
-    connect(BControls->CtlSat->Model, SIGNAL(ChangedSignal()), this, SLOT(RedrawCol()));
-    connect(BControls->CtlHue->Model, SIGNAL(ChangedSignal()), this, SLOT(RedrawCol()));
+    //connect(BControls->CtlLit->Model, SIGNAL(ChangedSignal()), this, SLOT(RedrawCol()));
+    //connect(BControls->CtlLit->Model, SIGNAL(ChangedSignal()), this, SLOT(RedrawCol()));
+    //connect(BControls->CtlSat->Model, SIGNAL(ChangedSignal()), this, SLOT(RedrawCol()));
+    connect(PaintColor, SIGNAL(NewColor(QColor)), this, SLOT(RedrawCol()));
+
     //connect(BControls->CtlHue->Model, SIGNAL(ChangedSignal()), PaintColor, SLOT(SetHueF(float)));
     //connect(BControls->CtlSat->Model, SIGNAL(ChangedSignal()), PaintColor, SLOT(SetSatF(float)));
     //connect(BControls->CtlLit->Model, SIGNAL(ChangedSignal()), PaintColor, SLOT(SetLitF(float)));
@@ -260,7 +262,7 @@ MHPwindow::MHPwindow()
     // connect(this,SIGNAL(destroyed()),DlgCol,SLOT(close()));
     // connect(MainImage,SIGNAL(SendColor(QColor)),CtlCol,SLOT(SetColor(QColor)));
     connect(MainImage, SIGNAL(AskResetPos()), StrokeMaster, SLOT(ResetLocalPos()), Qt::DirectConnection);
-    connect(MainImage, SIGNAL(SendColor(QColor)), this, SLOT(GetColor(QColor)));
+    connect(MainImage, SIGNAL(SendColor(QColor)), this, SLOT(AssignMainColor(QColor)));
     connect(MainImage, SIGNAL(SendColor(QColor)), PaintColor, SLOT(SetCol(QColor)));
     qDebug() << ("MHPW connects part-5 done");
     connect(MainImage, SIGNAL(MouseIn()), this, SLOT(GrabKB()));
@@ -286,14 +288,12 @@ MHPwindow::MHPwindow()
 
     qDebug() << ("MHPW connects part-6 done");
 
-    // connect(CtlCol,SIGNAL(SendColor(QColor)),this,SLOT(GetColor(QColor)));
+    // connect(CtlCol,SIGNAL(SendColor(QColor)),this,SLOT(AssignMainColor(QColor)));
     //connect(BControls->CtlHue->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetHueF(float)));
     //connect(BControls->CtlSat->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetSatF(float)));
     //connect(BControls->CtlLit->Slider, SIGNAL(ValChange(float)), PaintColor, SLOT(SetLitF(float)));
 
-    //connect(BControls->CtlHue->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
-    //connect(BControls->CtlSat->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
-    //connect(BControls->CtlLit->Slider, SIGNAL(ValChange(float)), this, SLOT(RedrawCol()));
+
 
     connect(BControls->CtlLen->Model, SIGNAL(NewValue(float)), MainImage, SLOT(SetLengths(float)));
     connect(CHAT->ChatLine, SIGNAL(returnPressed()), this, SLOT(SendChatMsg()));
@@ -329,7 +329,7 @@ MHPwindow::MHPwindow()
     FileMenu->BtnReload->setEnabled(false);
 
     qDebug() << ("buttons done");
-    GetColor(Qt::cyan);
+    AssignMainColor(Qt::cyan);
 
     RedrawCol();
     ShowQP();
@@ -906,7 +906,7 @@ void MHPwindow::RedrawCol()
 
     // QuickPanel->QuickHue->update();
 }
-void MHPwindow::GetColor(QColor col)
+void MHPwindow::AssignMainColor(QColor col)
 { // get color from various sources ike canvas cpicker etc.
     PaintColor->SetCol(col);
 

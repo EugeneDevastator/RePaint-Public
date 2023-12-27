@@ -142,7 +142,7 @@ class MHPwindow : public QWidget {
       void ConnectAddr();
       void ImgOpen();
       void RedrawCol();
-      void GetColor(QColor col);
+      void AssignMainColor(QColor col);
       void SendChatMsg();
       // void GetChatMsg(QString Msg);
       void GetLogin(QString user, QString pass);

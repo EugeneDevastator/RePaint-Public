@@ -6,13 +6,16 @@ HueDial(hueDial), SatDial(satDial), LitDial(litDial)
     savehue = 0;
     savesat = 0;
     savelit = 0;
-    UseCol = Qt::black;
+    UseCol = QColor::fromHslF(savehue, savesat, savelit);
     connect(HueDial,SIGNAL(ChangedSignal()),this,SLOT(RefreshColor()));
+    connect(SatDial,SIGNAL(ChangedSignal()),this,SLOT(RefreshColor()));
+    connect(LitDial,SIGNAL(ChangedSignal()),this,SLOT(RefreshColor()));
+    emit NewColor(UseCol);
 }
 void b_SmartColor::RefreshColor(){
-    savesat = SatDial->GetValueInRange(1);
-    savehue = HueDial->GetValueInRange(1);
-    savelit = LitDial->GetValueInRange(1);
+    savesat = SatDial->GetValueAtMax();
+    savehue = HueDial->GetValueAtMax();
+    savelit = LitDial->GetValueAtMax();
     UseCol = QColor::fromHslF(savehue, savesat, savelit);
     emit NewColor(UseCol);
 }
@@ -22,24 +25,7 @@ void b_SmartColor::LoadAll()
     UseCol = QColor::fromHslF(savehue, savesat, savelit);
     emit NewColor(UseCol);
 }
-void b_SmartColor::SetSatF(float inp)
-{
-    savesat = inp;
-    UseCol = QColor::fromHslF(savehue, savesat, savelit);
-    emit NewColor(UseCol);
-}
-void b_SmartColor::SetHueF(float inp)
-{
-    savehue = inp;
-    UseCol = QColor::fromHslF(savehue, savesat, savelit);
-    emit NewColor(UseCol);
-}
-void b_SmartColor::SetLitF(float inp)
-{
-    savelit = inp;
-    UseCol = QColor::fromHslF(savehue, savesat, savelit);
-    emit NewColor(UseCol);
-}
+
 void b_SmartColor::SetCol(QColor col)
 {
     if ((col.lightnessF() == 0) | (col.lightnessF() == 1))

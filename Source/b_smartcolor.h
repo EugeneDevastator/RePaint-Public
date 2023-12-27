@@ -19,9 +19,6 @@ class b_SmartColor : public QObject {
       DialModel *LitDial;
    public slots:
       void RefreshColor();
-      void SetHueF(float inp);
-      void SetSatF(float inp);
-      void SetLitF(float inp);
       void LoadAll();
       //void SaveAll();
       void SetCol(QColor col);
