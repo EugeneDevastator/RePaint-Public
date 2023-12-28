@@ -75,7 +75,7 @@ class DialModel : public QObject {
           RuntimeCursorNorm = DefaultMaxCursorNorm;
           emit ChangedSignal();
       }
-      float GetValueInRange(float t) {
+      float GetValueInCursorRange(float t) {
           float cursorRange = MaxCursorNorm - MinCursorNorm;
           float boundT = cursorRange * t + MinCursorNorm;
           return boundT * GetBoundRange() + MinBound;
@@ -138,6 +138,11 @@ class DialModel : public QObject {
    public slots:
       void SetMaxCursor(float maxNormal) {
           MaxCursorNorm = maxNormal;
+          emit ChangedSignal();
+      }
+
+      void SetMaxCursorByValue(float value) {
+          MaxCursorNorm =  (value - MinBound)/GetBoundRange();
           emit ChangedSignal();
       }
 };

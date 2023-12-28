@@ -269,7 +269,8 @@ BrushEditorPresenter::BrushEditorPresenter(ClientBrushStamp *mainBrush, QWidget 
     Controllers.append(CtlSat);
     Controllers.append(CtlLit);
 
-    foreach (BrushDialWidget *ct, Controllers) connect(ct->Slider, SIGNAL(Repainted()), this, SLOT(BrushRequest()));
+    foreach (BrushDialWidget *ct, Controllers)
+            connect(ct->Model, SIGNAL(ChangedSignal()), this, SLOT(BrushRequest()));
 /*
     CtlPwr->Slider->grad->setColorAt(0,QColor::fromHslF(0,0,1));
     CtlPwr->Slider->grad->setColorAt(0.5,QColor::fromHslF(0,0,0));
@@ -288,47 +289,47 @@ void BrushEditorPresenter::SetRadRel(float rel) {
     CtlRadRel->Model->SetMaxCursor(rel);
 }
 
-ActionData BrushEditorPresenter::ParseBrush(d_Stroke Strk, d_StrokePars stpars) {
+ActionData BrushEditorPresenter::ParseBrush(d_Stroke Strk, d_StrokePars strokeParams) {
 
     BrushData nb;
     ActionData act;
 
     nb.ClientStamp.opacity = 0.8;
     act.Brush = nb;
-    qreal op = CtlOp->GetModValue(stpars);
+    qreal op = CtlOp->GetModValue(strokeParams);
     act.Brush.ClientStamp.opacity = op;
-    act.Brush.ClientStamp.opacity = CtlOp->GetModValue(stpars);
-    act.Brush.ClientStamp.rad_out = InternalBrush->rad_out * CtlRad->GetModValue(stpars);//*stpars.pressure;
-    qreal minrad = 3.0;
+    act.Brush.ClientStamp.opacity = CtlOp->GetModValue(strokeParams);
+//    act.Brush.ClientStamp.rad_out = InternalBrush->rad_out * CtlRad->GetModValue(strokeParams);//*strokeParams.pressure;
+    act.Brush.ClientStamp.rad_out = CtlRad->GetModValue(strokeParams);//*strokeParams.pressure;
+    qreal minrad = 2.0;
     if (act.Brush.ClientStamp.rad_out < minrad) {
         act.Brush.ClientStamp.opacity *= (act.Brush.ClientStamp.rad_out) / minrad;
         act.Brush.ClientStamp.rad_out = (minrad + act.Brush.ClientStamp.rad_out) * 0.5;
     }
-    act.Brush.ClientStamp.rad_in = act.Brush.ClientStamp.rad_out * CtlRadRel->GetModValue(
-            stpars);//Brush->rad_in*CtlRad->GetModValue(stpars);//*stpars.pressure;
+    act.Brush.ClientStamp.rad_in = act.Brush.ClientStamp.rad_out
+            * CtlRadRel->GetModValue(strokeParams);//Brush->rad_in*CtlRad->GetModValue(strokeParams);//*strokeParams.pressure;
 
-
-    act.Brush.ClientStamp.resangle = InternalBrush->resangle + CtlAng->GetModValue(stpars);
+    act.Brush.ClientStamp.resangle = InitialBrushAngle + CtlAng->GetModValue(strokeParams);
     if ((act.Brush.ClientStamp.resangle == 45) | (act.Brush.ClientStamp.resangle == -45) | (act.Brush.ClientStamp.resangle == 135) |
         (act.Brush.ClientStamp.resangle == 225) | (act.Brush.ClientStamp.resangle == 315))
         act.Brush.ClientStamp.resangle = act.Brush.ClientStamp.resangle + 0.00001;
 
-    QColor DrawCol = QColor::fromHslF(CtlHue->GetModValue(stpars),
-                                      CtlSat->GetModValue(stpars),
-                                      CtlLit->GetModValue(stpars)
+    QColor DrawCol = QColor::fromHslF(CtlHue->GetModValue(strokeParams),
+                                      CtlSat->GetModValue(strokeParams),
+                                      CtlLit->GetModValue(strokeParams)
     );
 
     act.Brush.ClientStamp.col = qRgba(DrawCol.red(), DrawCol.green(), DrawCol.blue(), round(act.Brush.ClientStamp.opacity * 255));
 
-//if (stpars.Pars[csERASER]==1) act.Brush.col = EraserColor->UseCol;
+//if (strokeParams.Pars[csERASER]==1) act.Brush.col = EraserColor->UseCol;
 
-    act.Brush.ClientStamp.crv = CtlCrv->GetModValue(stpars);
-    act.Brush.ClientStamp.cop = CtlCop->GetModValue(stpars);
-    act.Brush.ClientStamp.sol = CtlSol->GetModValue(stpars);
-    act.Brush.ClientStamp.sol2op = CtlSol2->GetModValue(stpars);
-    act.Brush.ClientStamp.x2y = CtlScaleRel->GetModValue(stpars);
-    act.Brush.ClientStamp.scale = CtlScale->GetModValue(stpars);
-    act.Brush.ClientStamp.scale = CtlScale->GetModValue(stpars);
+    act.Brush.ClientStamp.crv = CtlCrv->GetModValue(strokeParams);
+    act.Brush.ClientStamp.cop = CtlCop->GetModValue(strokeParams);
+    act.Brush.ClientStamp.sol = CtlSol->GetModValue(strokeParams);
+    act.Brush.ClientStamp.sol2op = CtlSol2->GetModValue(strokeParams);
+    act.Brush.ClientStamp.x2y = CtlScaleRel->GetModValue(strokeParams);
+    act.Brush.ClientStamp.scale = CtlScale->GetModValue(strokeParams);
+    act.Brush.ClientStamp.scale = CtlScale->GetModValue(strokeParams);
 //act.Brush.compmode= //ARTM->BMmodes.at(CtlCompMode->currentIndex());
     act.Brush.ClientStamp.bmidx = CtlCompMode->GetIdx();
     act.Brush.ClientStamp.noiseidx = CtlNoiseMode->currentIndex();
@@ -359,9 +360,9 @@ ActionData BrushEditorPresenter::ParseBrush(d_Stroke Strk, d_StrokePars stpars) 
     if (chkFastMode->isChecked()) act.Brush.ClientStamp.pipeID = plRS;
 
     act.ToolID = CtlTools->ToolID;
-    act.Brush.ClientStamp.pwr = CtlPwr->GetModValue(stpars);
+    act.Brush.ClientStamp.pwr = CtlPwr->GetModValue(strokeParams);
     act.Stroke = Strk;
-    if (stpars.Pars[csERASER] == 1) {
+    if (strokeParams.Pars[csERASER] == 1) {
         act.Brush.ClientStamp.bmidx = 1;
     }
 

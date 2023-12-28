@@ -32,6 +32,7 @@ enum enKeyevs{
     ekFitScreen,
     ekTouchScreen,
     ekActualPixels,
+    ekBrushRegulation,
 
     ekSTOP
     };

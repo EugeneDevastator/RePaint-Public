@@ -32,6 +32,7 @@ qDebug()<<("KEYM:zeroed states");
     //KKlinks[Compose(Qt::AltModifier,0)]=ekCanvasPick;
 
     KKlinks.insert(Compose(Qt::ShiftModifier,Qt::Key_Shift),ekFastBrush);
+    KKlinks.insert(Compose(0,Qt::Key_CapsLock),ekBrushRegulation);
     KKlinks.insert(Compose(0,Qt::Key_QuoteLeft),ekCPICK);
     KKlinks.insert(Compose(0,Qt::Key_BracketLeft),ekBrushSizeM);
     KKlinks.insert(Compose(0,Qt::Key_BracketRight),ekBrushSizeP);
@@ -50,7 +51,7 @@ qDebug()<<("KEYM:zeroed states");
     KKlinks.insert(Compose(0,Qt::Key_Space),ekCanvasMove);
     KKlinks.insert(Compose(Qt::ControlModifier,Qt::Key_Control),ekCanvasZoomIn);
     KKlinks.insert(Compose(Qt::ControlModifier|Qt::ShiftModifier,Qt::Key_Space),ekCanvasZoomOut);
-    KKlinks.insert(Compose(Qt::ShiftModifier,Qt::Key_Shift),ekFastBrush);
+  //  KKlinks.insert(Compose(Qt::ShiftModifier,Qt::Key_Shift),ekFastBrush);
     KKlinks.insert(Compose(Qt::ControlModifier,Qt::Key_0),ekFitScreen);
     KKlinks.insert(Compose(Qt::ControlModifier|Qt::AltModifier,Qt::Key_0),ekActualPixels);
     KKlinks.insert(Compose(Qt::AltModifier,Qt::Key_0),ekTouchScreen);

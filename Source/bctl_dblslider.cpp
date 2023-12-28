@@ -2,8 +2,8 @@
 #include <math.h>
 #include <QLinearGradient>
 
-DialSliderWidget::DialSliderWidget(QWidget *parent) : bctl_ImageWidget(parent)
-{
+DialSliderWidget::DialSliderWidget(DialModel *model, QWidget *parent) : bctl_ImageWidget(parent) {
+    Model = model;
     ActivePick = -1;
     DsRange = 0.25;
     clipminF = 0;
@@ -24,12 +24,10 @@ DialSliderWidget::DialSliderWidget(QWidget *parent) : bctl_ImageWidget(parent)
     midtone.setRgb(240, 240, 240);
 }
 
-void DialSliderWidget::Redraw()
-{
+void DialSliderWidget::Redraw() {
     quint8 Soff = 2; // oldSlider offset from the borders
     QPainter painter(&ViewImage);
-    if (orient == 0)
-    {
+    if (orient == 0) {
         painter.setPen(Qt::SolidLine);
         // float top=qMax(clipmaxF,clipminF);
         // float bot=qMin(clipmaxF,clipminF);
@@ -60,9 +58,7 @@ void DialSliderWidget::Redraw()
         painter.drawRect(indr);
 
         DrawFrame(&ViewImage, &painter, indr, midtone, shade);
-    }
-    else
-    {
+    } else {
         painter.setPen(Qt::NoPen);
         grad->setStart(3, this->height());
         grad->setFinalStop(3, 0);
@@ -92,9 +88,20 @@ void DialSliderWidget::Redraw()
 
         DrawFrame(&ViewImage, &painter, indr, midtone, shade);
     }
-    painter.setPen(Qt::white);
-    // painter.drawRect(this->width()*clipmaxF,0,-4,this->height()-1);
-    painter.drawText(this->width() * 0.5 - 25, 0, 50, this->height(), Qt::AlignVCenter | Qt::AlignHCenter, QString::number((quint8)((int)255 * clipmaxF)));
+    if (Model) {
+        painter.setPen(Qt::black);
+        // painter.drawRect(this->width()*clipmaxF,0,-4,this->height()-1);
+        painter.drawText(this->width() * 0.5 - 25+1, +1, 50, this->height(),
+                         Qt::AlignVCenter | Qt::AlignHCenter,
+                //QString::number((quint8)((int)255 * clipmaxF)));
+                         QString::number(Model->GetValueAtMax(), 'f', 2));
+        painter.setPen(Qt::white);
+        // painter.drawRect(this->width()*clipmaxF,0,-4,this->height()-1);
+        painter.drawText(this->width() * 0.5 - 25, 0, 50, this->height(),
+                         Qt::AlignVCenter | Qt::AlignHCenter,
+                //QString::number((quint8)((int)255 * clipmaxF)));
+                         QString::number(Model->GetValueAtMax(), 'f', 2));
+    }
 
     // draw border frame;
 
@@ -114,8 +121,8 @@ void DialSliderWidget::Redraw()
 }
 // void DialSliderWidget::paintEvent(QPaintEvent *event){}
 
-void DialSliderWidget::mousePressEvent(QMouseEvent *event)
-{
+
+void DialSliderWidget::mousePressEvent(QMouseEvent *event) {
 
     if (event->buttons() == Qt::LeftButton)
         ActivePick = 1; // maximum
@@ -128,65 +135,55 @@ void DialSliderWidget::mousePressEvent(QMouseEvent *event)
     // QApplication::processEvents(QEventLoop::AllEvents,10);
 }
 
-void DialSliderWidget::ParsePoint(QPoint pos)
-{
-    if (ActivePick > -1)
-    {
+void DialSliderWidget::ParsePoint(QPoint pos) {
+    if (ActivePick > -1) {
         float val;
-        if (orient == 0)
-        {
-            val = (float)((float)pos.x() / ViewImage.width());
-            val = qMin(val, (float)1);
-            val = qMax(val, (float)0);
+        if (orient == 0) {
+            val = (float) ((float) pos.x() / ViewImage.width());
+            val = qMin(val, (float) 1);
+            val = qMax(val, (float) 0);
 
-            if ((pos.y() > this->height() * 2) | (pos.y() < -this->height()))
-            {
+            if ((pos.y() > this->height() * 2) | (pos.y() < -this->height())) {
                 // float drange=0.25;
                 val = val / DsRange;
                 val = round(val) * DsRange;
             }
-        }
-        else // vertical orient;
+        } else // vertical orient;
         {
-            val = (float)((float)pos.y() / ViewImage.height());
-            val = qMin(val, (float)1);
-            val = qMax(val, (float)0);
+            val = (float) ((float) pos.y() / ViewImage.height());
+            val = qMin(val, (float) 1);
+            val = qMax(val, (float) 0);
             val = 1 - val;
-            if ((pos.x() > this->width() * 2) | (pos.x() < -this->width()))
-            {
+            if ((pos.x() > this->width() * 2) | (pos.x() < -this->width())) {
                 // float drange = 0.25;
                 val = val / DsRange;
                 val = round(val) * DsRange;
             }
         }
 
-        if (ActivePick == 1)
-        {
+        if (ActivePick == 1) {
             clipmaxF = val;
         }
-        if (ActivePick == 0)
-        {
+        if (ActivePick == 0) {
             clipminF = val;
         }
-        if (ActivePick == 2)
-        {
+        if (ActivePick == 2) {
             jitter = val;
         }
 
         emit ValChange(val);
-     //   emit AllValChange(clipmaxF, clipminF, jitter);
+        //   emit AllValChange(clipmaxF, clipminF, jitter);
     }
     Redraw();
     update();
     QApplication::processEvents(QEventLoop::AllEvents, 50);
 }
-void DialSliderWidget::change()
-{
-   // emit AllValChange(clipmaxF, clipminF, jitter);
+
+void DialSliderWidget::change() {
+    // emit AllValChange(clipmaxF, clipminF, jitter);
 }
 
-void DialSliderWidget::SetValues(float maxf, float minf, float jit)
-{
+void DialSliderWidget::SetValues(float maxf, float minf, float jit) {
     clipmaxF = maxf;
     clipminF = minf;
     jitter = jit;
@@ -194,42 +191,35 @@ void DialSliderWidget::SetValues(float maxf, float minf, float jit)
     update();
 }
 
-void DialSliderWidget::tabletEvent(QTabletEvent *event)
-{
+void DialSliderWidget::tabletEvent(QTabletEvent *event) {
 
-    if (event->type() == QEvent::TabletPress)
-    {
+    if (event->type() == QEvent::TabletPress) {
 
         if (event->pointerType() == QTabletEvent::Eraser)
             ActivePick = 2;
         else
             ActivePick = 1;
     }
-    if (event->type() == QEvent::TabletRelease)
-    {
+    if (event->type() == QEvent::TabletRelease) {
         ActivePick = -1;
     }
 
-    if (event->type() == QEvent::TabletMove)
-    {
+    if (event->type() == QEvent::TabletMove) {
         ParsePoint(event->pos());
     }
 }
 
-void DialSliderWidget::mouseMoveEvent(QMouseEvent *event)
-{
+void DialSliderWidget::mouseMoveEvent(QMouseEvent *event) {
 
     ParsePoint(event->pos());
 }
 
-void DialSliderWidget::mouseReleaseEvent(QMouseEvent *event)
-{
+void DialSliderWidget::mouseReleaseEvent(QMouseEvent *event) {
     emit ValConfirm(clipmaxF);
     ActivePick = -1;
 }
 
-void DialSliderWidget::resizeEvent(QResizeEvent *event)
-{
+void DialSliderWidget::resizeEvent(QResizeEvent *event) {
     resizeImage(&ViewImage, this->size());
     int thin = qMin(this->width(), this->height());
     sliderrad = thin * 0.25 * 0.5;
@@ -237,13 +227,11 @@ void DialSliderWidget::resizeEvent(QResizeEvent *event)
     update();
 }
 
-void DialSliderWidget::DrawFrame(QImage *img, QPainter *pnt, QRect rect, QColor SHD, QColor HL)
-{
+void DialSliderWidget::DrawFrame(QImage *img, QPainter *pnt, QRect rect, QColor SHD, QColor HL) {
     DrawFrame(img, pnt, rect.x(), rect.y(), rect.width(), rect.height(), SHD, HL);
 }
 
-void DialSliderWidget::DrawFrame(QImage *img, QPainter *pnt, int x, int y, int w, int h, QColor SHD, QColor HL)
-{
+void DialSliderWidget::DrawFrame(QImage *img, QPainter *pnt, int x, int y, int w, int h, QColor SHD, QColor HL) {
 
     //  QPainter pnt(img);
     pnt->setPen(Qt::NoPen);

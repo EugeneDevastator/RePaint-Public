@@ -50,10 +50,10 @@ public:
     ctl_ToolSelector *CtlTools;
     QCheckBox *chkFastMode;
      //QSizeGrip SzGrip;
+    float InitialBrushAngle;
     BrushDialWidget *CtlLen;
     BrushDialWidget *CtlPwr;
     BrushDialWidget *CtlRad;
-
     BrushDialWidget *CtlRadRel;
 
     BrushDialWidget *CtlScaleRel;
@@ -77,7 +77,7 @@ public:
     QVBoxLayout *LtLeftToolbar;
 
     BrushData ParseBrush(BrushData BRSH);
-    ActionData ParseBrush(d_Stroke Strk, d_StrokePars stpars);
+    ActionData ParseBrush(d_Stroke Strk, d_StrokePars strokeParams);
 
 
 signals:

@@ -15,8 +15,12 @@ class DialSliderWidget : public bctl_ImageWidget
 {
     Q_OBJECT
 
-public:
-    explicit DialSliderWidget(QWidget *parent = 0);
+
+   private:
+      DialModel *Model;
+
+   public:
+    explicit       DialSliderWidget(DialModel *model=nullptr, QWidget *parent=0);
     /*BrushDialConfig VisParam;
     BrushDialConfig Param;*/
     int ActivePick;
@@ -56,7 +60,6 @@ signals:
         void ValChange(float maxf);
         void ValConfirm(float maxf);
        // void AllValChange(float maxf,float minf, float jit);
-
 
 };
 

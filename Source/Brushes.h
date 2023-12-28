@@ -214,15 +214,16 @@ struct d_ToolPreset {
 
 };
 
-struct BrushParameterSettings {
-   float clipmin;
-   float clipmax;
-   float jitter;
-   //this seems outdated
-   QPainter::CompositionMode compmode;
-   bool usecol;
-   int ctlid;
-};
+// legacy
+//struct BrushParameterSettings {
+//   float clipmin;
+//   float clipmax;
+//   float jitter;
+//   //this seems outdated
+//   QPainter::CompositionMode compmode;
+//   bool usecol;
+//   int ctlid;
+//};
 
 struct ActionData //: public QObject
 {

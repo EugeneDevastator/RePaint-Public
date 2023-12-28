@@ -40,7 +40,7 @@ pnl_QuickControl::pnl_QuickControl(BrushEditorPresenter *BCTLS, ClientBrushStamp
     //QuickCop = new BrushDialWidget(BCTLS->CtlCop->Model,this);
     //QuickPow = new BrushDialWidget(BCTLS->CtlPwr->Model,this);
 
-    FastBrush = new ctl_FastBrush(mainBrush,MImage,this);
+    FastBrush = new ctl_FastBrush(BCTLS,MImage,this);
     FastBrush->show();
     // FastBrush->setWindowFlags(Qt::Tool|Qt::CustomizeWindowHint|Qt::WindowMinimizeButtonHint);
 

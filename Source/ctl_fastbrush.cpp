@@ -1,12 +1,10 @@
 #include "ctl_fastbrush.h"
-#include "BrushEngine/ClientBrushStamp.hpp"
 #include "BrushEngine/LegacySharedBrush.hpp"
 #include "ReMath/ReMath.hpp"
 #include <QtGui>
 
-ctl_FastBrush::ctl_FastBrush(ClientBrushStamp *brush, ImageArray *imageArray, QWidget *parent) :
-        QWidget(parent), clientBrush(brush)
-{
+ctl_FastBrush::ctl_FastBrush(BrushEditorPresenter *brushParams, ImageArray *imageArray, QWidget *parent) :
+        QWidget(parent), BrushParams(brushParams) {
     // Brush =new BrushData;
     ZoomK = &imageArray->ZoomK;
 
@@ -24,15 +22,14 @@ ctl_FastBrush::ctl_FastBrush(ClientBrushStamp *brush, ImageArray *imageArray, QW
     DBR = new BrushData;
     gotbrush = false;
 }
-void ctl_FastBrush::ForcePaint()
-{
+
+void ctl_FastBrush::ForcePaint() {
 }
 
-void ctl_FastBrush::paintEvent(QPaintEvent *event)
-{
+void ctl_FastBrush::paintEvent(QPaintEvent *event) {
     // if (!repainted )
     {
-        if(!DBR)
+        if (!DBR)
             return;
 
         /*QImage tmpbr(QSize(128,128),QImage::Format_ARGB32_Premultiplied);
@@ -69,10 +66,10 @@ void ctl_FastBrush::paintEvent(QPaintEvent *event)
 
         painter.setBrush(Qt::NoBrush);
         painter.setPen(np);
-        float drawradout = clientBrush->rad_out * (*ZoomK);
-        float drawradin = clientBrush->rad_in * (*ZoomK);
-        float rr = (qreal)clientBrush->rad_out * (qreal)(clientBrush->crv);
-        qreal drawrelrad = drawradout * (clientBrush->crv);
+        float drawradout = BrushParams->CtlRad->GetMaxValue() * (*ZoomK);
+        float drawradin = BrushParams->CtlRad->GetMaxValue() * BrushParams->CtlRadRel->GetMaxValue() * (*ZoomK);
+        float rr = (qreal) BrushParams->CtlRad->GetMaxValue() * (qreal) (BrushParams->CtlCrv->GetMaxValue());
+        qreal drawCurveRadius = drawradout * (1-((BrushParams->CtlCrv->GetMaxValue() + 1) / 2.0));
         // painter.setCompositionMode(QPainter::CompositionMode_Xor);
         // painter.setPen(Qt::white);
 
@@ -86,58 +83,65 @@ void ctl_FastBrush::paintEvent(QPaintEvent *event)
         painter.drawLine(QPoint(midpoint,midpoint),QPoint(midpoint,midpoint)+QPoint(512*cos(-d30*9),512*sin(-d30*9)));
         painter.drawEllipse(QPointF(midpoint,midpoint),drawradout,drawradout);
         painter.drawPie(QRect(midpoint-drawradin,midpoint-drawradin,drawradin*2,drawradin*2),16*30+16*120,16*120);
-        painter.drawPie(QRect(midpoint-drawrelrad,midpoint-drawrelrad,drawrelrad*2,drawrelrad*2),16*30+16*120+16*120,16*120);
+        painter.drawPie(QRect(midpoint-drawCurveRadius,midpoint-drawCurveRadius,drawCurveRadius*2,drawCurveRadius*2),16*30+16*120+16*120,16*120);
         */
         np.setWidth(1);
         np.setColor(Qt::white);
         painter.setPen(np);
         painter.setCompositionMode(QPainter::CompositionMode_Exclusion);
 
-        painter.drawLine(QPoint(midpoint, midpoint), QPoint(0, 1) + QPoint(midpoint, midpoint) + QPoint(512 * cos(-d30), 512 * sin(-d30)));
-        painter.drawLine(QPoint(midpoint, midpoint), QPoint(0, 1) + QPoint(midpoint, midpoint) + QPoint(512 * cos(-d30 * 5), 512 * sin(-d30 * 5)));
-        painter.drawLine(QPoint(midpoint, midpoint), QPoint(1, 0) + QPoint(midpoint, midpoint) + QPoint(512 * cos(-d30 * 9), 512 * sin(-d30 * 9)));
+        painter.drawLine(QPoint(midpoint, midpoint),
+                         QPoint(0, 1) + QPoint(midpoint, midpoint) + QPoint(512 * cos(-d30), 512 * sin(-d30)));
+        painter.drawLine(QPoint(midpoint, midpoint),
+                         QPoint(0, 1) + QPoint(midpoint, midpoint) + QPoint(512 * cos(-d30 * 5), 512 * sin(-d30 * 5)));
+        painter.drawLine(QPoint(midpoint, midpoint),
+                         QPoint(1, 0) + QPoint(midpoint, midpoint) + QPoint(512 * cos(-d30 * 9), 512 * sin(-d30 * 9)));
 
         painter.drawEllipse(QPointF(midpoint, midpoint), drawradout, drawradout);
-        painter.drawArc(QRect(midpoint - drawradin, midpoint - drawradin, drawradin * 2, drawradin * 2), 16 * 30 + 16 * 120, 16 * 120);
-        painter.drawArc(QRect(midpoint - drawrelrad, midpoint - drawrelrad, drawrelrad * 2, drawrelrad * 2), 16 * 30 + 16 * 120 + 16 * 120, 16 * 120);
+        painter.drawArc(QRect(midpoint - drawradin, midpoint - drawradin, drawradin * 2, drawradin * 2),
+                        16 * 30 + 16 * 120, 16 * 120);
+        painter.drawArc(
+                QRect(midpoint - drawCurveRadius, midpoint - drawCurveRadius, drawCurveRadius * 2, drawCurveRadius * 2),
+                16 * 30 + 16 * 120 + 16 * 120, 16 * 120);
 
         // painter.drawText(127,0,100,23,0,QString::number(ang));
 
         // drawing angle arrow
-        float rang = (clientBrush->resangle * M_PI * 2 / 360);
-        QPoint head(anglerad * cos(rang), anglerad * sin(rang));
+        float arrowAngle = (BrushParams->InitialBrushAngle * M_PI * 2 / 360);
+        QPoint head(anglerad * cos(arrowAngle), anglerad * sin(arrowAngle));
         np.setColor(Qt::red);
         np.setWidth(2);
         painter.setPen(np);
         painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
         painter.drawLine(QPoint(midpoint, midpoint), QPoint(midpoint, midpoint) + head);
-        painter.drawLine(QPoint(midpoint, midpoint) + head, QPoint(midpoint, midpoint) + head + QPoint(10 * cos(rang - M_PI + M_PI * 0.2), 10 * sin(rang - M_PI + M_PI * 0.2)));
-        painter.drawLine(QPoint(midpoint, midpoint) + head, QPoint(midpoint, midpoint) + head + QPoint(10 * cos(rang - M_PI - M_PI * 0.2), 10 * sin(rang - M_PI - M_PI * 0.2)));
+        painter.drawLine(QPoint(midpoint, midpoint) + head, QPoint(midpoint, midpoint) + head +
+                                                            QPoint(10 * cos(arrowAngle - M_PI + M_PI * 0.2),
+                                                                   10 * sin(arrowAngle - M_PI + M_PI * 0.2)));
+        painter.drawLine(QPoint(midpoint, midpoint) + head, QPoint(midpoint, midpoint) + head +
+                                                            QPoint(10 * cos(arrowAngle - M_PI - M_PI * 0.2),
+                                                                   10 * sin(arrowAngle - M_PI - M_PI * 0.2)));
         repainted = true;
     }
 }
 
-void ctl_FastBrush::ReBrush(ActionData act)
-{
+void ctl_FastBrush::ReBrush(ActionData act) {
     *DBR = act.Brush;
     DBR->ClientStamp.scale = DBR->ClientStamp.scale * (*ZoomK);
     gotbrush = true;
-    if (repainted == true)
-    {
+    if (repainted == true) {
         repainted = false;
         this->update();
     }
 }
 
-void ctl_FastBrush::mousePressEvent(QMouseEvent *event)
-{
+void ctl_FastBrush::mousePressEvent(QMouseEvent *event) {
     float rad = Dist2D(event->pos(), QPoint(midpoint, midpoint));
 
     rad = rad / (*ZoomK);
 
     ang = AtanXY(event->pos().x() - midpoint, event->pos().y() - midpoint);
     float d30 = M_PI * 30 / 180;
-    if (fabs(((ang + M_PI) * 180 / M_PI) - clientBrush->resangle) < 5)
+    if (fabs(((ang + M_PI) * 180 / M_PI) - BrushParams->InitialBrushAngle) < 5)
         brushRegulationMode = 4;
     else if ((ang > d30) & (ang < d30 * 5))
         brushRegulationMode = 1;
@@ -147,8 +151,7 @@ void ctl_FastBrush::mousePressEvent(QMouseEvent *event)
         brushRegulationMode = 3;
 }
 
-void ctl_FastBrush::tabletEvent(QTabletEvent *event)
-{
+void ctl_FastBrush::tabletEvent(QTabletEvent *event) {
     float rad = Dist2D(event->pos(), QPoint(midpoint, midpoint));
 
     rad = rad / (*ZoomK);
@@ -156,9 +159,8 @@ void ctl_FastBrush::tabletEvent(QTabletEvent *event)
     ang = AtanXY(event->pos().x() - midpoint, event->pos().y() - midpoint);
     float d30 = M_PI * 30 / 180;
 
-    if (event->type() == QEvent::TabletPress)
-    {
-        if (fabs(((ang + M_PI) * 180 / M_PI) - clientBrush->resangle) < 5)
+    if (event->type() == QEvent::TabletPress) {
+        if (fabs(((ang + M_PI) * 180 / M_PI) - BrushParams->InitialBrushAngle) < 5)
             brushRegulationMode = 4;
         else if ((ang > d30) & (ang < d30 * 5))
             brushRegulationMode = 1;
@@ -167,36 +169,32 @@ void ctl_FastBrush::tabletEvent(QTabletEvent *event)
         else if ((ang > d30 * 5) | (ang < (-M_PI * 0.5)))
             brushRegulationMode = 3;
     }
-    if (event->type() == QEvent::TabletMove)
-    {
-        if (brushRegulationMode > 0)
-        {
+    if (event->type() == QEvent::TabletMove) {
+        if (brushRegulationMode > 0) {
             ParsePos(event->pos());
         }
     }
-    if (event->type() == QEvent::TabletRelease)
-    {
+    if (event->type() == QEvent::TabletRelease) {
         brushRegulationMode = 0;
     }
 }
-void ctl_FastBrush::ParsePos(QPoint pos)
-{
 
-    //    float radrel=Brush->rad_out/Brush->rad_in;
+void ctl_FastBrush::ParsePos(QPoint pos) {
+
+    //    float radrel=Brush->CtlRad->GetMaxValue()/Brush->rad_in;
     int mode;
     ang = AtanXY(pos.x() - midpoint, pos.y() - midpoint);
-    if ((pos.x() - midpoint) == 0)
-    {
+    if ((pos.x() - midpoint) == 0) {
 
         ang = 0;
         if (pos.y() - midpoint > 0)
             ang = -M_PI * 0.5;
     }
-    float rad = Dist2D(pos, QPoint(midpoint, midpoint));
+    float radiusAtMouse = Dist2D(pos, QPoint(midpoint, midpoint));
 
-    float absrad = rad;
-    rad = rad / (*ZoomK);
-    rad = qMin((float)256, rad);
+    float absrad = radiusAtMouse;
+    radiusAtMouse = radiusAtMouse / (*ZoomK);
+    radiusAtMouse = qMin((float) 256, radiusAtMouse);
     float d30 = M_PI * 30 / 180;
 
     if ((ang > d30) & (ang < d30 * 5))
@@ -206,44 +204,48 @@ void ctl_FastBrush::ParsePos(QPoint pos)
     if ((ang > d30 * 5) | (ang < (-M_PI * 0.5)))
         mode = 3;
 
-    if (brushRegulationMode == 1)
-    { // radius
-        float rel = clientBrush->rad_in / clientBrush->rad_out;
+    if (brushRegulationMode == 1) { // radius
+        //float rel = BrushParams->CtlRadRel->GetMaxValue();
         if (!((ang > d30) & (ang < d30 * 5)))
-            (rad = Discrete(rad, 10));
-        // if (mode !=1) rad=0;
-        clientBrush->rad_out = rad;
-        clientBrush->rad_in = clientBrush->rad_out * rel;
+            (radiusAtMouse = Discrete(radiusAtMouse, 10));
+        // if (mode !=1) radiusAtMouse=0;
+        BrushParams->CtlRad->Model->SetMaxCursorByValue(radiusAtMouse);
+        //BrushParams->rad_in = BrushParams->CtlRad->GetMaxValue() * rel;
     }
-    if (brushRegulationMode == 2)
-    { // rad rel
-        clientBrush->rad_in = qMin(rad, clientBrush->rad_out);
-        if (mode != 2)
-            clientBrush->rad_in = 0;
+    if (brushRegulationMode == 2) { // radiusAtMouse rel
+        float innerRad = qMin(radiusAtMouse, BrushParams->CtlRad->GetMaxValue());;
+        //BrushParams->rad_in =
+        //if (mode != 2)
+        //    BrushParams->rad_in = 0;
+//
+        //if (BrushParams->rad_in < 7)
+        //    BrushParams->rad_in = 0;
 
-        if (clientBrush->rad_in < 7)
-            clientBrush->rad_in = 0;
-        float rel = clientBrush->rad_in / clientBrush->rad_out;
+        //BrushParams->rad_in = qMin(radiusAtMouse, BrushParams->CtlRad->GetMaxValue());
+        if (mode != 2)
+            innerRad = 0;
+//
+        if (innerRad < 7)
+            innerRad = 0;
+        float rel = innerRad / BrushParams->CtlRad->GetMaxValue();
         if (rel > 0.99)
             rel = 0.98;
-
-        emit SendRel(rel);
+        BrushParams->CtlRadRel->Model->SetMaxCursorByValue(rel);
     }
-    if (brushRegulationMode == 3)
-    { // curve
-        qreal ir = qMin(rad, clientBrush->rad_out);
+    if (brushRegulationMode == 3) { // curve
+        qreal ir = qMin(radiusAtMouse, BrushParams->CtlRad->GetMaxValue());
+        ir = qMax(ir, 0.0);
         if (mode != 3)
             ir = 0;
-        qreal tcrv = (qreal)ir / (qreal)(clientBrush->rad_out);
-        clientBrush->crv = tcrv;
-        emit SendCrv(1 - tcrv);
+        qreal tcrv = (qreal) ir / (qreal) (BrushParams->CtlRad->GetMaxValue());
+        tcrv = 1 - tcrv;
+        BrushParams->CtlCrv->Model->SetMaxCursorByValue((tcrv * 2) - 1);
     }
-    if (brushRegulationMode == 4)
-    {
+    if (brushRegulationMode == 4) {
         ang = (ang + M_PI) * 180 / M_PI;
-        if ((absrad > anglerad + 32) | (rad < 20))
+        if ((absrad > anglerad + 32) | (radiusAtMouse < 20))
             ang = Discrete(ang, 45 * 0.5);
-        clientBrush->resangle = ang;
+        BrushParams->InitialBrushAngle = ang;
     }
 
     emit AskBrush();
@@ -252,7 +254,6 @@ void ctl_FastBrush::ParsePos(QPoint pos)
     QApplication::processEvents(QEventLoop::AllEvents, 10);
 }
 
-void ctl_FastBrush::mouseMoveEvent(QMouseEvent *event)
-{
+void ctl_FastBrush::mouseMoveEvent(QMouseEvent *event) {
     ParsePos(event->pos());
 }

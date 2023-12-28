@@ -13,9 +13,7 @@ BrushDialWidget::BrushDialWidget(DialModel *model,QWidget *parent) :
     Model->PenMode = 0;
     Model->OutMode = 1;
 
-    oldSlider = new QSlider(Qt::Horizontal);
-
-    Slider = new DialSliderWidget;
+    Slider = new DialSliderWidget(Model);
     // Slider->setFixedHeight(24);
     BtnPenMode = new QToolButton;
     BtnPenMode->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -169,12 +167,16 @@ qreal BrushDialWidget::GetModValue(d_StrokePars stpars) {
     float OutR = Model->GetBoundRange();
     float sliderRange = Slider->clipmaxF - Slider->clipminF;
     float respar = modulationValue * sliderRange + Slider->clipminF;
+
     // float randm = ((float)qrand()/RAND_MAX)*(Slider->jitter*2)-(Slider->jitter);
     float randm = (((float) qrand() / RAND_MAX) - 0.5) * 2 * Slider->jitter;
+
     float res = (respar + randm);
+    res = modulationValue + randm;
     res = qMax(res, (float) 0.0);
     res = qMin(res, (float) 1);
-    return Model->GetValueInRange(res);
+
+    return Model->GetValueInCursorRange(modulationValue);
     //return res * OutR + Model->MinBound;
 
 

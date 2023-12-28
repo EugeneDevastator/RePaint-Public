@@ -333,7 +333,8 @@ Offy=qMin((int)((ViewCanvas[0].height()+hh/ZoomK))-51,Offy);
             Brepainted = true;
         }
 
-        float rad = g_Brush->rad_out * ZoomK * RadCtl->GetModValue(lastspars) * ScaleCtl->GetModValue(lastspars);
+        //float rad = g_Brush->rad_out * ZoomK * RadCtl->GetModValue(lastspars) * ScaleCtl->GetModValue(lastspars);
+        float rad = ZoomK * RadCtl->GetModValue(lastspars) * ScaleCtl->GetModValue(lastspars);
 
         if (MMode == mRadSize) rad = g_Brush->rad_out * ZoomK;//*ScaleCtl->Slider->clipmaxF;
         if (rad < 1) rad = g_Brush->rad_out * ZoomK;
@@ -460,14 +461,19 @@ void ImageArray::SpacingFilter(d_Stroke *strk) {
 
     QRect r1;
     QRect r2;
-    int rad = g_Brush->rad_out * ScaleCtl->GetModValue(currspars) * (RadCtl->GetModValue(currspars));
+    //int rad = g_Brush->rad_out * ScaleCtl->GetModValue(currspars) * (RadCtl->GetModValue(currspars));
+    int rad = ScaleCtl->GetModValue(currspars) * (RadCtl->GetModValue(currspars));
     r1.setTopLeft(strk->pos1.toPoint() - QPoint(rad, rad));
     r1.setBottomRight(strk->pos1.toPoint() + QPoint(rad, rad));
     r2.setTopLeft(strk->pos2.toPoint() - QPoint(rad, rad));
     r2.setBottomRight(strk->pos2.toPoint() + QPoint(rad, rad));
 
-    spacing = ((SpacingCtl->GetModValue(currspars) * SpacingCtl->GetModValue(currspars)) * g_Brush->rad_out *
-               ScaleCtl->GetModValue(currspars) * (RadCtl->GetModValue(currspars)));
+    spacing = SpacingCtl->GetModValue(currspars)
+              * SpacingCtl->GetModValue(currspars)
+
+              // * g_Brush->rad_out
+              * ScaleCtl->GetModValue(currspars)
+              * RadCtl->GetModValue(currspars);
     spacing = qMax(spacing, (float) 1);
     if (SpacingEN) {
         if (tdist > spacing) {
@@ -487,8 +493,10 @@ void ImageArray::SpacingFilter(d_Stroke *strk) {
             tpos2 = strk->pos1;
             float rnflw;
             float rnside;
-            float rrang = SpacingJitCtl->GetModValue(currspars) * g_Brush->rad_out * ScaleCtl->GetModValue(currspars) *
-                          RadCtl->GetModValue(currspars);
+            float rrang = SpacingJitCtl->GetModValue(currspars)
+                          //* g_Brush->rad_out
+                          * ScaleCtl->GetModValue(currspars)
+                          * RadCtl->GetModValue(currspars);
             d_Stroke outstrk;
             QPointF outPPos = PPos;
 
@@ -711,7 +719,10 @@ void ImageArray::tabletEvent(QTabletEvent *event) {
 
         }
 
-    int rad = ceil(g_Brush->rad_out * RadCtl->GetModValue(lastspars) * ScaleCtl->GetModValue(lastspars));
+    int rad = ceil(
+            RadCtl->GetModValue(lastspars)
+            //* g_Brush->rad_out
+            * ScaleCtl->GetModValue(lastspars));
     //if  (MMode==50) rad=Brush->rad_out*ZoomK;//if setting brush size
     if (rad < 1) rad = 1;
 
@@ -844,7 +855,8 @@ void ImageArray::ParseMovePosF(QPointF pos) {
     if (Brepainted) {
         BPos = pos;
         Btilt = QPointF(currspars.Pars[csXtilt], currspars.Pars[csYtilt]);
-        Brad = g_Brush->rad_out * ZoomK * RadCtl->GetModValue(lastspars) * ScaleCtl->GetModValue(lastspars);
+        // Brad = g_Brush->rad_out * ZoomK * RadCtl->GetModValue(lastspars) * ScaleCtl->GetModValue(lastspars);
+        Brad = ZoomK * RadCtl->GetModValue(lastspars) * ScaleCtl->GetModValue(lastspars);
         Brepainted = false;
     }
 
@@ -938,7 +950,7 @@ void ImageArray::mousePressEvent(QMouseEvent *event) {
         currspars.Pars[csVtilt] = 0.5;
 
         if (GlobalKB->KBstate[ekCanvasZoomIn] == true) { MMode = mZoom; }
-        else if (GlobalKB->KBstate[ekFastBrush] == true) {
+        else if (GlobalKB->KBstate[ekBrushRegulation] == true) {
             PPos = event->pos();
             if (event->button() == Qt::LeftButton) MMode = mRadSize;
             if (event->button() == Qt::RightButton) MMode = mrad2Size;
@@ -1111,7 +1123,8 @@ if ((event->button()==Qt::LeftButton)&&(!Drawn)&&(MMode==mPaint)){
 }
 
 void ImageArray::moveEvent(QMoveEvent *event) {
-    float rad = g_Brush->rad_out * ZoomK * RadCtl->GetModValue(lastspars) * ScaleCtl->GetModValue(lastspars);
+    //float rad = g_Brush->rad_out * ZoomK * RadCtl->GetModValue(lastspars) * ScaleCtl->GetModValue(lastspars);
+    float rad = ZoomK * RadCtl->GetModValue(lastspars) * ScaleCtl->GetModValue(lastspars);
     if (rad < 1) rad = g_Brush->rad_out * ZoomK;
     //  RepaintImgRect(QRect(event->pos()-QPoint(rad,rad),MPos2.toPoint()+QPoint(rad,rad)));
 //emit SendNewB(BPos.toPoint(),(int)rad,(qreal)lastspars.Pars[csXtilt],(qreal)lastspars.Pars[csYtilt]);
