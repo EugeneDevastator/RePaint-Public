@@ -76,8 +76,11 @@ class DialModel : public QObject {
           emit ChangedSignal();
       }
       float GetValueInCursorRange(float t) {
+
           float cursorRange = MaxCursorNorm - MinCursorNorm;
           float boundT = cursorRange * t + MinCursorNorm;
+          boundT = qMax(boundT, (float) 0.0);
+          boundT = qMin(boundT, (float) 1);
           return boundT * GetBoundRange() + MinBound;
       }
 
