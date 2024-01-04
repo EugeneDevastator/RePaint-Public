@@ -7,14 +7,14 @@
 #include "BrushEngine/ClientBrushStamp.hpp"
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QSplashScreen>
+
 // #include <QDomDocument>
 // #include "signal.h"
-MHPwindow::MHPwindow()
-{
+MHPwindow::MHPwindow() {
 
     // ctl_ColorPicker *cpik=new ctl_ColorPicker;
     // cpik->show();
-    PanelsPinned = true;
+    PanelsPinned = false;
     this->hide();
     /* BrushDialWidget *CtlTest=new BrushDialWidget; ///CtlScaleRel->setToolTip("Spacing");
      CtlTest->MaxBound=1;
@@ -46,7 +46,7 @@ MHPwindow::MHPwindow()
     ActiveLayer = 0;
     PansHidden = false;
 
-    // Root level Dependencies
+    // Root level Dependenciesq
     KBLINK = new c_KeyLink();
     Brush = new ClientBrushStamp;
     Brush->sol2op = 1;
@@ -54,12 +54,11 @@ MHPwindow::MHPwindow()
     Brush->rad_in = 10;
     Brush->resangle = 0.0;
 
-
     BControls = new BrushEditorPresenter(Brush);
-    PaintColor = new b_SmartColor(BControls->CtlHue->Model,BControls->CtlSat->Model,BControls->CtlLit->Model);
+    PaintColor = new b_SmartColor(BControls->CtlHue->Model, BControls->CtlSat->Model, BControls->CtlLit->Model);
     AllPanels.append(BControls);
 
-    MainImage = new ImageArray(Brush, BControls,KBLINK);
+    MainImage = new ImageArray(Brush, BControls, KBLINK);
 
     DlgAbout = new QDialog();
 
@@ -98,7 +97,6 @@ MHPwindow::MHPwindow()
     FileMenu->setWindowTitle("File Operations");
     AllPanels.append(FileMenu);
     DlgNew = new dlg_NewCanvas(MainImage);
-
 
     NetControls = new pnl_NetControls();
     NetControls->setAccessibleName("NetControls");
@@ -150,13 +148,12 @@ MHPwindow::MHPwindow()
     PRESETS->setAccessibleName("PresetPanel");
     AllPanels.append(PRESETS);
 
-    foreach (QWidget *w, AllPanels)
-    {
-        w->setParent(this);
-        //  w->setWindowFlags(Qt::Tool|Qt::CustomizeWindowHint|Qt::WindowMinimizeButtonHint);
-        w->setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint);
-        w->show();
-    }
+            foreach (QWidget *w, AllPanels) {
+            w->setParent(this);
+            //  w->setWindowFlags(Qt::Tool|Qt::CustomizeWindowHint|Qt::WindowMinimizeButtonHint);
+            w->setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint);
+            w->show();
+        }
 
     MainLayout->addWidget(MainImage, 1, 0);
 
@@ -254,7 +251,8 @@ MHPwindow::MHPwindow()
     //        connect(ARTM,SIGNAL(SendMsg(QString)),CHAT,SLOT(GetChatMsg(QString)));
 
     //  connect(MainImage,SIGNAL(SendStroke(d_Stroke)),this,SLOT(GetStroke(d_Stroke)));
-    connect(MainImage, SIGNAL(SendTStroke2(d_Stroke, d_StrokePars, d_StrokePars)), StrokeMaster, SLOT(GetRawStroke(d_Stroke, d_StrokePars, d_StrokePars)));
+    connect(MainImage, SIGNAL(SendTStroke2(d_Stroke, d_StrokePars, d_StrokePars)), StrokeMaster,
+            SLOT(GetRawStroke(d_Stroke, d_StrokePars, d_StrokePars)));
     connect(MainImage, SIGNAL(SendTStroke(d_Stroke, d_StrokePars)), this, SLOT(GetTStroke(d_Stroke, d_StrokePars)));
 
     // connect(BControls->BrushControl,SIGNAL(SendSize(int)),MainImage,SLOT(GetBSize(int)));
@@ -321,8 +319,6 @@ MHPwindow::MHPwindow()
     logfile.write("\n props init block complete");
     logfile.close();
     logfile.open(QFile::Append);
-
-
 
     FileMenu->BtnSnap->setEnabled(false);
     FileMenu->BtnSave->setEnabled(false);
@@ -419,12 +415,19 @@ MHPwindow::MHPwindow()
     // Applying settings to window geometries;
 
     this->setGeometry(AppSettings->value("MainGeo", this->geometry()).toRect());
-    foreach (QWidget *w, AllPanels)
-    {
-        w->setGeometry(AppSettings->value(w->accessibleName(), w->geometry()).toRect());
-        w->setFocusProxy(this);
-    }
+
     this->show();
+            foreach (QWidget *w, AllPanels) {
+            auto windowGeo = this->geometry();
+            auto r = AppSettings->value(w->accessibleName(), w->geometry()).toRect();
+            r.setX(fmax(0, r.x()));
+            r.setY(fmax(0, r.y()));
+            r.setX(fmin(windowGeo.width() - r.width(), r.x()));
+            r.setY(fmin(windowGeo.height() - r.height(), r.y()));
+            w->setGeometry(r);
+            w->setFocusProxy(this);
+            w->update();
+        }
 
     //// Brush image selector. looks like it causes some bugs.
 //
@@ -501,9 +504,8 @@ MHPwindow::MHPwindow()
     this->setWindowTitle(RESPATH);
     MainImage->RepaintWidgetRect(MainImage->rect());
     QuickPanel->UpdateBG();
-
     SwitchPinPanels();
-
+    SwitchPinPanels();
 }
 
 void MHPwindow::SetAppMetaInfo() {
@@ -520,8 +522,8 @@ void MHPwindow::SetAppMetaInfo() {
 }
 // EOI
 
-void MHPwindow::ShowQP()
-{
+void MHPwindow::ShowQP() {
+
 
     // MainImage->uptimer->stop();
 
@@ -534,45 +536,41 @@ void MHPwindow::ShowQP()
     QuickPanel->appear();
     QuickPanel->show();
 
-    foreach (QWidget *w, AllPanels)
-    {
-        w->show();
-        w->raise();
-        w->setAutoFillBackground(true);
-    }
+            foreach (QWidget *w, AllPanels) {
+            w->show();
+            w->raise();
+            w->setAutoFillBackground(true);
+        }
     MainImage->GenAllThumbs();
     this->activateWindow();
+
 }
 
-void MHPwindow::HideQP()
-{
+void MHPwindow::HideQP() {
     MainImage->RepaintWidgetRect(MainImage->rect());
+    SwitchPinPanels();
+    SwitchPinPanels();
     //   MainImage->uptimer->start();
     MainImage->SetLock(-1);
     QuickPanel->vanish();
     QuickPanel->hide();
-    foreach (QWidget *w, AllPanels)
-    {
-        w->hide();
-    }
+            foreach (QWidget *w, AllPanels) {
+            w->hide();
+        }
     this->activateWindow();
     // this->grabKeyboard();
 }
 
-void MHPwindow::RealignQP()
-{
+void MHPwindow::RealignQP() {
 }
 
-void MHPwindow::SendMsg()
-{
+void MHPwindow::SendMsg() {
     //    QByteArray buf("ada");
     //  TcpClient->write(buf);
 }
 
-void MHPwindow::GetAction(ActionData act)
-{
-    if (!Dedicated)
-    {
+void MHPwindow::GetAction(ActionData act) {
+    if (!Dedicated) {
 
         // used for receiving actions from network!
         ARTM->ExecAction(&MainImage->ViewCanvas[act.layer], act, false);
@@ -583,13 +581,12 @@ void MHPwindow::GetAction(ActionData act)
 
     MainImage->update();
 }
-void MHPwindow::ConnectAddr()
-{
+
+void MHPwindow::ConnectAddr() {
     NET->ConnectToServer(NetControls->EdTargetIP->text());
 }
 
-void MHPwindow::GetTStroke(d_Stroke Strk, d_StrokePars stpars)
-{
+void MHPwindow::GetTStroke(d_Stroke Strk, d_StrokePars stpars) {
     /*
 // get stroke from local user
 Strk.packpos1.SetByQPointF(Strk.pos1);
@@ -631,8 +628,8 @@ Strk.pos2=Strk.packpos2.ToPointF();
 
 */
 }
-void MHPwindow::GetPoly(QPolygonF Poly)
-{
+
+void MHPwindow::GetPoly(QPolygonF Poly) {
     QPainter Pnt(&MainImage->ViewCanvas[LayersPanel->GetActiveLayer()]);
     // QPainter Pnt(&ViewCanvas[0]);
     Pnt.setPen(Qt::NoPen);
@@ -645,16 +642,15 @@ void MHPwindow::GetPoly(QPolygonF Poly)
     MainImage->RepaintImgRect(Poly.boundingRect().toRect());
 }
 
-void MHPwindow::GetMsg(QString msg)
-{
+void MHPwindow::GetMsg(QString msg) {
     Label1->setText(msg);
 }
-void MHPwindow::GetServIp(QString msg)
-{
+
+void MHPwindow::GetServIp(QString msg) {
     LblServIp->setText(msg);
 }
-void MHPwindow::wheelEvent(QWheelEvent *event)
-{
+
+void MHPwindow::wheelEvent(QWheelEvent *event) {
     int delta = event->delta();
     float k;
     if (delta > 0)
@@ -667,8 +663,8 @@ void MHPwindow::wheelEvent(QWheelEvent *event)
     MainImage->RepaintWidgetRect(MainImage->rect());
     MainImage->update();
 }
-void MHPwindow::keyReleaseEvent(QKeyEvent *event)
-{
+
+void MHPwindow::keyReleaseEvent(QKeyEvent *event) {
     KBLINK->UnPressKey(event);
     /*
      if (!FastPanelLeft->isHidden()) {
@@ -678,136 +674,103 @@ void MHPwindow::keyReleaseEvent(QKeyEvent *event)
      */
 }
 
-void MHPwindow::ConfirmAct(ActionData act)
-{
+void MHPwindow::ConfirmAct(ActionData act) {
     NET->GetAction(act);
 }
 
-void MHPwindow::ExecLayerAction(LayerAction lact)
-{
+void MHPwindow::ExecLayerAction(LayerAction lact) {
     // filter mode for layers;
-    if (NET->NetMode == emNone)
-    {
+    if (NET->NetMode == emNone) {
         if (!Dedicated)
             ActionExecutor->ExecLayerAction(lact);
         // net send layer action
-    }
-    else
+    } else
         NET->C_SendLaction(lact);
 
     // LOGM->AddAct(lact);
 }
 
-void MHPwindow::keyPressEvent(QKeyEvent *event)
-{
+void MHPwindow::keyPressEvent(QKeyEvent *event) {
 
     qint64 tmp = KBLINK->Compose(event->modifiers(), event->key());
     Label1->setText(QString::number(tmp));
     KBLINK->PressKey(event);
 
-    if (KBLINK->KBstate[ekCPICK] == true)
-    {
+    if (KBLINK->KBstate[ekCPICK] == true) {
         // if (DlgCol->isVisible()) { DlgCol->hide();
         //   this->releaseKeyboard();
     }
-    /*   else {
+        /*   else {
 
-           QPoint p=QCursor::pos();
-           int rx=p.x()-DlgCol->height()-(DlgCol->height()-DlgCol->width())*0.5;
-           int ry=p.y()-DlgCol->height()*0.5;
-                   rx=qMax(rx,0);
-                   ry=qMax(ry,0);
-                   QDesktopWidget screen;
-                  rx=qMin(screen.availableGeometry().width()-DlgCol->width(),rx);
-                  ry=qMin(screen.availableGeometry().height()-DlgCol->height(),ry);
-           p.setX(rx);
-           p.setY(ry);
+               QPoint p=QCursor::pos();
+               int rx=p.x()-DlgCol->height()-(DlgCol->height()-DlgCol->width())*0.5;
+               int ry=p.y()-DlgCol->height()*0.5;
+                       rx=qMax(rx,0);
+                       ry=qMax(ry,0);
+                       QDesktopWidget screen;
+                      rx=qMin(screen.availableGeometry().width()-DlgCol->width(),rx);
+                      ry=qMin(screen.availableGeometry().height()-DlgCol->height(),ry);
+               p.setX(rx);
+               p.setY(ry);
 
-           CtlCol->SetColor(QColor::fromHslF(
-                        BControls->CtlHue->GetValue()
-                        ,
-                        BControls->CtlSat->GetValue()
-                        ,
-                        BControls->CtlLit->GetMaxValue()
-                        ));
+               CtlCol->SetColor(QColor::fromHslF(
+                            BControls->CtlHue->GetValue()
+                            ,
+                            BControls->CtlSat->GetValue()
+                            ,
+                            BControls->CtlLit->GetMaxValue()
+                            ));
 
-           CtlCol->DrawSliders(CtlCol->LColor);
-           DlgCol->setGeometry(QRect(p,QSize(DlgCol->width(),DlgCol->height())));
-           DlgCol->show();
- //  DlgCol->pos()=QPoint(90,90);//QCursor::pos();
-   }*/
+               CtlCol->DrawSliders(CtlCol->LColor);
+               DlgCol->setGeometry(QRect(p,QSize(DlgCol->width(),DlgCol->height())));
+               DlgCol->show();
+     //  DlgCol->pos()=QPoint(90,90);//QCursor::pos();
+       }*/
 
-    else if (KBLINK->KBstate[ekBrushSizeP] == true)
-    {
+    else if (KBLINK->KBstate[ekBrushSizeP] == true) {
         Brush->rad_out += 0.1;
         Brush->rad_in += 0.1;
-    }
-    else if (KBLINK->KBstate[ekBrushSizeM] == true)
-    {
+    } else if (KBLINK->KBstate[ekBrushSizeM] == true) {
 
         Brush->rad_out -= 0.1;
         Brush->rad_in -= 0.1;
     }
-    if (event->key() == Qt::Key_BraceLeft)
-    {
-      //  BControls->CtlCrv->ApplyValue(BControls->CtlCrv->GetMaxValue() - 0.01);
-    }
-    else if (event->key() == Qt::Key_BraceRight)
-    {
-     //   BControls->CtlCrv->ApplyValue(BControls->CtlCrv->GetMaxValue() + 0.01);
-    }
-    else if (KBLINK->KBstate[ekLitP] == true)
-    {
+    if (event->key() == Qt::Key_BraceLeft) {
+        //  BControls->CtlCrv->ApplyValue(BControls->CtlCrv->GetMaxValue() - 0.01);
+    } else if (event->key() == Qt::Key_BraceRight) {
+        //   BControls->CtlCrv->ApplyValue(BControls->CtlCrv->GetMaxValue() + 0.01);
+    } else if (KBLINK->KBstate[ekLitP] == true) {
 
         BControls->CtlLit->Model->SetMaxCursor(BControls->CtlLit->GetMaxValue() + 0.01);
-    }
-    else if (KBLINK->KBstate[ekLitM] == true)
-    {
+    } else if (KBLINK->KBstate[ekLitM] == true) {
 
         BControls->CtlLit->Model->SetMaxCursor(BControls->CtlLit->GetMaxValue() - 0.01);
-    }
-    else if (KBLINK->KBstate[ekHueP] == true)
-    {
+    } else if (KBLINK->KBstate[ekHueP] == true) {
         float reshue = BControls->CtlHue->GetMaxValue() + 0.005;
         reshue = reshue - floor(reshue);
         //        Brush->col.setHslF(reshue,Brush->col.hslSaturationF(),Brush->col.valueF());
         BControls->CtlHue->Model->SetMaxCursor(reshue);
-    }
-    else if (KBLINK->KBstate[ekFastBrush] == true)
-    {
+    } else if (KBLINK->KBstate[ekFastBrush] == true) {
         // please return fast brush panel
         MainImage->EndPainting();
-        if (QuickPanel->isHidden())
-        {
+        if (QuickPanel->isHidden()) {
             ShowQP();
-        }
-        else
+        } else
             HideQP();
         QuickPanel->RealignPanel();
-    }
-    else if (KBLINK->KBstate[ekHueM] == true)
-    {
+    } else if (KBLINK->KBstate[ekHueM] == true) {
         float reshue = BControls->CtlHue->GetMaxValue() - 0.005;
         reshue = reshue - ceil(reshue - 1);
         // if (reshue<0) reshue+=1;
         // Brush->col.setHslF(reshue,Brush->col.hslSaturationF(),Brush->col.valueF());
         BControls->CtlHue->Model->SetMaxCursor(reshue);
-    }
-    else if (KBLINK->KBstate[ekActualPixels] == true)
-    {
+    } else if (KBLINK->KBstate[ekActualPixels] == true) {
         MainImage->ActualPixels();
-    }
-    else if (KBLINK->KBstate[ekTouchScreen] == true)
-    {
+    } else if (KBLINK->KBstate[ekTouchScreen] == true) {
         MainImage->TouchScreen();
-    }
-    else if (KBLINK->KBstate[ekFitScreen] == true)
-    {
+    } else if (KBLINK->KBstate[ekFitScreen] == true) {
         MainImage->FitScreen();
-    }
-
-    else if (KBLINK->KBstate[ekPanelhide] == true)
-    {
+    } else if (KBLINK->KBstate[ekPanelhide] == true) {
         /*
             QList <int> ZTMsizes;
         ZTMsizes.append(0);
@@ -815,8 +778,7 @@ void MHPwindow::keyPressEvent(QKeyEvent *event)
         ZTMsizes.append(0);
     */
 
-        if (PansHidden)
-        {
+        if (PansHidden) {
             this->setGeometry(MainGeometry);
             this->setWindowState(Qt::WindowNoState);
             // MCSplitter->widget(0)->show();
@@ -825,9 +787,7 @@ void MHPwindow::keyPressEvent(QKeyEvent *event)
             MainImage->RepaintWidgetRect(MainImage->rect());
             MainImage->update();
             PansHidden = false;
-        }
-        else
-        {
+        } else {
             // TMsizes=TMSplitter->sizes();
             // TMSplitter->setSizes(ZTMsizes);
             MainGeometry = this->geometry();
@@ -847,20 +807,16 @@ void MHPwindow::keyPressEvent(QKeyEvent *event)
     MCsizes.append(128);
     MCSplitter->setSizes(MCsizes);
 */
-    }
-    else if (KBLINK->KBstate[ekTPresets] == true)
-    {
+    } else if (KBLINK->KBstate[ekTPresets] == true) {
         KBLINK->UnPressAll();
         BControls->BtnMasks->click();
-    }
-
-    else if (KBLINK->KBstate[ekSatP] == true)
+    } else if (KBLINK->KBstate[ekSatP] == true)
         BControls->CtlSat->Model->SetMaxCursor(BControls->CtlSat->GetMaxValue() + 0.01);
     else if (KBLINK->KBstate[ekSatM] == true)
         BControls->CtlSat->Model->SetMaxCursor(BControls->CtlSat->GetMaxValue() - 0.01);
 }
-void MHPwindow::ImgOpen()
-{
+
+void MHPwindow::ImgOpen() {
     QFileDialog::Options options;
     //    if (!native->isChecked())
     //      options |= QFileDialog::DontUseNativeDialog;
@@ -871,27 +827,37 @@ void MHPwindow::ImgOpen()
                                                     tr("eyeris layer image ELI PNG Files (*.ELI);;Portable Network Graphic (*.PNG);;JPG Files (*.JPG)"),
                                                     &selectedFilter,
                                                     options);
-    if (!fileName.isEmpty())
-    {
+    if (!fileName.isEmpty()) {
         Label1->setText(fileName);
     }
 }
 
-void MHPwindow::GetClient()
-{
+void MHPwindow::GetClient() {
 }
-void MHPwindow::RedrawCol()
-{
+
+void MHPwindow::RedrawCol() {
     // please
     QColor col = PaintColor->UseCol;
     float step = RngConv(M_PI / 6, 0, M_PI, 0, 1);
-    BControls->CtlHue->Slider->grad->setColorAt(0, QColor::fromHslF(QColor(Qt::red).hueF(), col.hslSaturationF(), col.lightnessF()));
-    BControls->CtlHue->Slider->grad->setColorAt(0 + step, QColor::fromHslF(QColor(Qt::yellow).hueF(), col.hslSaturationF(), col.lightnessF()));
-    BControls->CtlHue->Slider->grad->setColorAt(0 + step * 2, QColor::fromHslF(QColor(Qt::green).hueF(), col.hslSaturationF(), col.lightnessF()));
-    BControls->CtlHue->Slider->grad->setColorAt(0 + step * 3, QColor::fromHslF(QColor(Qt::cyan).hueF(), col.hslSaturationF(), col.lightnessF()));
-    BControls->CtlHue->Slider->grad->setColorAt(0 + step * 4, QColor::fromHslF(QColor(Qt::blue).hueF(), col.hslSaturationF(), col.lightnessF()));
-    BControls->CtlHue->Slider->grad->setColorAt(0 + step * 5, QColor::fromHslF(QColor(QColor::fromRgbF(1, 0, 1, 1)).hueF(), col.hslSaturationF(), col.lightnessF()));
-    BControls->CtlHue->Slider->grad->setColorAt(1, QColor::fromHslF(QColor(Qt::red).hueF(), col.hslSaturationF(), col.lightnessF()));
+    BControls->CtlHue->Slider->grad->setColorAt(0, QColor::fromHslF(QColor(Qt::red).hueF(), col.hslSaturationF(),
+                                                                    col.lightnessF()));
+    BControls->CtlHue->Slider->grad->setColorAt(0 + step,
+                                                QColor::fromHslF(QColor(Qt::yellow).hueF(), col.hslSaturationF(),
+                                                                 col.lightnessF()));
+    BControls->CtlHue->Slider->grad->setColorAt(0 + step * 2,
+                                                QColor::fromHslF(QColor(Qt::green).hueF(), col.hslSaturationF(),
+                                                                 col.lightnessF()));
+    BControls->CtlHue->Slider->grad->setColorAt(0 + step * 3,
+                                                QColor::fromHslF(QColor(Qt::cyan).hueF(), col.hslSaturationF(),
+                                                                 col.lightnessF()));
+    BControls->CtlHue->Slider->grad->setColorAt(0 + step * 4,
+                                                QColor::fromHslF(QColor(Qt::blue).hueF(), col.hslSaturationF(),
+                                                                 col.lightnessF()));
+    BControls->CtlHue->Slider->grad->setColorAt(0 + step * 5,
+                                                QColor::fromHslF(QColor(QColor::fromRgbF(1, 0, 1, 1)).hueF(),
+                                                                 col.hslSaturationF(), col.lightnessF()));
+    BControls->CtlHue->Slider->grad->setColorAt(1, QColor::fromHslF(QColor(Qt::red).hueF(), col.hslSaturationF(),
+                                                                    col.lightnessF()));
 
     BControls->CtlSat->Slider->grad->setColorAt(0, QColor::fromHslF(col.hslHueF(), 0, col.lightnessF()));
     BControls->CtlSat->Slider->grad->setColorAt(1, QColor::fromHslF(col.hslHueF(), 1, col.lightnessF()));
@@ -906,8 +872,8 @@ void MHPwindow::RedrawCol()
 
     // QuickPanel->QuickHue->update();
 }
-void MHPwindow::AssignMainColor(QColor col)
-{ // get color from various sources ike canvas cpicker etc.
+
+void MHPwindow::AssignMainColor(QColor col) { // get color from various sources ike canvas cpicker etc.
     PaintColor->SetCol(col);
 
     BControls->CtlHue->Model->SetMaxCursor(col.hslHueF());
@@ -917,8 +883,8 @@ void MHPwindow::AssignMainColor(QColor col)
     // CtlCol->SetColor(col);
     // CtlLit->SetMaxCursor(col.lightnessF());
 }
-void MHPwindow::SendChatMsg()
-{
+
+void MHPwindow::SendChatMsg() {
     QString Msg = CHAT->ChatLine->text();
     Msg.prepend(NET->LocalClient->RegName + ": ");
     Msg.append("\n");
@@ -931,21 +897,20 @@ void MHPwindow::SendChatMsg()
     // Chat->ensureCursorVisible();
 }
 
-void MHPwindow::GetLogin(QString user, QString pass)
-{
+void MHPwindow::GetLogin(QString user, QString pass) {
     NET->LogIn(user, pass);
 }
-void MHPwindow::GrabKB()
-{
+
+void MHPwindow::GrabKB() {
     MainImage->setFocus();
 }
-void MHPwindow::RelKB()
-{
+
+void MHPwindow::RelKB() {
     //    this->releaseKeyboard();
     //    Label1->setText("kb released");
 }
-void MHPwindow::SaveLogin()
-{
+
+void MHPwindow::SaveLogin() {
     QString nval = "netlogn/" + NetControls->EdTargetIP->text();
     QString pval = "netlogp/" + NetControls->EdTargetIP->text();
 
@@ -954,8 +919,7 @@ void MHPwindow::SaveLogin()
     //  AppSettings->sync();
 }
 
-void MHPwindow::LoadLogin()
-{
+void MHPwindow::LoadLogin() {
     QString nval = "netlogn/" + NetControls->EdTargetIP->text();
     QString pval = "netlogp/" + NetControls->EdTargetIP->text();
 
@@ -963,8 +927,7 @@ void MHPwindow::LoadLogin()
     //  DlgLogin->EdPassword->setText(AppSettings->value(pval).toString());
 }
 
-void MHPwindow::OpenImage()
-{
+void MHPwindow::OpenImage() {
 
     QFileDialog::Options options;
     //    if (!native->isChecked())
@@ -976,17 +939,13 @@ void MHPwindow::OpenImage()
                                                     tr("All supported types (*.ELI *.Png *.Jpg *.RIL);;Repaint layer image ELI Files (*.ELI);;Portable Network Graphic (*.PNG);;JPG Files (*.JPG);;RePAINT Image Log file (*.RIL)"),
                                                     &selectedFilter,
                                                     options);
-    if (!fileName.isEmpty())
-    {
+    if (!fileName.isEmpty()) {
         {
             QString EXT = fileName.right(3);
-            if (EXT.compare("ril", Qt::CaseInsensitive) == 0)
-            {
+            if (EXT.compare("ril", Qt::CaseInsensitive) == 0) {
                 fileName.chop(4);
                 // ActionExecutor->OpenLog((fileName));
-            }
-            else
-            {
+            } else {
                 WorkFilePath = fileName;
                 //   MainImage->ViewCanvas[0].load(fileName);
                 FileMenu->BtnSnap->setEnabled(true);
@@ -1000,8 +959,7 @@ void MHPwindow::OpenImage()
     }
 }
 
-void MHPwindow::ReOpenImage()
-{
+void MHPwindow::ReOpenImage() {
     if (!WorkFilePath.isEmpty())
         /*
          MainImage->ViewCanvas[0].load(WorkFilePath);*/
@@ -1009,10 +967,9 @@ void MHPwindow::ReOpenImage()
     MainImage->RepaintWidgetRect(MainImage->rect());
     MainImage->update();
 }
-void MHPwindow::SnapImage()
-{
-    if (!WorkFilePath.isEmpty())
-    {
+
+void MHPwindow::SnapImage() {
+    if (!WorkFilePath.isEmpty()) {
 
         QString Nameonly;
         Nameonly.append(WorkFilePath);
@@ -1026,8 +983,7 @@ void MHPwindow::SnapImage()
             Num.prepend("0");
         // QFile ftest;
 
-        while (QFile(Nameonly + "_" + Num + Ext).exists() == true)
-        {
+        while (QFile(Nameonly + "_" + Num + Ext).exists() == true) {
             SnapIdx++;
             Num = QString::number(SnapIdx);
             for (int i = Num.length(); i < 3; i++)
@@ -1038,13 +994,13 @@ void MHPwindow::SnapImage()
         MainImage->SaveImg(Nameonly + "_" + Num + Ext);
     }
 }
-void MHPwindow::SaveImg()
-{
+
+void MHPwindow::SaveImg() {
     if (!WorkFilePath.isEmpty())
         MainImage->SaveImg(WorkFilePath);
 }
-void MHPwindow::SaveImgAs()
-{
+
+void MHPwindow::SaveImgAs() {
     QFileDialog::Options options;
 
     QString selectedFilter;
@@ -1054,8 +1010,7 @@ void MHPwindow::SaveImgAs()
                                                     tr("eyeris layer image ELI PNG Files (*.ELI);;Portable Network Graphic (*.PNG);;JPG Files (*.JPG)"),
                                                     &selectedFilter,
                                                     options);
-    if (!fileName.isEmpty())
-    {
+    if (!fileName.isEmpty()) {
         MainImage->ViewCanvas[0].save(fileName);
 
         WorkFilePath = fileName;
@@ -1066,8 +1021,8 @@ void MHPwindow::SaveImgAs()
         // ActionExecutor->SaveLog(fileName);
     }
 }
-void MHPwindow::NewImage(QSize sz)
-{
+
+void MHPwindow::NewImage(QSize sz) {
     FileMenu->BtnSnap->setEnabled(false);
     FileMenu->BtnSave->setEnabled(false);
     FileMenu->BtnReload->setEnabled(false);
@@ -1079,12 +1034,10 @@ void MHPwindow::NewImage(QSize sz)
     ActionExecutor->ExecLayerAction(lact);
 }
 
-void MHPwindow::PasteImage()
-{
+void MHPwindow::PasteImage() {
     // please update button state depending on CB data.
     QClipboard *clipboard = QApplication::clipboard();
-    if (!clipboard->image().isNull())
-    {
+    if (!clipboard->image().isNull()) {
 
         // QByteArray bytes;
         // QBuffer buffer(&bytes);
@@ -1097,8 +1050,8 @@ void MHPwindow::PasteImage()
         Pnt.drawImage(0, 0, clipboard->image());
     }
 }
-void MHPwindow::LockCanvas(qint8 lk)
-{
+
+void MHPwindow::LockCanvas(qint8 lk) {
     /*
      MainImage->IsLocked=MainImage->IsLocked+lk;
       if (MainImage->IsLocked >0)
@@ -1107,61 +1060,53 @@ void MHPwindow::LockCanvas(qint8 lk)
           ARTM->suspended=false;
           */
 }
-void MHPwindow::GrabImg(QString asker)
-{
+
+void MHPwindow::GrabImg(QString asker) {
     QByteArray ELI(1, 'c');
     MainImage->WriteToBytes(&ELI);
     NET->SendImageData(asker, ELI);
 }
 
-void MHPwindow::ConfirmImage(QByteArray ba)
-{
+void MHPwindow::ConfirmImage(QByteArray ba) {
     MainImage->SetLock(-1);
     LayersPanel->SetLock(-1);
 }
-void MHPwindow::closeEvent(QCloseEvent *event)
-{
+
+void MHPwindow::closeEvent(QCloseEvent *event) {
     AppSettings->setValue(("MainGeo"), this->geometry());
-    foreach (QWidget *w, AllPanels)
-    {
-        AppSettings->setValue((w->accessibleName()), w->geometry());
-    }
+            foreach (QWidget *w, AllPanels) {
+            AppSettings->setValue((w->accessibleName()), w->geometry());
+        }
 }
 
-void MHPwindow::SwitchPinPanels()
-{
+void MHPwindow::SwitchPinPanels() {
     int HideComp;
     int ShowComp;
-    if (PanelsPinned)
-    {
-        foreach (QWidget *w, AllPanels)
-        {
-            //   w->setWindowFlags(Qt::Tool|Qt::CustomizeWindowHint|Qt::WindowMinimizeButtonHint);
+    if (PanelsPinned) {
+                foreach (QWidget *w, AllPanels) {
+                //   w->setWindowFlags(Qt::Tool|Qt::CustomizeWindowHint|Qt::WindowMinimizeButtonHint);
 
-            int newx = w->pos().x() + this->geometry().x();
-            int newy = w->pos().y() + this->geometry().y();
-            w->setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint);
-            w->hide();
-            w->show();
-            w->setGeometry(newx, newy, w->geometry().width(), w->geometry().height());
-        }
-    }
-    else
-    { // pinning panels back
-        foreach (QWidget *w, AllPanels)
-        {
-            int newx = w->geometry().x() - this->geometry().x();
-            int newy = w->geometry().y() - this->geometry().y();
+                int newx = w->pos().x() + this->geometry().x();
+                int newy = w->pos().y() + this->geometry().y();
+                w->setWindowFlags(Qt::Tool | Qt::CustomizeWindowHint);
+                w->hide();
+                w->show();
+                w->setGeometry(newx, newy, w->geometry().width(), w->geometry().height());
+            }
+    } else { // pinning panels back
+                foreach (QWidget *w, AllPanels) {
+                int newx = w->geometry().x() - this->geometry().x();
+                int newy = w->geometry().y() - this->geometry().y();
 
-            if ((newx + w->width()) > this->width())
-                newx = this->width() - w->width();
-            if (newy + w->height() > this->height())
-                newy = this->height() - w->height();
-            w->setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint);
-            w->hide();
-            w->setGeometry(newx, newy, w->geometry().width(), w->geometry().height());
-            w->show();
-        }
+                if ((newx + w->width()) > this->width())
+                    newx = this->width() - w->width();
+                if (newy + w->height() > this->height())
+                    newy = this->height() - w->height();
+                w->setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint);
+                w->hide();
+                w->setGeometry(newx, newy, w->geometry().width(), w->geometry().height());
+                w->show();
+            }
     }
     PanelsPinned = !PanelsPinned;
     this->update();
