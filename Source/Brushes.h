@@ -278,7 +278,8 @@ struct StrokeSection {
 
    QByteArray Serialize();
    void DeSerialize(QByteArray src);
-
+   //temporar measure for working networking
+   bool IsLocal = false;
 };
 
 // layer action

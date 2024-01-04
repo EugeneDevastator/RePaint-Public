@@ -133,9 +133,7 @@ void NetServer::S_UpdateUserStatus(NetSocket *user, quint8 status)
 
 void NetServer::S_RegisterSock(NetSocket *sock)
 {
-
     // (c3) step 3 allow registration
-
     if (!NameClientList.contains(sock->RegName))
     {
         RemoteClients.append(sock);

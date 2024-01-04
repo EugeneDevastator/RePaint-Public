@@ -81,7 +81,7 @@ public slots:
 
 
 signals:
-
+    void SendDataObj(NetPacketHeader, QByteArray, NetSocket *);
     // outside connection functions
     void SendAction(ActionData st); // signal to send action to local canvas
     void SendSection(StrokeSection sect);
@@ -118,6 +118,7 @@ signals:
     void SendLAction(LayerAction lact);
 
     void LoginSuccess();
+    void ConnectionSuccess();
 
     void NetReset();
 

@@ -65,9 +65,10 @@ void NetClient::OnConnectionSuccess()
     // SendStatus("connected to :"+addr);
     //     connect(LocalClient,SIGNAL(RSAction(ActionData)),this,SLOT(C_GetAction(ActionData)));
     // connect(LocalClient,SIGNAL(SendDataHid(QString,QByteArray)),this,SLOT(G_ExecData(QString,QByteArray)));
-    connect(LocalClient, SIGNAL(SendDataObj(stNetHead, QByteArray, NetSocket *)), this, SLOT(G_ExecData(stNetHead, QByteArray, NetSocket *)));
+    connect(LocalClient, SIGNAL(SendDataObj(NetPacketHeader, QByteArray, NetSocket *)), this, SLOT(G_ExecData(NetPacketHeader, QByteArray, NetSocket *)));
     LocalClient->init();
     LocalClient->IsRegistered = true;
+    emit ConnectionSuccess();
 }
 
 void NetClient::LogIn(QString Uname, QString Upass)

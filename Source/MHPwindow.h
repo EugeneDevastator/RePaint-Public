@@ -187,8 +187,8 @@ class MHPwindow : public QWidget {
       int SnapIdx;
 
       QString *LocalName;
-      NetClient *NET;
-      NetServer *sNET;
+      NetClient *netClient;
+      NetServer *netServer;
       c_KeyLink *KBLINK;
 
       ArtThread *ARTM;

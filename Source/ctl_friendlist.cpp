@@ -93,7 +93,7 @@ ctl_friendlist::ctl_friendlist(NetClient *net, QWidget *parent)
     connect(DlgFind, SIGNAL(AskAdd(QString)), NET, SLOT(C_AddFriend(QString)));
     connect(NET, SIGNAL(SendPeopleList(QStringList)), DlgFind, SLOT(GetPeopleList(QStringList)));
 
-    // make loof for lists of friends. connect(NET,SIGNAL()
+    // make loof for lists of friends. connect(netClient,SIGNAL()
 
     //   MnuPopup->pos().setX(300);
     //    MnuPopup->pos().setY(300);
@@ -256,7 +256,7 @@ void ctl_friendlist::SearchFriend()
                                              tr("Name:"), QLineEdit::Normal,
                          "InputName", &ok);
    if (ok && !iname.isEmpty() && iname.length()>1){
-       NET->FindFriend(iname);
+       netClient->FindFriend(iname);
    }*/
     DlgFind->show();
 }

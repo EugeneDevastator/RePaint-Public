@@ -74,10 +74,8 @@ public slots:
     void OpenImgBa(QByteArray ba);
     void ImportImg(QString fname);
 
-
-        void UnpackSection(StrokeSection Sect, bool local);
-        void ParseSections();
-        void ParseLActions();
+    void ParseSections();
+    void ParseLActions();
 
     void NewLog();
     void LogAct(ActionData act);
@@ -90,8 +88,7 @@ public slots:
     void SaveLog(QIODevice *iodev);
 
     void ConfirmLAction();
-
-    
+    void UnfoldStrokeToDots(StrokeSection Sect);
 };
 
 #endif // ACTIONMASTER_H

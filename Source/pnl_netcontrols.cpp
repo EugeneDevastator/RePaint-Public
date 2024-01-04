@@ -32,7 +32,8 @@ pnl_NetControls::pnl_NetControls(QWidget *parent)
     BtnNetStop->setFixedWidth(142);
     EdTargetIP = new QLineEdit;
     EdTargetIP->setAlignment(Qt::AlignCenter);
-    EdTargetIP->setText("46.252.193.146");
+    //EdTargetIP->setText("46.252.193.146");
+    EdTargetIP->setText("127.0.0.1");
     EdTargetIP->setFixedWidth(192);
     // QFont lrgfont;
     // lrgfont.setPointSize(16);
@@ -42,6 +43,7 @@ pnl_NetControls::pnl_NetControls(QWidget *parent)
     Lt->addWidget(BtnConnect);
     Lt->addWidget(BtnStartServer);
     Lt->addWidget(BtnNetStop);
+    Lt->addWidget(BtnLocal);
     Lt->addStretch(0);
     Lt->addWidget(BtnAbout);
     // Lt->addWidget(BtnLocal);
@@ -71,45 +73,46 @@ pnl_NetControls::pnl_NetControls(QWidget *parent)
 }
 void pnl_NetControls::init(NetClient *net, NetServer *snet)
 {
-    NET = net;
-    sNET = snet;
+    netClient = net;
+    netServer = snet;
     connect(BtnAbout, SIGNAL(clicked()), DlgAbout, SLOT(show()));
-    connect(BtnStartServer, SIGNAL(clicked()), sNET, SLOT(S_Start()));
+    connect(BtnStartServer, SIGNAL(clicked()), netServer, SLOT(S_Start()));
     connect(BtnLocal, SIGNAL(clicked()), this, SLOT(ToLocal()));
 
-    connect(BtnNetStop, SIGNAL(clicked()), NET, SLOT(N_Disconnect()));
-    connect(BtnNetStop, SIGNAL(clicked()), sNET, SLOT(N_Disconnect()));
+    connect(BtnNetStop, SIGNAL(clicked()), netClient, SLOT(N_Disconnect()));
+    connect(BtnNetStop, SIGNAL(clicked()), netServer, SLOT(N_Disconnect()));
 
     connect(BtnConnect, SIGNAL(clicked()), this, SLOT(Cstart()));
-    connect(BtnStartRoom, SIGNAL(clicked()), NET, SLOT(C_StartRoom()));
-    connect(BtnPartRoom, SIGNAL(clicked()), NET, SLOT(C_PartRoom()));
+    connect(BtnStartRoom, SIGNAL(clicked()), netClient, SLOT(C_StartRoom()));
+    connect(BtnPartRoom, SIGNAL(clicked()), netClient, SLOT(C_PartRoom()));
     connect(BtnSearch, SIGNAL(clicked()), this, SLOT(SearchFriend()));
     //    connect(BtnLogin,SIGNAL(clicked()),DlgLogin,SLOT(show()));
     //---------
-    connect(sNET, SIGNAL(SendServIp(QString)), this, SLOT(ToServer()));
-    connect(sNET, SIGNAL(SendServIp(QString)), this, SLOT(Cloopback()));
+    connect(netServer, SIGNAL(SendServIp(QString)), this, SLOT(ToServer()));
+    connect(netServer, SIGNAL(SendServIp(QString)), this, SLOT(Cloopback()));
 
-    connect(NET, SIGNAL(LoginSuccess()), this, SLOT(ToClient()));
-    connect(NET, SIGNAL(NetReset()), this, SLOT(ToNone()));
+    //connect(netClient, SIGNAL(LoginSuccess()), this, SLOT(ToClient()));
+    connect(netClient, SIGNAL(ConnectionSuccess()), this, SLOT(ToClient()));
+    connect(netClient, SIGNAL(NetReset()), this, SLOT(ToNone()));
 
-    //    connect(NET,SIGNAL(ReqLogin(QString)),DlgLogin,SLOT(RequestLog(QString)));
-    //    connect(NET,SIGNAL(LoginS(QString)),FriendList,SLOT(AddUser(QString)));
-    //    connect(NET,SIGNAL(LoginSuccess()),DlgLogin,SLOT(hide()));
+    //    connect(netClient,SIGNAL(ReqLogin(QString)),DlgLogin,SLOT(RequestLog(QString)));
+    //    connect(netClient,SIGNAL(LoginS(QString)),FriendList,SLOT(AddUser(QString)));
+    //    connect(netClient,SIGNAL(LoginSuccess()),DlgLogin,SLOT(hide()));
 }
 
 void pnl_NetControls::CreateRoom()
 {
-    // NET->C;
+    // netClient->C;
 }
 
 void pnl_NetControls::Cstart()
 {
-    NET->ConnectToServer(EdTargetIP->text());
-    emit sendlock(1);
+    netClient->ConnectToServer(EdTargetIP->text());
+    //emit sendlock(1);
 }
 void pnl_NetControls::Cloopback()
 {
-    NET->ConnectToServer("127.0.0.1");
+    netClient->ConnectToServer("127.0.0.1");
 }
 
 void pnl_NetControls::ToClient()
@@ -133,7 +136,7 @@ void pnl_NetControls::ToServer()
 void pnl_NetControls::ToLocal()
 {
     EdTargetIP->setEnabled(false);
-    BtnNetStop->setText("Open up.");
+    BtnNetStop->setText("Stop");
     BtnConnect->hide();
     BtnStartServer->hide();
     // BtnLocal->hide();
@@ -147,8 +150,8 @@ void pnl_NetControls::ToNone()
     BtnConnect->show();
     BtnStartServer->show();
     BtnNetStop->hide();
-    //    NET->N_Disconnect();
-    //    sNET->N_Disconnect();
+    //    netClient->N_Disconnect();
+    //    netServer->N_Disconnect();
     emit sendlock(-1);
 }
 void pnl_NetControls::SearchFriend()
@@ -159,6 +162,6 @@ void pnl_NetControls::SearchFriend()
                                           "Iris", &ok);
     if (ok)
     {
-        NET->FindFriend(iname);
+        netClient->FindFriend(iname);
     }
 }

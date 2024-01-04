@@ -30,8 +30,8 @@ public:
     QDialog *DlgAbout;
     QLabel *Lb1;
     QHBoxLayout *Lt;
-    NetClient *NET;
-    NetServer *sNET;
+    NetClient *netClient;
+    NetServer *netServer;
 signals:
     void sendlock (qint8);
 public slots:

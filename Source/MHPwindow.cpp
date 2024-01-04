@@ -71,8 +71,8 @@ MHPwindow::MHPwindow() {
     bool singlecore = false;
     ActionExecutor = new ActionMaster(MainImage, singlecore, this);
     ActionExecutor->executing = true;
-    NET = new NetClient();
-    sNET = new NetServer();
+    netClient = new NetClient();
+    netServer = new NetServer();
 
     /* ARTM= new ArtThread(MainImage);
      if (QThread::idealThreadCount()<2) {
@@ -103,15 +103,15 @@ MHPwindow::MHPwindow() {
     NetControls->setWindowTitle("Network");
     AllPanels.append(NetControls);
     // NetControls->hide();
-    FriendList = new ctl_friendlist(NET);
+    FriendList = new ctl_friendlist(netClient);
     FriendList->setAccessibleName("FriendList");
     FriendList->setWindowTitle("Friends");
     AllPanels.append(FriendList);
     // FriendList->hide();
 
     StrokeMaster = new class StrokeMaster(BControls, LayersPanel, MainImage);
-    NetControls->init(NET, sNET);
-    FriendList->NET = NET;
+    NetControls->init(netClient, netServer);
+    FriendList->NET = netClient;
 
     PaintColor->SetCol(Qt::black);
     //EraserColor->SetCol(Qt::white);
@@ -220,29 +220,29 @@ MHPwindow::MHPwindow() {
     //    connect(BtnLogin,SIGNAL(clicked()),DlgLogin,SLOT(show()));
     //---------
     qDebug() << ("MHPW connects part-2 done");
-    connect(NET, SIGNAL(SendAction(d_Action)), this, SLOT(GetAction(d_Action)));
-    connect(NET, SIGNAL(SendStatus(QString)), this, SLOT(GetMsg(QString)));
-    connect(NET, SIGNAL(SendServIp(QString)), this, SLOT(GetServIp(QString)));
-    connect(NET, SIGNAL(SendChatMsg(QString)), CHAT, SLOT(GetChatMsg(QString)));
-    connect(NET, SIGNAL(ReqLogin(QString)), this, SLOT(LoadLogin()));
-    connect(NET, SIGNAL(ReqLogin(QString)), DlgLogin, SLOT(RequestLog(QString)));
+    connect(netClient, SIGNAL(SendAction(d_Action)), this, SLOT(GetAction(d_Action)));
+    connect(netClient, SIGNAL(SendStatus(QString)), this, SLOT(GetMsg(QString)));
+    connect(netClient, SIGNAL(SendServIp(QString)), this, SLOT(GetServIp(QString)));
+    connect(netClient, SIGNAL(SendChatMsg(QString)), CHAT, SLOT(GetChatMsg(QString)));
+    connect(netClient, SIGNAL(ReqLogin(QString)), this, SLOT(LoadLogin()));
+    connect(netClient, SIGNAL(ReqLogin(QString)), DlgLogin, SLOT(RequestLog(QString)));
 
     qDebug() << ("MHPW connects part-3 done");
-    connect(NET, SIGNAL(LoginSuccess()), DlgLogin, SLOT(hide()));
-    connect(NET, SIGNAL(LoginSuccess()), this, SLOT(SaveLogin()));
-    connect(NET, SIGNAL(ClientEnd(QString)), FriendList, SLOT(DelUser(QString)));
-    connect(NET, SIGNAL(NetReset()), FriendList, SLOT(Purge()));
-    connect(NET, SIGNAL(SendUserStatus(QString, int)), FriendList, SLOT(SetUserStatus(QString, int)));
-    connect(NET, SIGNAL(SendUserRJ(QString, int)), FriendList, SLOT(AddToRoom(QString, int)));
-    connect(NET, SIGNAL(SendPartRoom(QString)), FriendList, SLOT(DelFromRoom(QString)));
+    connect(netClient, SIGNAL(LoginSuccess()), DlgLogin, SLOT(hide()));
+    connect(netClient, SIGNAL(LoginSuccess()), this, SLOT(SaveLogin()));
+    connect(netClient, SIGNAL(ClientEnd(QString)), FriendList, SLOT(DelUser(QString)));
+    connect(netClient, SIGNAL(NetReset()), FriendList, SLOT(Purge()));
+    connect(netClient, SIGNAL(SendUserStatus(QString, int)), FriendList, SLOT(SetUserStatus(QString, int)));
+    connect(netClient, SIGNAL(SendUserRJ(QString, int)), FriendList, SLOT(AddToRoom(QString, int)));
+    connect(netClient, SIGNAL(SendPartRoom(QString)), FriendList, SLOT(DelFromRoom(QString)));
 
-    connect(NET, SIGNAL(LockCanvas(qint8)), this, SLOT(LockCanvas(qint8)));
+    connect(netClient, SIGNAL(LockCanvas(qint8)), this, SLOT(LockCanvas(qint8)));
     if (!Dedicated)
-        connect(NET, SIGNAL(GetImage(QByteArray)), ActionExecutor, SLOT(OpenImgBa(QByteArray)));
-    connect(NET, SIGNAL(GetImage(QByteArray)), this, SLOT(ConfirmImage(QByteArray)));
-    connect(NET, SIGNAL(ReqImage(QString)), this, SLOT(GrabImg(QString)));
+        connect(netClient, SIGNAL(GetImage(QByteArray)), ActionExecutor, SLOT(OpenImgBa(QByteArray)));
+    connect(netClient, SIGNAL(GetImage(QByteArray)), this, SLOT(ConfirmImage(QByteArray)));
+    connect(netClient, SIGNAL(ReqImage(QString)), this, SLOT(GrabImg(QString)));
     if (!Dedicated)
-        connect(NET, SIGNAL(SendLAction(LayerAction)), ActionExecutor, SLOT(ExecLayerAction(LayerAction)));
+        connect(netClient, SIGNAL(SendLAction(LayerAction)), ActionExecutor, SLOT(ExecLayerAction(LayerAction)));
 
     qDebug() << ("MHPW connects part-4 done");
     connect(NetControls, SIGNAL(sendlock(qint8)), LayersPanel, SLOT(SetLock(qint8)));
@@ -273,9 +273,8 @@ MHPwindow::MHPwindow() {
 
     // please remove this later
     connect(StrokeMaster, SIGNAL(SendReadySect(StrokeSection)), ActionExecutor, SLOT(ExecSection(StrokeSection)));
-    connect(ActionExecutor, SIGNAL(SendSection(StrokeSection)), NET, SLOT(GetSection(StrokeSection)));
-    if (!Dedicated)
-        connect(NET, SIGNAL(SendSection(StrokeSection)), ActionExecutor, SLOT(ExecNetSection(StrokeSection)));
+    connect(ActionExecutor, SIGNAL(SendSection(StrokeSection)), netClient, SLOT(GetSection(StrokeSection)));
+    connect(netClient, SIGNAL(SendSection(StrokeSection)), ActionExecutor, SLOT(ExecNetSection(StrokeSection)));
 
     connect(LayersPanel, SIGNAL(SendActiveLayer(int)), MainImage, SLOT(SetActiveLayer(int)));
     connect(LayersPanel, SIGNAL(SendLayerVis(int, bool)), MainImage, SLOT(SetLvis(int, bool)));
@@ -297,13 +296,13 @@ MHPwindow::MHPwindow() {
     connect(CHAT->ChatLine, SIGNAL(returnPressed()), this, SLOT(SendChatMsg()));
     // ----------------
     // connect(DlgLogin,SIGNAL(SendLogin(QString,QString)),this,SLOT(GetLogin(QString,QString)));
-    connect(DlgLogin, SIGNAL(SendLogin(QString, QString)), NET, SLOT(C_Login(QString, QString)));
-    connect(DlgLogin, SIGNAL(SendReg(QString, QString)), NET, SLOT(C_Regin(QString, QString)));
-    connect(DlgLogin, SIGNAL(rejected()), NET, SLOT(N_Disconnect()));
-    connect(DlgLogin, SIGNAL(rejected()), sNET, SLOT(N_Disconnect()));
+    connect(DlgLogin, SIGNAL(SendLogin(QString, QString)), netClient, SLOT(LogIn(QString, QString)));
+    connect(DlgLogin, SIGNAL(SendReg(QString, QString)), netClient, SLOT(RegisterNewUser(QString, QString)));
+    connect(DlgLogin, SIGNAL(rejected()), netClient, SLOT(N_Disconnect()));
+    connect(DlgLogin, SIGNAL(rejected()), netServer, SLOT(S_Disconnect()));
     //  connect(DlgLogin,SIGNAL(SendLogin(QString,QString)),this,SLOT(SaveLogin()));
 
-    connect(FriendList, SIGNAL(SendJoin(QString)), NET, SLOT(C_JoinRoom(QString)));
+    connect(FriendList, SIGNAL(SendJoin(QString)), netClient, SLOT(JoinRoom(QString)));
     connect(FriendList, SIGNAL(SendJoin(QString)), CHAT, SLOT(GetChatMsg(QString)));
     connect(FriendList, SIGNAL(SendIntMsg(QString)), CHAT, SLOT(GetIntchatMsg(QString)));
     connect(NetControls->BtnPartRoom, SIGNAL(clicked()), FriendList, SLOT(LeaveRoom()));
@@ -359,10 +358,10 @@ MHPwindow::MHPwindow() {
 
     // unlock for polypaint Pnt.drawPolygon(GM.IssuePoly(),Qt::WindingFill);
 
-    // this->setWindowTitle(NET->GenForumHash("[)evastator","password"));
+    // this->setWindowTitle(netClient->GenForumHash("[)evastator","password"));
     //$1$LKUcDhZo$
     //$1$LKUcDhZo$drghukl = wrong
-    // this->setWindowTitle(NET->GenForumHash("drghukl$1$LKUcDhZo",""));
+    // this->setWindowTitle(netClient->GenForumHash("drghukl$1$LKUcDhZo",""));
     // qsrand(456);
     //       this->setWindowTitle(QString::number(qrand()));
     //    this->setWindowTitle(this->windowTitle()+ " " +QString::number(qrand()));
@@ -571,7 +570,6 @@ void MHPwindow::SendMsg() {
 
 void MHPwindow::GetAction(ActionData act) {
     if (!Dedicated) {
-
         // used for receiving actions from network!
         ARTM->ExecAction(&MainImage->ViewCanvas[act.layer], act, false);
     }
@@ -583,7 +581,7 @@ void MHPwindow::GetAction(ActionData act) {
 }
 
 void MHPwindow::ConnectAddr() {
-    NET->ConnectToServer(NetControls->EdTargetIP->text());
+    netClient->ConnectToServer(NetControls->EdTargetIP->text());
 }
 
 void MHPwindow::GetTStroke(d_Stroke Strk, d_StrokePars stpars) {
@@ -622,7 +620,7 @@ Strk.pos2=Strk.packpos2.ToPointF();
      else
 
 
-       NET->GetAction(nact);
+       netClient->GetAction(nact);
 
     ChatLine->setText(QString::number(stpars.Pars[PenPressure]));
 
@@ -675,17 +673,17 @@ void MHPwindow::keyReleaseEvent(QKeyEvent *event) {
 }
 
 void MHPwindow::ConfirmAct(ActionData act) {
-    NET->GetAction(act);
+    netClient->GetAction(act);
 }
 
 void MHPwindow::ExecLayerAction(LayerAction lact) {
     // filter mode for layers;
-    if (NET->NetMode == emNone) {
+    if (netClient->NetMode == emNone) {
         if (!Dedicated)
             ActionExecutor->ExecLayerAction(lact);
         // net send layer action
     } else
-        NET->C_SendLaction(lact);
+        netClient->C_SendLaction(lact);
 
     // LOGM->AddAct(lact);
 }
@@ -886,19 +884,19 @@ void MHPwindow::AssignMainColor(QColor col) { // get color from various sources 
 
 void MHPwindow::SendChatMsg() {
     QString Msg = CHAT->ChatLine->text();
-    Msg.prepend(NET->LocalClient->RegName + ": ");
+    Msg.prepend(netClient->LocalClient->RegName + ": ");
     Msg.append("\n");
     CHAT->ChatLine->clear();
 
     //    Chat->insertPlainText(Msg);
     //  Chat->autoFormatting();
 
-    NET->GetChatMsg(Msg);
+    netClient->GetChatMsg(Msg);
     // Chat->ensureCursorVisible();
 }
 
 void MHPwindow::GetLogin(QString user, QString pass) {
-    NET->LogIn(user, pass);
+    netClient->LogIn(user, pass);
 }
 
 void MHPwindow::GrabKB() {
@@ -1064,7 +1062,7 @@ void MHPwindow::LockCanvas(qint8 lk) {
 void MHPwindow::GrabImg(QString asker) {
     QByteArray ELI(1, 'c');
     MainImage->WriteToBytes(&ELI);
-    NET->SendImageData(asker, ELI);
+    netClient->SendImageData(asker, ELI);
 }
 
 void MHPwindow::ConfirmImage(QByteArray ba) {

@@ -32,7 +32,7 @@ private:
     dotList *DotsLocal;
     dotList *DotsNet;
 
-    
+      void addNetSect(StrokeSection sect);
 };
 
 #endif // LAYERSTACK_H

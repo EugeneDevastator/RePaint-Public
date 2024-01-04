@@ -79,7 +79,7 @@ void ActionMaster::ParseSections()
             {
                 while (sList.count() > 0)
                 {
-                    this->UnpackSection(sList.takeAt(0), true);
+                    this->UnfoldStrokeToDots(sList.takeAt(0));
                     foreach (ArtThread *at, ARTList)
                     {
                         if (!at->executing)
@@ -90,7 +90,7 @@ void ActionMaster::ParseSections()
             }
             /*
             while ((*LStacks)[i].SectsNet.count()>0){
-                this->UnpackSection(*(*LStacks)[i].SectsNet.takeAt(0),false);
+                this->UnfoldStrokeToDots(*(*LStacks)[i].SectsNet.takeAt(0),false);
                 foreach (ArtThread *at,ARTList){
                    if (!at->executing) at->start();
                     }
@@ -116,9 +116,8 @@ void ActionMaster::ExecNetSection(StrokeSection Sect)
 {
     if (LStacks->count() - 1 >= Sect.layer)
     {
-        StrokeSection *pSect = new StrokeSection;
-        *pSect = Sect;
-        //  (*LStacks)[Sect.layer]->addNetSect(Sect);
+        Sect.IsLocal=false;
+        (*LStacks)[Sect.layer]->addLocalSect(Sect);
     }
 }
 
@@ -127,9 +126,9 @@ void ActionMaster::ExecSection(StrokeSection Sect)
     if (LStacks->count() - 1 >= Sect.layer)
     {
 
-        StrokeSection *pSect = new StrokeSection;
-        *pSect = Sect;
-
+        //StrokeSection *pSect = new StrokeSection;
+        //*pSect = Sect;
+        Sect.IsLocal=true;
         (*LStacks)[Sect.layer]->addLocalSect(Sect);
     }
 }
@@ -249,13 +248,13 @@ void ActionMaster::ParseLActions()
 
 //----------------------- data conversion procedures
 
-void ActionMaster::UnpackSection(StrokeSection Sect, bool local)
+void ActionMaster::UnfoldStrokeToDots(StrokeSection Sect)
 {
     // please perhaps Backward stroke resolve! bug with rnd colors
 
     dotList tmpList;
     tmpList.clear();
-    if (local)
+    if (Sect.IsLocal)
         emit SendSection(Sect);
 
     qreal stdist = Dist2D(Sect.Stroke.pos1, Sect.Stroke.pos2);
@@ -349,18 +348,8 @@ void ActionMaster::UnpackSection(StrokeSection Sect, bool local)
               ap.islocal=local;
               ap.img=&MainImage->ViewCanvas[Sect.layer];
                APlist.append(ap);*/
-            if (local)
-            {
-                ActionData rawact = *newact;
-                //(*LStacks)[Sect.layer]->addLocalDot(rawact);
-                tmpList.append(rawact);
-                delete newact;
-            }
-            else
-            {
 
-                //                  (*LStacks)[Sect.layer].DotsNet->append(newact);
-            }
+            tmpList.append(*newact);
             //   QApplication::processEvents(QEventLoop::AllEvents,2);
             //
             dotpos2 = dotpos1;
@@ -607,8 +596,8 @@ void ActionMaster::OpenLog(QIODevice *iodev)
         if (LOG[i].logid == atSect)
         {
             StrokeSection sect;
-            sect.DeSerialize(LOG[i].szdAction);
 
+            sect.DeSerialize(LOG[i].szdAction);
             sect.Stroke.pos1.setX(((qreal)sect.Stroke.pos1.x() * MainImage->ViewCanvas[0].width()) / baseSize.width());
             sect.Stroke.pos1.setY(((qreal)sect.Stroke.pos1.y() * MainImage->ViewCanvas[0].height()) / baseSize.height());
             sect.Stroke.pos2.setX(((qreal)sect.Stroke.pos2.x() * MainImage->ViewCanvas[0].width()) / baseSize.width());
