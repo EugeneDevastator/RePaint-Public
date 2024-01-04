@@ -164,19 +164,18 @@ qreal BrushDialWidget::GetModValue(d_StrokePars stpars) {
         if (Model->PenMode > 0)
             modulationValue = stpars.Pars[Model->PenMode];
     }
-    float OutR = Model->GetBoundRange();
-    float sliderRange = Slider->clipmaxF - Slider->clipminF;
-    float respar = modulationValue * sliderRange + Slider->clipminF;
+    //float OutR = Model->GetBoundRange();
+    //float sliderRange = Slider->clipmaxF - Slider->clipminF;
+    //float respar = modulationValue * sliderRange + Slider->clipminF;
 
     // float randm = ((float)qrand()/RAND_MAX)*(Slider->jitter*2)-(Slider->jitter);
-    float randm = (((float) qrand() / RAND_MAX) - 0.5) * 2 * Slider->jitter;
+    float randm = (((float) qrand() / RAND_MAX) - 0.5) * 2 * Model->Jitter;
 
-    float res = (respar + randm);
-    res = modulationValue + randm;
-    res = qMax(res, (float) 0.0);
-    res = qMin(res, (float) 1);
+    float res = modulationValue + randm;
+    //res = qMax(res, (float) 0.0);
+    //res = qMin(res, (float) 1);
 
-    return Model->GetValueInCursorRange(modulationValue);
+    return Model->GetValueInCursorRange(res);
     //return res * OutR + Model->MinBound;
 
 
