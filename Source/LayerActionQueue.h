@@ -7,11 +7,11 @@
 typedef QList <StrokeSection> sectionList;
 typedef QList <ActionData> dotList;
 
-class LayerStack : public QObject
+class LayerActionQueue : public QObject
 {
 Q_OBJECT
 public:
-    explicit LayerStack();
+    explicit LayerActionQueue();
     bool isLocked;
     bool isForDel;
     bool canDel;
