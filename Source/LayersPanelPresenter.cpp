@@ -199,7 +199,7 @@ void LayersPanelPresenter::DelLayer(int userrow)
 void LayersPanelPresenter::DelActiveLayer()
 {
     // DelLayer(ActiveLayer);
-    LayerAction lact;
+    LayerOperation lact;
     lact.ActID = laDel;
     lact.layer = ActiveLayer;
     emit SendLayerAction(lact);
@@ -221,7 +221,7 @@ void LayersPanelPresenter::DropLayerCmd()
 
     if (GetActiveLayer() < LayerProps->count() - 1)
     {
-        LayerAction lact;
+        LayerOperation lact;
         lact.ActID = laDrop;
         lact.layer = GetActiveLayer();
         emit SendLayerAction(lact);
@@ -233,7 +233,7 @@ void LayersPanelPresenter::DropLayerCmd()
 void LayersPanelPresenter::SetActiveOp(float op)
 {
     // LayerProps[ActiveLayer].Opacity=Opacity;
-    LayerAction lact;
+    LayerOperation lact;
     lact.ActID = laOp;
     lact.layer = GetActiveLayer();
     lact.op = op;
@@ -243,7 +243,7 @@ void LayersPanelPresenter::SetActiveOp(float op)
 void LayersPanelPresenter::SetActiveBm(int bm)
 {
     // LayerProps[ActiveLayer].blendmode=bm;
-    LayerAction lact;
+    LayerOperation lact;
     lact.ActID = laBm;
     lact.layer = GetActiveLayer();
     lact.bm = bm;
@@ -328,7 +328,7 @@ void LayersPanelPresenter::SelChanged()
     int layerto = GetActiveLayer();
     int layerfrom = movinglayer;
 
-    LayerAction lact;
+    LayerOperation lact;
     lact.ActID = laMove;
     lact.layerto = layerto;
     lact.layer = layerfrom;
@@ -340,14 +340,14 @@ void LayersPanelPresenter::AddLayerCmd()
 {
 
     //  ActiveLayer=MdlLayers->itemFromIndex(selmodel->selectedIndexes().at(0))->row();
-    LayerAction lact;
+    LayerOperation lact;
     lact.ActID = laAdd;
     lact.layer = GetActiveLayer();
     emit SendLayerAction(lact);
 }
 void LayersPanelPresenter::DupLayerCmd()
 {
-    LayerAction lact;
+    LayerOperation lact;
     lact.ActID = laDup;
     lact.layer = GetActiveLayer();
     emit SendLayerAction(lact);
@@ -356,13 +356,13 @@ void LayersPanelPresenter::DelLayerCmd()
 {
     // DelLayer(ActiveLayer);
     //     ActiveLayer=MdlLayers->itemFromIndex(selmodel->selectedIndexes().at(0))->row();
-    LayerAction lact;
+    LayerOperation lact;
     lact.ActID = laDel;
     lact.layer = GetActiveLayer();
     qDebug() << (GetActiveLayer());
     emit SendLayerAction(lact);
 }
-void LayersPanelPresenter::ExecLAction(LayerAction lact)
+void LayersPanelPresenter::ExecLAction(LayerOperation lact)
 {
 
     if (lact.ActID == laAdd)

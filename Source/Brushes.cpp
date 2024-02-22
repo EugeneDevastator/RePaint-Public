@@ -158,8 +158,8 @@ void ActionData::DeSerialize(QByteArray src) {
 void StrokeSection::DeSerialize(QByteArray src) {
     QDataStream stream(&src, QIODevice::ReadWrite);
     Stroke.DeSerialize(&stream);
-    Brush.DeSerialize(stream);
-    BrushFrom.DeSerialize(stream);
+    BrushEnd.DeSerialize(stream);
+    BrushStart.DeSerialize(stream);
     stream >> ToolID;
     stream >> BrushID;
     stream >> NoiseID;
@@ -192,8 +192,8 @@ QByteArray StrokeSection::Serialize() {
     qba->clear();
     QDataStream ba(qba, QIODevice::ReadWrite);
     Stroke.Serialize(&ba);
-    Brush.Serialize(ba);
-    BrushFrom.Serialize(ba);
+    BrushEnd.Serialize(ba);
+    BrushStart.Serialize(ba);
     ba << ToolID;
     ba << BrushID;
     ba << NoiseID;
@@ -223,7 +223,7 @@ QByteArray StrokeSection::Serialize() {
 
 // -------------------------  LACTION SERIALIZATION
 
-QByteArray LayerAction::Serialize() {
+QByteArray LayerOperation::Serialize() {
     QByteArray qba;
     QDataStream ds(&qba, QIODevice::ReadWrite);
     ds << ActID;
@@ -237,7 +237,7 @@ QByteArray LayerAction::Serialize() {
     return qba;
 }
 
-void LayerAction::DeSerialize(QByteArray src) {
+void LayerOperation::DeSerialize(QByteArray src) {
     QDataStream ds(&src, QIODevice::ReadWrite);
 
     ds >> ActID;
@@ -425,8 +425,8 @@ QColor BlendQCOL(QColor from, QColor to, qreal k) {
 QPointF CalcLastPos(StrokeSection Sect) {
 
     float stdist = Dist2D(Sect.Stroke.pos1, Sect.Stroke.pos2);
-    qint16 rad = Sect.BrushFrom.ClientStamp.rad_out * Sect.BrushFrom.ClientStamp.scale;
-    qint16 endradius = Sect.Brush.ClientStamp.rad_out * Sect.BrushFrom.ClientStamp.scale;
+    qint16 rad = Sect.BrushStart.ClientStamp.rad_out * Sect.BrushStart.ClientStamp.scale;
+    qint16 endradius = Sect.BrushEnd.ClientStamp.rad_out * Sect.BrushStart.ClientStamp.scale;
 
     qreal dx = Sect.Stroke.pos1.x() - Sect.Stroke.pos2.x();
     qreal dy = Sect.Stroke.pos1.y() - Sect.Stroke.pos2.y();

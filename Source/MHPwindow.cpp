@@ -335,7 +335,7 @@ MHPwindow::MHPwindow() {
     //      MainImage->NewImg(QSize(1920,1200),3);
     //  else
     //   MainImage->NewImg(QSize(1920,1200),1);
-    LayerAction lact;
+    LayerOperation lact;
     lact.ActID = laNewCanvas;
     lact.layer = 3;
     lact.rect.setSize(QSize(1920, 1200));
@@ -676,7 +676,7 @@ void MHPwindow::ConfirmAct(ActionData act) {
     netClient->GetAction(act);
 }
 
-void MHPwindow::ExecLayerAction(LayerAction lact) {
+void MHPwindow::ExecLayerAction(LayerOperation lact) {
     // filter mode for layers;
     if (netClient->NetMode == emNone) {
         if (!Dedicated)
@@ -1025,7 +1025,7 @@ void MHPwindow::NewImage(QSize sz) {
     FileMenu->BtnSave->setEnabled(false);
     FileMenu->BtnReload->setEnabled(false);
 
-    LayerAction lact;
+    LayerOperation lact;
     lact.ActID = laNewCanvas;
     lact.rect.setSize(sz);
     lact.layer = 1;

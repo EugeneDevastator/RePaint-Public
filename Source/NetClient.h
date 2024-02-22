@@ -61,7 +61,7 @@ public slots:
     void RegisterNewUser(QString Uname, QString Upass);
 
     //  void C_Send(ActionData st); // send action client to server.
-    void C_SendLaction(LayerAction st);
+    void C_SendLaction(LayerOperation st);
 
     void DisconnectFromServer(NetSocket *sock);
 
@@ -115,7 +115,7 @@ signals:
 
     void SendLayerMove(int at, int to);
 
-    void SendLAction(LayerAction lact);
+    void SendLAction(LayerOperation lact);
 
     void LoginSuccess();
     void ConnectionSuccess();

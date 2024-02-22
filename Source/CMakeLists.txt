@@ -190,8 +190,8 @@ add_executable(Source
         imagearray.h
         #imagebox.cpp unused
         #imagebox.h
-        layerstack.cpp
-        layerstack.h
+        LayerActionQueue.cpp
+        LayerActionQueue.h
         main.cpp
         MHPwindow.cpp
         MHPwindow.h

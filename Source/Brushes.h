@@ -247,8 +247,8 @@ struct actionpair {
 
 struct StrokeSection {
    d_Stroke Stroke;
-   BrushData BrushFrom;
-   BrushData Brush;
+   BrushData BrushStart;
+   BrushData BrushEnd;
    quint8 BrushID;
    quint8 NoiseID;
    quint8 Noisemode;
@@ -256,9 +256,12 @@ struct StrokeSection {
    quint8 startseed;
    quint8 layer; // layer from
 
+
    float spacing; // spacing parameter for sections
    //  float spacing_offset; // offset left for proper drawing;
    quint8 scatter;
+
+   //it seems that those params are legacy and unused..
    quint8 rRadout;
    quint8 rRadrel;
    quint8 rScale;
@@ -282,8 +285,8 @@ struct StrokeSection {
    bool IsLocal = false;
 };
 
-// layer action
-struct LayerAction {
+// Denotes operation on layer like delete move change blend mode etc.
+struct LayerOperation {
    quint8 ActID;
    qint16 layer; // layer from
    qint16 layerto;

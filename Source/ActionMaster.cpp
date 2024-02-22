@@ -13,45 +13,45 @@ ActionMaster::ActionMaster(ImageArray *iar, bool forcesinglecore, QObject *paren
     executing = false;
     LActionBusy = false;
     // atcount = new quint8;
-    LStacks = new QList<LayerStack *>;
-    LStacks->clear();
-    LayerStack *ls = new LayerStack();
-    LayerStack *ls1 = new LayerStack();
-    LayerStack *ls2 = new LayerStack();
+    ActionsPerLayer = new QList<LayerActionQueue *>;
+    ActionsPerLayer->clear();
+    LayerActionQueue *ls = new LayerActionQueue();
+    LayerActionQueue *ls1 = new LayerActionQueue();
+    LayerActionQueue *ls2 = new LayerActionQueue();
 
-    LStacks->append(ls);
-    LStacks->append(ls1);
-    LStacks->append(ls2);
+    ActionsPerLayer->append(ls);
+    ActionsPerLayer->append(ls1);
+    ActionsPerLayer->append(ls2);
     // LStacks.append(ls);
     // LStacks.append(ls);
 
     if ((QThread::idealThreadCount() > 1) & !forcesinglecore)
     {
-        ARTList.clear();
+        ArtThreads.clear();
         atcount = QThread::idealThreadCount() - 1;
 
         for (int i = 1; i <= QThread::idealThreadCount() - 1; i++)
         {
             ArtThread *at = new ArtThread(iar);
-            at->LStacks = LStacks;
+            at->ActionsPerLayer = ActionsPerLayer;
             at->tcount = &atcount;
             at->threadID = i - 1;
             at->GlobalLock = &GlobalLock;
-            ARTList.append(at);
+            ArtThreads.append(at);
             at->start();
         }
     }
     else
     {
         atcount = 1;
-        ARTList.clear();
+        ArtThreads.clear();
         ArtThread *at = new ArtThread(iar);
         at->ForceSingleCore();
-        at->LStacks = LStacks;
+        at->ActionsPerLayer = ActionsPerLayer;
         at->tcount = &atcount;
         at->GlobalLock = &GlobalLock;
 
-        ARTList.append(at);
+        ArtThreads.append(at);
     }
 
     maxthreads = atcount;
@@ -74,19 +74,19 @@ void ActionMaster::ParseSections()
             //  (currlayer % corecount) +1
             //  tn=(i % atcount);  //0=0 1=1 n-1%n=n-1
             //  ARTList[tn]->ExecAction(LStacks[i].LocalDots.takeAt(0));
-            sectionList sList = (*LStacks)[i]->GetLocalSects();
+            sectionList sList = (*ActionsPerLayer)[i]->GetLocalSects();
             while (!sList.isEmpty())
             {
                 while (sList.count() > 0)
                 {
                     this->UnfoldStrokeToDots(sList.takeAt(0));
-                    foreach (ArtThread *at, ARTList)
+                    foreach (ArtThread *at, ArtThreads)
                     {
                         if (!at->executing)
                             at->start();
                     }
                 }
-                sList = (*LStacks)[i]->GetLocalSects();
+                sList = (*ActionsPerLayer)[i]->GetLocalSects();
             }
             /*
             while ((*LStacks)[i].SectsNet.count()>0){
@@ -114,33 +114,33 @@ void ActionMaster::ExecOperation(quint8 OpType, QByteArray Data)
 
 void ActionMaster::ExecNetSection(StrokeSection Sect)
 {
-    if (LStacks->count() - 1 >= Sect.layer)
+    if (ActionsPerLayer->count() - 1 >= Sect.layer)
     {
         Sect.IsLocal=false;
-        (*LStacks)[Sect.layer]->addLocalSect(Sect);
+        (*ActionsPerLayer)[Sect.layer]->addLocalSect(Sect);
     }
 }
 
 void ActionMaster::ExecSection(StrokeSection Sect)
 {
-    if (LStacks->count() - 1 >= Sect.layer)
+    if (ActionsPerLayer->count() - 1 >= Sect.layer)
     {
 
         //StrokeSection *pSect = new StrokeSection;
         //*pSect = Sect;
         Sect.IsLocal=true;
-        (*LStacks)[Sect.layer]->addLocalSect(Sect);
+        (*ActionsPerLayer)[Sect.layer]->addLocalSect(Sect);
     }
 }
 
-void ActionMaster::ExecLayerAction(LayerAction lact)
+void ActionMaster::ExecLayerAction(LayerOperation lact)
 {
     LAStack.append(lact);
     if (!LActionBusy && LAStack.count() > 0)
     {
         int k = 1;
         k = k + 1;
-        ParseLActions();
+        ParseLayerActions();
     }
     return;
 }
@@ -150,11 +150,11 @@ void ActionMaster::ConfirmLAction()
     LActionBusy = false;
     if (LAStack.count() > 0)
     {
-        ParseLActions();
+        ParseLayerActions();
     }
 }
 
-void ActionMaster::ParseLActions()
+void ActionMaster::ParseLayerActions()
 {
 
     if (LActionBusy | LAStack.isEmpty())
@@ -164,7 +164,7 @@ void ActionMaster::ParseLActions()
     }
 
     LActionBusy = true;
-    LayerAction lact = LAStack.takeFirst();
+    LayerOperation lact = LAStack.takeFirst();
 
     if (lact.ActID == laBm)
     {
@@ -178,8 +178,8 @@ void ActionMaster::ParseLActions()
     {
         MainImage->DupLayer(lact.layer);
 
-        LayerStack *LS = new LayerStack();
-        LStacks->insert(lact.layer, LS);
+        LayerActionQueue *LS = new LayerActionQueue();
+        ActionsPerLayer->insert(lact.layer, LS);
     }
     else if (lact.ActID == laDel)
     {
@@ -188,7 +188,7 @@ void ActionMaster::ParseLActions()
         {
 
             // SUSPEND ALL THREADS FIRST!
-            LStacks->removeAt(lact.layer);
+            ActionsPerLayer->removeAt(lact.layer);
             MainImage->DelLayer(lact.layer);
         }
         //    GlobalLock=false;
@@ -198,38 +198,38 @@ void ActionMaster::ParseLActions()
     }
     else if (lact.ActID == laAdd)
     {
-        LayerStack *LS = new LayerStack;
-        LStacks->insert(lact.layer, LS);
+        LayerActionQueue *LS = new LayerActionQueue;
+        ActionsPerLayer->insert(lact.layer, LS);
         MainImage->AddLayerAt(lact.layer);
     }
     else if (lact.ActID == laDrop)
     {
         if (lact.layer < MainImage->ViewCanvas.count() - 1)
         {
-            LStacks->removeAt(lact.layer);
+            ActionsPerLayer->removeAt(lact.layer);
             MainImage->DropLayer(lact.layer);
         }
     }
     else if (lact.ActID == laMove)
     {
 
-        if (lact.layer >= LStacks->count())
-            lact.layer = LStacks->count() - 1;
-        if (lact.layerto >= LStacks->count())
-            lact.layerto = LStacks->count() - 1;
+        if (lact.layer >= ActionsPerLayer->count())
+            lact.layer = ActionsPerLayer->count() - 1;
+        if (lact.layerto >= ActionsPerLayer->count())
+            lact.layerto = ActionsPerLayer->count() - 1;
 
-        LStacks->move(lact.layer, lact.layerto);
+        ActionsPerLayer->move(lact.layer, lact.layerto);
         MainImage->MoveLayer(lact.layer, lact.layerto);
     }
     else if (lact.ActID == laNewCanvas)
     {
 
-        LStacks->clear();
+        ActionsPerLayer->clear();
         NewImg(lact.rect.size(), lact.layer);
         for (int i = 0; i < lact.layer; i++)
         {
-            LayerStack *LS = new LayerStack;
-            LStacks->append(LS);
+            LayerActionQueue *LS = new LayerActionQueue;
+            ActionsPerLayer->append(LS);
         }
     }
     else if (lact.ActID == laResizeCanvas)
@@ -259,8 +259,8 @@ void ActionMaster::UnfoldStrokeToDots(StrokeSection Sect)
 
     qreal stdist = Dist2D(Sect.Stroke.pos1, Sect.Stroke.pos2);
 
-    int rad = Sect.BrushFrom.ClientStamp.rad_out * Sect.BrushFrom.ClientStamp.scale;
-    int endradius = Sect.Brush.ClientStamp.rad_out * Sect.BrushFrom.ClientStamp.scale;
+    int rad = Sect.BrushStart.ClientStamp.rad_out * Sect.BrushStart.ClientStamp.scale;
+    int endradius = Sect.BrushEnd.ClientStamp.rad_out * Sect.BrushStart.ClientStamp.scale;
 
     qreal dx = Sect.Stroke.pos1.x() - Sect.Stroke.pos2.x();
     qreal dy = Sect.Stroke.pos1.y() - Sect.Stroke.pos2.y();
@@ -286,7 +286,7 @@ void ActionMaster::UnfoldStrokeToDots(StrokeSection Sect)
 
     // what if length < than rads?
     // qreal rrang=Sect.spacing*Sect.Brush.rad_out*Sect.Brush.scale;
-    qreal rrang = Sect.Brush.ClientStamp.rad_out * Sect.Brush.ClientStamp.scale * (Sect.scatter / 51.0);
+    qreal rrang = Sect.BrushEnd.ClientStamp.rad_out * Sect.BrushEnd.ClientStamp.scale * (Sect.scatter / 51.0);
     // rrang=0;
 
     quint16 n = 0;
@@ -296,7 +296,7 @@ void ActionMaster::UnfoldStrokeToDots(StrokeSection Sect)
         {
             n = n + 1;
             ;
-            rnflw = RawRnd(Sect.BrushFrom.ClientStamp.seed + n * 2, 1024) * rrang * 2 - rrang; //(qrand()/32767.0*rrang*2)-rrang;
+            rnflw = RawRnd(Sect.BrushStart.ClientStamp.seed + n * 2, 1024) * rrang * 2 - rrang; //(qrand()/32767.0*rrang*2)-rrang;
             rnside = 0;                                                                  // 0.0;//(qrand()/32767.0*rrang*2)-rrang;
 
             // original equo
@@ -309,8 +309,8 @@ void ActionMaster::UnfoldStrokeToDots(StrokeSection Sect)
 
             //------- send actions to thread
             qreal k = nextlen / stdist;
-            BrushData Cbrush = Sect.BrushFrom;
-            Cbrush.ClientStamp = BlendBrushes(Sect.BrushFrom.ClientStamp, Sect.Brush.ClientStamp, k);
+            BrushData Cbrush = Sect.BrushStart;
+            Cbrush.ClientStamp = BlendBrushes(Sect.BrushStart.ClientStamp, Sect.BrushEnd.ClientStamp, k);
 
             newact->layer = Sect.layer;
             newact->startseed = Sect.startseed;
@@ -322,8 +322,8 @@ void ActionMaster::UnfoldStrokeToDots(StrokeSection Sect)
             if (Sect.Noisemode == 0) // random
             {
 
-                newact->Brush.ClientStamp.noisex = RawRnd(Sect.BrushFrom.ClientStamp.seed + n * 3, 1024) * 1024;
-                newact->Brush.ClientStamp.noisey = RawRnd(Sect.BrushFrom.ClientStamp.seed + n + 21, 1024) * 1024;
+                newact->Brush.ClientStamp.noisex = RawRnd(Sect.BrushStart.ClientStamp.seed + n * 3, 1024) * 1024;
+                newact->Brush.ClientStamp.noisey = RawRnd(Sect.BrushStart.ClientStamp.seed + n + 21, 1024) * 1024;
             }
             else if (Sect.Noisemode == 1)
             { // constant
@@ -362,7 +362,7 @@ void ActionMaster::UnfoldStrokeToDots(StrokeSection Sect)
     //     else
     //      if (local)offset-=stdist;
 
-    (*LStacks)[Sect.layer]->addLocalDotList(tmpList);
+    (*ActionsPerLayer)[Sect.layer]->addLocalDotList(tmpList);
 }
 
 // ------------------------------
@@ -456,14 +456,14 @@ void ActionMaster::OpenImg(QIODevice *iodev)
     dstream >> height;
     // NewImg(QSize(width,height),lcount);
 
-    LayerAction nia;
+    LayerOperation nia;
     nia.layer = lcount;
     nia.rect.setWidth(width);
     nia.rect.setHeight(height);
     nia.ActID = laNewCanvas;
     ExecLayerAction(nia);
 
-    LayerAction visact;
+    LayerOperation visact;
 
     for (int i = 0; i < lcount; i++)
     {
@@ -502,7 +502,7 @@ void ActionMaster::ImportImg(QString fname)
     QImage tmpimg = QImage(QSize(50, 50), QImage::Format_ARGB32_Premultiplied);
     tmpimg.load(fname, "PNG");
 
-    LayerAction nia;
+    LayerOperation nia;
     nia.layer = 1;
     nia.rect.setWidth(tmpimg.width());
     nia.rect.setHeight(tmpimg.height());
@@ -540,7 +540,7 @@ void ActionMaster::LogAct(ActionData act)
         LOG.append(lp);
     }
 }
-void ActionMaster::LogLAct(LayerAction act)
+void ActionMaster::LogLAct(LayerOperation act)
 {
     if (isLogging)
     {
@@ -602,21 +602,21 @@ void ActionMaster::OpenLog(QIODevice *iodev)
             sect.Stroke.pos1.setY(((qreal)sect.Stroke.pos1.y() * MainImage->ViewCanvas[0].height()) / baseSize.height());
             sect.Stroke.pos2.setX(((qreal)sect.Stroke.pos2.x() * MainImage->ViewCanvas[0].width()) / baseSize.width());
             sect.Stroke.pos2.setY(((qreal)sect.Stroke.pos2.y() * MainImage->ViewCanvas[0].height()) / baseSize.height());
-            sect.BrushFrom.ClientStamp.rad_out = ((qreal)sect.BrushFrom.ClientStamp.rad_out * MainImage->ViewCanvas[0].width()) / baseSize.width();
-            sect.BrushFrom.ClientStamp.rad_in = ((qreal)sect.BrushFrom.ClientStamp.rad_in * MainImage->ViewCanvas[0].width()) / baseSize.width();
-            sect.Brush.ClientStamp.rad_out = ((qreal)sect.Brush.ClientStamp.rad_out * MainImage->ViewCanvas[0].width()) / baseSize.width();
-            sect.Brush.ClientStamp.rad_in = ((qreal)sect.Brush.ClientStamp.rad_in * MainImage->ViewCanvas[0].width()) / baseSize.width();
+            sect.BrushStart.ClientStamp.rad_out = ((qreal)sect.BrushStart.ClientStamp.rad_out * MainImage->ViewCanvas[0].width()) / baseSize.width();
+            sect.BrushStart.ClientStamp.rad_in = ((qreal)sect.BrushStart.ClientStamp.rad_in * MainImage->ViewCanvas[0].width()) / baseSize.width();
+            sect.BrushEnd.ClientStamp.rad_out = ((qreal)sect.BrushEnd.ClientStamp.rad_out * MainImage->ViewCanvas[0].width()) / baseSize.width();
+            sect.BrushEnd.ClientStamp.rad_in = ((qreal)sect.BrushEnd.ClientStamp.rad_in * MainImage->ViewCanvas[0].width()) / baseSize.width();
             // sect.scatter=((qreal)sect.scatter*MainImage->ViewCanvas[0].width())/baseSize.width();
             qreal minrad = 3.0;
-            if (sect.Brush.ClientStamp.rad_out < minrad)
+            if (sect.BrushEnd.ClientStamp.rad_out < minrad)
             {
-                sect.Brush.ClientStamp.opacity *= (sect.Brush.ClientStamp.rad_out) / minrad;
-                sect.Brush.ClientStamp.rad_out = (minrad + sect.Brush.ClientStamp.rad_out) * 0.5;
+                sect.BrushEnd.ClientStamp.opacity *= (sect.BrushEnd.ClientStamp.rad_out) / minrad;
+                sect.BrushEnd.ClientStamp.rad_out = (minrad + sect.BrushEnd.ClientStamp.rad_out) * 0.5;
             }
-            if (sect.BrushFrom.ClientStamp.rad_out < minrad)
+            if (sect.BrushStart.ClientStamp.rad_out < minrad)
             {
-                sect.BrushFrom.ClientStamp.opacity *= (sect.BrushFrom.ClientStamp.rad_out) / minrad;
-                sect.BrushFrom.ClientStamp.rad_out = (minrad + sect.BrushFrom.ClientStamp.rad_out) * 0.5;
+                sect.BrushStart.ClientStamp.opacity *= (sect.BrushStart.ClientStamp.rad_out) / minrad;
+                sect.BrushStart.ClientStamp.rad_out = (minrad + sect.BrushStart.ClientStamp.rad_out) * 0.5;
             }
             // LocalSects.append(sect);
             this->ExecSection(sect);
@@ -629,7 +629,6 @@ void ActionMaster::OpenLog(QIODevice *iodev)
 
 void ActionMaster::SaveLog(QString Fname)
 {
-
     //   if ((Fname.right(3).contains("RPL")))
     Fname.append(".RIL"); // repaint image lof
     {

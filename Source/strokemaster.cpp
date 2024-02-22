@@ -57,12 +57,12 @@ void StrokeMaster::GetRawStroke(d_Stroke Strk, d_StrokePars currpars, d_StrokePa
     StrokeSection Sect;
     Sect.Stroke = Strk;
     Sect.Noisemode = nact.Noisemode;
-    Sect.Brush = nact.Brush; // BC->ParseBrush(Strk,currpars).Brush;
+    Sect.BrushEnd = nact.Brush; // BC->ParseBrush(Strk,currpars).Brush;
     if (isNew)
-        Sect.BrushFrom = BC->ParseBrush(Strk, lastpars).Brush;
+        Sect.BrushStart = BC->ParseBrush(Strk, lastpars).Brush;
     else
-        Sect.BrushFrom = prevBrush;
-    prevBrush = Sect.Brush;
+        Sect.BrushStart = prevBrush;
+    prevBrush = Sect.BrushEnd;
 
     Sect.layer = LP->GetActiveLayer();
     Sect.spacing = BC->CtlSpc->GetModValue(currpars);
@@ -70,13 +70,13 @@ void StrokeMaster::GetRawStroke(d_Stroke Strk, d_StrokePars currpars, d_StrokePa
     Sect.ToolID = nact.ToolID;
     if (currpars.Pars[csERASER] == 1)
     {
-        Sect.Brush.ClientStamp.bmidx = 1;
-        Sect.BrushFrom.ClientStamp.bmidx = 1;
+        Sect.BrushEnd.ClientStamp.bmidx = 1;
+        Sect.BrushStart.ClientStamp.bmidx = 1;
     }
     if (LP->BtnPresOp->isChecked())
     {
-        Sect.Brush.ClientStamp.preserveop = 1;
-        Sect.BrushFrom.ClientStamp.preserveop = 1;
+        Sect.BrushEnd.ClientStamp.preserveop = 1;
+        Sect.BrushStart.ClientStamp.preserveop = 1;
     }
 
     if (isNew)

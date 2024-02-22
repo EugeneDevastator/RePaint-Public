@@ -1456,7 +1456,7 @@ void ImageArray::SetLvis(int layer, bool vis) {
     RepaintWidgetRect(this->rect());
 }
 
-void ImageArray::ExecLayerAction(LayerAction lact) {
+void ImageArray::ExecLayerAction(LayerOperation lact) {
 /*
     if (lact.ActID==laBm){
         SetLBm(lact.layer,lact.bm);

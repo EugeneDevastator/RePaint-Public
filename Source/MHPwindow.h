@@ -14,7 +14,7 @@
 #include <QtWidgets/QSplitter>
 #include <QtWidgets/QMainWindow>
 #include "Brushes.h"
-#include "layerstack.h"
+#include "LayerActionQueue.h"
 #include "ArtMaster.h"
 #include "ArtThread.h"
 #include "ActionMaster.h"
@@ -166,7 +166,7 @@ class MHPwindow : public QWidget {
       void LockCanvas(qint8 lk);
       void GrabImg(QString asker);
 
-      void ExecLayerAction(LayerAction lact);
+      void ExecLayerAction(LayerOperation lact);
       void ConfirmImage(QByteArray ba);
       void ConfirmAct(ActionData act);
 

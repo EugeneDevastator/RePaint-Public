@@ -4,7 +4,7 @@
 #include <QThread>
 #include "ArtMaster.h"
 #include "imagearray.h"
-#include "layerstack.h"
+#include "LayerActionQueue.h"
 
 
 class ArtThread : public QThread
@@ -34,7 +34,7 @@ bool isdone;
 
     QList <actionpair> ActionList;
     QList <actionpair> ActionNetList;
-    QList <LayerStack*> *LStacks;
+    QList <LayerActionQueue*> *ActionsPerLayer;
 
 
 

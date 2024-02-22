@@ -90,7 +90,7 @@ void NetClient::RegisterNewUser(QString Uname, QString Upass)
     G_SendData(sdAuth, auth.Serialize(), LocalClient);
 }
 
-void NetClient::C_SendLaction(LayerAction la)
+void NetClient::C_SendLaction(LayerOperation la)
 {
     G_SendData(sdLAction, la.Serialize(), LocalClient);
 }
@@ -219,7 +219,7 @@ void NetClient::G_ExecData(NetPacketHeader HEAD, QByteArray data, NetSocket *des
         emit SendLAction(*GotAction);
         delete GotAction;
         */
-        LayerAction lact;
+        LayerOperation lact;
         lact.DeSerialize(data);
         emit SendLAction(lact);
     }

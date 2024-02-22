@@ -23,7 +23,7 @@
 #include <QPainter>
 #include <QImage>
 #include <QRgb>
-#include "layerstack.h"
+#include "LayerActionQueue.h"
 #include "BrushEngine/LegacySharedBrush.hpp"
 
 /*ArtMaster::ArtMaster(QObject *parent) :

@@ -77,14 +77,14 @@ void ArtThread::run()
             if (!suspended)
             {
 
-                for (int i = threadID; i < LStacks->count(); i = i + (*tcount))
+                for (int i = threadID; i < ActionsPerLayer->count(); i = i + (*tcount))
                 {
 
                     dotList *LocalDots;
-                    if ((*LStacks)[i]->isForDel)
+                    if ((*ActionsPerLayer)[i]->isForDel)
                     {
                     }
-                    LocalDots = (*LStacks)[i]->GetLocalDots();
+                    LocalDots = (*ActionsPerLayer)[i]->GetLocalDots();
 
                     while (!LocalDots->isEmpty())
 
@@ -92,7 +92,7 @@ void ArtThread::run()
 
                         // if (!LocalDots->isEmpty())
                         ARTM->DoActionList(&MainImage->ViewCanvas[i], LocalDots, true);
-                        LocalDots = (*LStacks)[i]->GetLocalDots();
+                        LocalDots = (*ActionsPerLayer)[i]->GetLocalDots();
                     }
 
                     /*

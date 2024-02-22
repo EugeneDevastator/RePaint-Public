@@ -6,7 +6,7 @@
 #include "ArtMaster.h"
 #include "strokemaster.h"
 #include "imagearray.h"
-#include "layerstack.h"
+#include "LayerActionQueue.h"
 
 
 enum eActionTypes{
@@ -35,7 +35,7 @@ class ActionMaster : public QThread
     Q_OBJECT
 public:
     explicit ActionMaster(ImageArray *iar,bool forcesinglecore=false,QObject *parent = 0);
-    QList <ArtThread*> ARTList;
+    QList <ArtThread*> ArtThreads;
     StrokeMaster *STM;
     ImageArray *MainImage;
     bool isLogging;
@@ -46,9 +46,9 @@ public:
 
 
    QList <logpair> LOG;
-   QList <LayerStack*> *LStacks;
+   QList <LayerActionQueue*> *ActionsPerLayer;
    QList <dotList> LDotLists;
-   QList <LayerAction> LAStack;
+   QList <LayerOperation> LAStack;
 
     QSize baseSize;
         quint8 baselcount;
@@ -56,14 +56,14 @@ public:
         quint8 maxthreads;
 
 signals:
-    void SendLAction(LayerAction);
+    void SendLAction(LayerOperation);
     void SendSection(StrokeSection);
 public slots:
 
         void ExecOperation(quint8 OpType,QByteArray Data);
         void ExecSection(StrokeSection Sect);
         void ExecNetSection(StrokeSection Sect);
-        void ExecLayerAction(LayerAction lact);
+        void ExecLayerAction(LayerOperation lact);
         //      void ExecSection
     void NewImg(QSize sz,int lcount=1);
 
@@ -75,11 +75,11 @@ public slots:
     void ImportImg(QString fname);
 
     void ParseSections();
-    void ParseLActions();
+    void ParseLayerActions();
 
     void NewLog();
     void LogAct(ActionData act);
-    void LogLAct(LayerAction act);
+    void LogLAct(LayerOperation act);
     void LogSect(StrokeSection sect);
     void OpenLog(QString Fname);
     void OpenLog(QIODevice *iodev);

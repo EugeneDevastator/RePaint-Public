@@ -1,6 +1,6 @@
-#include "layerstack.h"
+#include "LayerActionQueue.h"
 
-LayerStack::LayerStack() {
+LayerActionQueue::LayerActionQueue() {
     isForDel = false;
     canDel = false;
     SectsLocal = new sectionList;
@@ -10,7 +10,7 @@ LayerStack::LayerStack() {
     DotsNet = new dotList;
 }
 
-dotList *LayerStack::GetLocalDots() {
+dotList *LayerActionQueue::GetLocalDots() {
     while (isLocked) {
         QApplication::processEvents();
     }
@@ -24,7 +24,7 @@ dotList *LayerStack::GetLocalDots() {
 
 }
 
-sectionList LayerStack::GetLocalSects() {
+sectionList LayerActionQueue::GetLocalSects() {
     while (isLocked) {
         QApplication::processEvents();
     }
@@ -36,7 +36,7 @@ sectionList LayerStack::GetLocalSects() {
 
 }
 
-void LayerStack::addLocalDot(ActionData act) {
+void LayerActionQueue::addLocalDot(ActionData act) {
     while (isLocked) {
         QApplication::processEvents();
     }
@@ -45,7 +45,7 @@ void LayerStack::addLocalDot(ActionData act) {
     isLocked = false;
 }
 
-void LayerStack::addLocalDotList(dotList dtLst) {
+void LayerActionQueue::addLocalDotList(dotList dtLst) {
     while (isLocked) {
         QApplication::processEvents();
     }
@@ -54,7 +54,7 @@ void LayerStack::addLocalDotList(dotList dtLst) {
     isLocked = false;
 }
 
-void LayerStack::addLocalSect(StrokeSection sect) {
+void LayerActionQueue::addLocalSect(StrokeSection sect) {
     while (isLocked) {
         QApplication::processEvents();
     }
@@ -63,7 +63,7 @@ void LayerStack::addLocalSect(StrokeSection sect) {
     isLocked = false;
 }
 
-void LayerStack::addNetSect(StrokeSection sect) {
+void LayerActionQueue::addNetSect(StrokeSection sect) {
     while (isLocked) {
         QApplication::processEvents();
     }
